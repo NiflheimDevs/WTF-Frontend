@@ -1,16 +1,42 @@
-# React + Vite
+## That's the full scaffold done 🎉
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Here's a summary of every `#backend-needed` comment across the project and what needs to happen for each:
 
-Currently, two official plugins are available:
+**`ReporterPage.jsx`**
+- Replace mock regions with `GET /api/v1/regions`
+- Replace simulated submit with `POST /api/v1/requests`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**`AuthContext.jsx`**
+- Replace the thrown error in `login()` with `api.post('/auth/login', { email, password })`
 
-## React Compiler
+**`LoginPage.jsx`**
+- Login form: call `saveSession(res.data.token, res.data.user)` after successful login
+- Signup form: call `api.post('/auth/register', { name, email, password })`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**`DashboardPage.jsx`**
+- Replace mock KPI data with `GET /api/v1/metrics/summary` via React Query
+- Replace mock requests with `GET /api/v1/requests` via React Query
+- Replace simulated status update with `PATCH /api/v1/requests/:id/status`
+- Replace simulated refresh with `queryClient.invalidateQueries()`
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Final commit message
+
+```
+feat: add axios instance with auth interceptor and request config
+```
+
+---
+
+## Then merge to main
+
+Once you've tested everything end to end on the branch:
+
+```bash
+git checkout main
+git merge feat/frontend-scaffold
+git push
+```
+
+Your frontend is fully built and ready for the backend to plug in. Nice work 💪
