@@ -46,9 +46,9 @@ export default function App() {
       <Route
         path="/dispatcher"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute> //teseting rn when fr we have to remove
             <DashboardPage />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       />
 
