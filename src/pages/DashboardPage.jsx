@@ -1,7 +1,7 @@
-export default function LoginPage() {
+export default function DashboardPage() {
   return (
     <div style={{ padding: 32, color: "var(--text-default)" }}>
-      Login Page — coming in Part 4
+      Dashboard — coming in Part 5
     </div>
   );
 }
