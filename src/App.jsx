@@ -1,59 +1,115 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
-import ReporterPage    from './pages/ReporterPage'
-import LoginPage       from './pages/LoginPage'
-import DashboardPage   from './pages/DashboardPage'
+import { lazy, Suspense } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./hooks/useAuth";
+import { Spinner } from "./components/primitives/Spinner";
 
-// Protects /dispatcher routes — redirects to login if not authenticated
+const ReporterPage = lazy(() => import("./pages/ReporterPage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const RequestsPage = lazy(() => import("./pages/RequestsPage"));
+const RegionsPage = lazy(() => import("./pages/RegionsPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div style={{
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-base)',
-      }}>
-        <div style={{
-          width: 32,
-          height: 32,
-          border: '2px solid var(--border)',
-          borderTopColor: 'var(--color-primary-500)',
-          borderRadius: '50%',
-          animation: 'spin 0.7s linear infinite',
-        }} />
+      <div className="h-screen flex items-center justify-center bg-neutral-0">
+        <Spinner size="lg" />
       </div>
-    )
+    );
   }
 
-  if (!user) return <Navigate to="/dispatcher/login" replace />
-  return children
+  if (!user) return <Navigate to="/dispatcher/login" replace />;
+  return children;
+}
+
+function Layout({ children }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen flex items-center justify-center">
+          <Spinner size="lg" />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  );
 }
 
 export default function App() {
   return (
     <Routes>
-      {/* Public reporter page */}
-      <Route path="/" element={<ReporterPage />} />
-
-      {/* Dispatcher login */}
-      <Route path="/dispatcher/login" element={<LoginPage />} />
-
-      {/* Protected dispatcher dashboard */}
       <Route
-        path="/dispatcher"
+        path="/"
         element={
-          // <ProtectedRoute> //teseting rn when fr we have to remove
-            <DashboardPage />
-          // </ProtectedRoute>
+          <Layout>
+            <ReporterPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/dispatcher/login"
+        element={
+          <Layout>
+            <LoginPage />
+          </Layout>
         }
       />
 
-      {/* Catch-all */}
+      <Route
+        path="/dispatcher"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <DashboardPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dispatcher/requests"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <RequestsPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dispatcher/regions"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <RegionsPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dispatcher/settings"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <SettingsPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/404"
+        element={
+          <Layout>
+            <NotFoundPage />
+          </Layout>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 }
