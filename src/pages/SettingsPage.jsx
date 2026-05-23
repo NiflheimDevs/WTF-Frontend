@@ -38,10 +38,10 @@ export default function SettingsPage() {
     try {
       // API call to update profile
       toast.success("Profile updated successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update profile");
     }
-  }, [profileForm]);
+  }, []);
 
   const handlePasswordUpdate = useCallback(async () => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
@@ -62,7 +62,7 @@ export default function SettingsPage() {
         newPassword: "",
         confirmPassword: "",
       });
-    } catch (error) {
+    } catch {
       toast.error("Failed to update password");
     }
   }, [passwordForm]);

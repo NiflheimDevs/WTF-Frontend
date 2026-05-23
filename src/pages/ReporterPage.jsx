@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useRegions } from "../hooks/useRegions";
 import { useSubmitRequest } from "../hooks/useSubmitRequest";
 import { Button } from "../components/primitives/Button";
@@ -9,7 +8,6 @@ import { RegionSelect } from "../components/reporter/RegionSelect";
 import { NeedTypePicker } from "../components/reporter/NeedTypePicker";
 import { QuantityStepper } from "../components/reporter/QuantityStepper";
 import { SuccessView } from "../components/reporter/SuccessView";
-import { HeroSection } from "../components/reporter/HeroSection";
 import {
   validateRegion,
   validateQuantity,
@@ -19,7 +17,6 @@ import { NEED_TYPES } from "../api/types";
 import toast from "react-hot-toast";
 
 export default function ReporterPage() {
-  const navigate = useNavigate();
   const { data: regions = [], isLoading: regionsLoading } = useRegions();
   const submitRequest = useSubmitRequest();
 
@@ -85,7 +82,7 @@ export default function ReporterPage() {
 
       setRequestId(result.id);
       setSubmitted(true);
-    } catch (error) {
+    } catch {
       // Error handled by hook
     }
   };
@@ -106,10 +103,14 @@ export default function ReporterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-0 flex flex-col">
-      <HeroSection />
-
-      <main className="flex-1 px-4 pb-8 w-full max-w-lg mx-auto">
+    <div
+      className="min-h-screen bg-neutral-0 flex flex-col items-center justify-center px-4 font-sans"
+      style={{
+        background:
+          "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+      }}
+    >
+      <main className="flex-1 px-4 py-8 w-full max-w-lg mx-auto">
         <Card>
           <div className="flex flex-col gap-5">
             <RegionSelect

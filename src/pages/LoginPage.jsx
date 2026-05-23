@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Droplets, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -59,7 +59,6 @@ function Alert({ message, type = "danger" }) {
 // ── Login Form ─────────────────────────────────────────────────────
 function LoginForm({ onSwitch }) {
   const { login } = useAuth();
-  const { saveSession } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -216,8 +215,6 @@ function LoginForm({ onSwitch }) {
 
 // ── Signup Form ────────────────────────────────────────────────────
 function SignupForm({ onSwitch }) {
-  const navigate = useNavigate();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -315,7 +312,7 @@ function SignupForm({ onSwitch }) {
             setPassword(val);
             setFieldErrors((e) => ({ ...e, password: null }));
           }}
-          placeholder="Min. 8 characters"
+          placeholder="••••••••"
           error={fieldErrors.password}
         >
           <button
@@ -409,17 +406,15 @@ function SignupForm({ onSwitch }) {
 
 // ── Main Login Page ────────────────────────────────────────────────
 export default function LoginPage() {
-  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [tab, setTab] = useState("login"); // 'login' | 'signup'
+  const { user } = useAuth();
 
-  // Force dark mode on this page
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "dark");
-    document.documentElement.classList.add("dark");
-  }, []);
-
-  // Already logged in — go straight to dashboard
+  const tabFromUrl = searchParams.get("tab");
+  const [tab, setTab] = useState(() => {
+    if (tabFromUrl === "signup") return "signup";
+    return "login";
+  });
   useEffect(() => {
     if (user) navigate("/dispatcher", { replace: true });
   }, [user, navigate]);

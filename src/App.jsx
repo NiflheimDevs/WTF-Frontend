@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
+import { RequireAuth } from "./components/auth/RequireAuth";
 import { Spinner } from "./components/primitives/Spinner";
-
+import { cn } from "./utils/cn";
+const AppHeader = lazy(() => import("./components/layout/AppHeader"));
 const ReporterPage = lazy(() => import("./pages/ReporterPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
@@ -11,33 +12,8 @@ const RegionsPage = lazy(() => import("./pages/RegionsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
-function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-neutral-0">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!user) return <Navigate to="/dispatcher/login" replace />;
-  return children;
-}
-
 function Layout({ children }) {
-  return (
-    <Suspense
-      fallback={
-        <div className="h-screen flex items-center justify-center">
-          <Spinner size="lg" />
-        </div>
-      }
-    >
-      {children}
-    </Suspense>
-  );
+  return <Suspense fallback={<Spinner size="lg" />}>{children}</Suspense>;
 }
 
 export default function App() {
@@ -47,6 +23,14 @@ export default function App() {
         path="/"
         element={
           <Layout>
+            <div
+              className={cn("fixed inset-0 -z-10 pointer-events-none")}
+              style={{
+                background:
+                  "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+              }}
+            />
+            <AppHeader />
             <ReporterPage />
           </Layout>
         }
@@ -55,49 +39,90 @@ export default function App() {
         path="/dispatcher/login"
         element={
           <Layout>
+            <div
+              className={cn("fixed inset-0 -z-10 pointer-events-none")}
+              style={{
+                background:
+                  "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+              }}
+            />
+            <AppHeader />
             <LoginPage />
           </Layout>
         }
       />
 
+      {/* Protected routes */}
       <Route
         path="/dispatcher"
         element={
-          <ProtectedRoute>
+          <RequireAuth>
             <Layout>
+              <div
+                className={cn("fixed inset-0 -z-10 pointer-events-none")}
+                style={{
+                  background:
+                    "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+                }}
+              />
+              <AppHeader />
               <DashboardPage />
             </Layout>
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/dispatcher/requests"
         element={
-          <ProtectedRoute>
+          <RequireAuth>
             <Layout>
+              <div
+                className={cn("fixed inset-0 -z-10 pointer-events-none")}
+                style={{
+                  background:
+                    "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+                }}
+              />
+              <AppHeader />
               <RequestsPage />
             </Layout>
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/dispatcher/regions"
         element={
-          <ProtectedRoute>
+          <RequireAuth>
             <Layout>
+              <div
+                className={cn("fixed inset-0 -z-10 pointer-events-none")}
+                style={{
+                  background:
+                    "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+                }}
+              />
+              <AppHeader />
               <RegionsPage />
             </Layout>
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/dispatcher/settings"
         element={
-          <ProtectedRoute>
+          <RequireAuth>
             <Layout>
+              <div
+                className={cn("fixed inset-0 -z-10 pointer-events-none")}
+                style={{
+                  background:
+                    "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+                }}
+              />
+              <AppHeader />
               <SettingsPage />
             </Layout>
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
 
@@ -105,11 +130,19 @@ export default function App() {
         path="/404"
         element={
           <Layout>
+            <div
+              className={cn("fixed inset-0 -z-10 pointer-events-none")}
+              style={{
+                background:
+                  "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+              }}
+            />
+            <AppHeader />
             <NotFoundPage />
           </Layout>
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
   );
 }

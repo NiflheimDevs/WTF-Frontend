@@ -20,7 +20,6 @@ export function DispatcherLayout() {
         onLogout={logout}
         collapsed={collapsed}
       />
-
       <TopBar
         activeNav={activeNav}
         theme={theme}
