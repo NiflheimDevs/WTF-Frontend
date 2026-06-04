@@ -25,7 +25,7 @@ export const Button = forwardRef(
       secondary:
         "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 active:bg-neutral-300 border border-neutral-200",
       ghost:
-        "bg-transparent text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200",
+        "bg-transparent dark:bg-neutral-700 text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200",
       danger:
         "bg-danger-bg text-danger-fg hover:bg-danger-bg/80 active:bg-danger-bg/90",
       success:

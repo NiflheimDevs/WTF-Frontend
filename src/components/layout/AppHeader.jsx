@@ -77,7 +77,6 @@ export default function AppHeader() {
               <ThemeToggle />
 
               {isDispatcherRoute ? (
-                // هدر دیسپچر
                 <>
                   <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-700" />
                   <Link
@@ -137,7 +136,6 @@ export default function AppHeader() {
                   )}
                 </>
               ) : (
-                // هدر عمومی (public)
                 <>
                   {user ? (
                     <div className="flex items-center gap-3">

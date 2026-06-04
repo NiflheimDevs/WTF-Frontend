@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
@@ -23,8 +23,7 @@ export default function RegionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: regions = [], isLoading: regionsLoading } = useRegions();
-  const { data: metrics = [], isLoading: metricsLoading } =
-    useMetricsByRegion(50);
+  const { data: metrics = [] } = useMetricsByRegion(50);
 
   const filteredRegions = regions.filter(
     (region) =>

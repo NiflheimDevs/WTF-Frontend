@@ -85,7 +85,7 @@ export function RequestRow({
       <td className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors">
         {request.id.slice(0, 8)}
       </td>
-      <td className="px-4 py-3 text-neutral-700 font-medium max-w-[150px] truncate">
+      <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">
         {request.region_name || request.region_id?.slice(0, 8) || "Unknown"}
       </td>
       <td className="px-4 py-3 text-center text-lg">

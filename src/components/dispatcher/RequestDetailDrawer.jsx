@@ -1,19 +1,11 @@
 import { useEffect } from "react";
-import {
-  X,
-  Calendar,
-  MapPin,
-  Phone,
-  FileText,
-  User,
-  Clock,
-} from "lucide-react";
-import { useRequestDetail } from "../../hooks/useRequestDetail";
+import { X, Calendar, MapPin, Phone, Clock } from "lucide-react";
+import { useRequestDetail } from "../../hooks/useRequests";
 import { useUpdateRequestStatus } from "../../hooks/useRequests";
 import { StatusBadge } from "./StatusBadge";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
-import { relativeTime, formatPhone } from "../../utils/formatters";
+import { formatPhone } from "../../utils/formatters";
 
 export function RequestDetailDrawer({
   requestId,

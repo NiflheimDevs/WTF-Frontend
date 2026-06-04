@@ -1,11 +1,4 @@
-import { useState } from "react";
-import {
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
+import { Filter, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { RequestRow } from "./RequestRow";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";

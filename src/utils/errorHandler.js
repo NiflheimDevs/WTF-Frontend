@@ -110,7 +110,7 @@ export function handleApiError(error, context = "") {
   }
 }
 
-export function validateResponse(response, schema = null) {
+export function validateResponse(response) {
   if (!response) {
     throw new AppError("VAL_001", "Empty response received");
   }

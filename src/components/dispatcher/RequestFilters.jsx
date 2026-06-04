@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { X, Calendar } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { Input } from "../primitives/Input";
-import { cn } from "../../utils/cn";
 
 export function RequestFilters({ filters, onChange, onClose }) {
   const [localFilters, setLocalFilters] = useState({

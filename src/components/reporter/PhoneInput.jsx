@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "../primitives/Input";
-import { formatPhone, validators } from "../../utils/formatters";
+import { validators } from "../../utils/formatters";
 
 export function PhoneInput({ value, onChange, error }) {
   const [localError, setLocalError] = useState("");
