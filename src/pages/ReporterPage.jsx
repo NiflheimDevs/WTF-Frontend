@@ -31,11 +31,6 @@ export default function ReporterPage() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "light");
-    document.documentElement.classList.remove("dark");
-  }, []);
-
-  useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     window.addEventListener("online", handleOnline);
