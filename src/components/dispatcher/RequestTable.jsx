@@ -2,6 +2,7 @@ import { Filter, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { RequestRow } from "./RequestRow";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
+import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 
 export function RequestTable({
@@ -15,6 +16,7 @@ export function RequestTable({
   pagination,
   onPageChange,
 }) {
+  const { t } = useTranslation();
   const statuses = ["all", "pending", "dispatched", "fulfilled", "cancelled"];
 
   if (loading) {
@@ -36,13 +38,13 @@ export function RequestTable({
             key={status}
             onClick={() => onFilterChange(status)}
             className={cn(
-              "px-3 py-1 rounded-full text-xs font-semibold capitalize transition-all duration-100",
+              "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100",
               filter === status
                 ? "bg-primary-500 text-white shadow-sm"
                 : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
             )}
           >
-            {status}
+            {t(`status.${status}`)}
           </button>
         ))}
       </div>
@@ -51,26 +53,26 @@ export function RequestTable({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-neutral-200 bg-neutral-50">
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                ID
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {t("requests.table.id")}
               </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                Region
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {t("requests.table.region")}
               </th>
               <th className="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                Need
+                {t("requests.table.need")}
               </th>
-              <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                Qty
+              <th className="px-4 py-3 text-end text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {t("requests.table.qty")}
               </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                Status
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {t("requests.table.status")}
               </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                Submitted
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {t("requests.table.submitted")}
               </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                Action
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {t("requests.table.action")}
               </th>
             </tr>
           </thead>
@@ -80,14 +82,12 @@ export function RequestTable({
                 <td colSpan={7} className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center gap-2 text-neutral-400">
                     <AlertCircle size={24} />
-                    <p className="text-sm font-medium">
-                      No requests match these filters
-                    </p>
+                    <p className="text-sm font-medium">{t("requests.noMatch")}</p>
                     <button
                       onClick={() => onFilterChange("all")}
                       className="text-xs text-primary-500 font-semibold hover:underline"
                     >
-                      Clear filters
+                      {t("common.clearFilters")}
                     </button>
                   </div>
                 </td>
@@ -110,12 +110,14 @@ export function RequestTable({
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-xs text-neutral-400">
-            Showing {(pagination.currentPage - 1) * pagination.pageSize + 1} to{" "}
-            {Math.min(
-              pagination.currentPage * pagination.pageSize,
-              pagination.totalItems,
-            )}{" "}
-            of {pagination.totalItems} results
+            {t("requests.showing", {
+              from: (pagination.currentPage - 1) * pagination.pageSize + 1,
+              to: Math.min(
+                pagination.currentPage * pagination.pageSize,
+                pagination.totalItems,
+              ),
+              total: pagination.totalItems,
+            })}
           </p>
           <div className="flex gap-2">
             <Button
@@ -124,8 +126,8 @@ export function RequestTable({
               onClick={() => onPageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}
             >
-              <ChevronLeft size={14} className="mr-1" />
-              Previous
+              <ChevronLeft size={14} className="me-1" />
+              {t("common.previous")}
             </Button>
             <Button
               variant="secondary"
@@ -133,8 +135,8 @@ export function RequestTable({
               onClick={() => onPageChange(pagination.currentPage + 1)}
               disabled={pagination.currentPage === pagination.totalPages}
             >
-              Next
-              <ChevronRight size={14} className="ml-1" />
+              {t("common.next")}
+              <ChevronRight size={14} className="ms-1" />
             </Button>
           </div>
         </div>

@@ -1,20 +1,25 @@
+import { getDateLocale, getLocale, translate as t } from "../i18n";
+
 export const formatters = {
   date: {
-    short: (date) =>
-      new Date(date).toLocaleDateString("en-GB", {
+    short: (date, locale = getLocale()) =>
+      new Date(date).toLocaleDateString(getDateLocale(locale), {
         day: "2-digit",
         month: "short",
         hour: "2-digit",
         minute: "2-digit",
       }),
-    relative: (date) => {
+    relative: (date, locale = getLocale()) => {
       const diff = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-      if (diff < 60) return `${diff}s ago`;
-      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-      return `${Math.floor(diff / 86400)}d ago`;
+      if (diff < 60) return t("time.secondsAgo", { count: diff }, locale);
+      if (diff < 3600)
+        return t("time.minutesAgo", { count: Math.floor(diff / 60) }, locale);
+      if (diff < 86400)
+        return t("time.hoursAgo", { count: Math.floor(diff / 3600) }, locale);
+      return t("time.daysAgo", { count: Math.floor(diff / 86400) }, locale);
     },
-    full: (date) => new Date(date).toLocaleString(),
+    full: (date, locale = getLocale()) =>
+      new Date(date).toLocaleString(getDateLocale(locale)),
   },
 
   number: {
@@ -23,7 +28,8 @@ export const formatters = {
       if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
       return num.toString();
     },
-    withCommas: (num) => num.toLocaleString(),
+    withCommas: (num, locale = getLocale()) =>
+      num.toLocaleString(getDateLocale(locale)),
     percentage: (num, total) =>
       total ? `${((num / total) * 100).toFixed(1)}%` : "0%",
   },

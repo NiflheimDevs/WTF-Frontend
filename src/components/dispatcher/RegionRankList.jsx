@@ -1,6 +1,9 @@
 import { Skeleton } from "../primitives/Skeleton";
+import { useTranslation } from "../../context/LocaleContext";
 
 export function RegionRankList({ regions, loading, maxItems = 8 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="flex flex-col gap-3">
@@ -14,7 +17,7 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
   if (!regions || regions.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-neutral-400">No region data available</p>
+        <p className="text-sm text-neutral-400">{t("dashboard.noRegionData")}</p>
       </div>
     );
   }
@@ -43,7 +46,7 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
             />
           </div>
 
-          <span className="font-mono text-xs text-neutral-900 w-6 text-right shrink-0">
+          <span className="font-mono text-xs text-neutral-900 w-6 text-end shrink-0">
             {region.count}
           </span>
         </div>

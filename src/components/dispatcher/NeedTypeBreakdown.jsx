@@ -1,6 +1,9 @@
 import { Skeleton } from "../primitives/Skeleton";
+import { useTranslation } from "../../context/LocaleContext";
 
 export function NeedTypeBreakdown({ bottles, tanker, loading }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4">
@@ -13,14 +16,14 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
   const items = [
     {
       type: "bottles",
-      label: "Water Bottles",
+      label: t("reporter.waterBottles"),
       icon: "💧",
       data: bottles,
       max: Math.max(bottles?.request_count || 0, tanker?.request_count || 0),
     },
     {
       type: "tanker",
-      label: "Tanker Truck",
+      label: t("reporter.tankerTruck"),
       icon: "🚛",
       data: tanker,
       max: Math.max(bottles?.request_count || 0, tanker?.request_count || 0),
@@ -38,11 +41,13 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
                 {label}
               </span>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <span className="font-mono text-base font-semibold text-neutral-900">
                 {data?.request_count || 0}
               </span>
-              <span className="text-xs text-neutral-400 ml-1">requests</span>
+              <span className="text-xs text-neutral-400 ms-1">
+                {t("common.requests")}
+              </span>
             </div>
           </div>
 
@@ -54,7 +59,9 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
           </div>
 
           <p className="text-xs text-neutral-400">
-            Total quantity: {(data?.total_quantity || 0).toLocaleString()}
+            {t("dashboard.totalQuantity", {
+              count: (data?.total_quantity || 0).toLocaleString(),
+            })}
           </p>
         </div>
       ))}

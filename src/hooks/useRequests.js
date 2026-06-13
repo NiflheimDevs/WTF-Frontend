@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { dispatcherApi } from "../api/endpoints";
+import { t } from "../i18n";
 import toast from "react-hot-toast";
 
 export const requestsKeys = {
@@ -94,7 +95,7 @@ export function useUpdateRequestStatus() {
           context.previousRequests,
         );
       }
-      toast.error(`Failed to update status. Please try again.`);
+      toast.error(t("requests.statusUpdateFailed"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: requestsKeys.all });

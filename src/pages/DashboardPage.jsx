@@ -15,11 +15,14 @@ import { NeedTypeBreakdown } from "../components/dispatcher/NeedTypeBreakdown";
 import { RequestTable } from "../components/dispatcher/RequestTable";
 import { KpiCardSkeleton } from "../components/primitives/Skeleton";
 import { useTheme } from "../hooks/useTheme";
+import { useTranslation } from "../context/LocaleContext";
+import { getDateLocale } from "../i18n";
 import toast from "react-hot-toast";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t, locale } = useTranslation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -40,8 +43,8 @@ export default function DashboardPage() {
 
   const handleRefresh = useCallback(async () => {
     await refetch();
-    toast.success("Dashboard refreshed");
-  }, [refetch]);
+    toast.success(t("dashboard.refreshed"));
+  }, [refetch, t]);
 
   const handleUpdateStatus = useCallback(
     (id, status) => {
@@ -73,16 +76,17 @@ export default function DashboardPage() {
         refreshing={updateStatus.isPending}
       />
 
-      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
+      <main className="pt-14 min-h-screen transition-all duration-200 ms-0 lg:ms-60">
         <div className="p-6 max-w-7xl mx-auto flex flex-col gap-6">
-          {/* Page Header */}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold text-neutral-900">
-                Dispatch Overview
+                {t("dashboard.title")}
               </h1>
               <p className="text-xs text-neutral-400 mt-0.5 font-mono">
-                Last updated: {new Date().toLocaleTimeString()}
+                {t("dashboard.lastUpdated", {
+                  time: new Date().toLocaleTimeString(getDateLocale(locale)),
+                })}
               </p>
             </div>
             <button
@@ -93,11 +97,10 @@ export default function DashboardPage() {
                 size={13}
                 className={updateStatus.isPending ? "animate-spin" : ""}
               />
-              Refresh
+              {t("common.refresh")}
             </button>
           </div>
 
-          {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {metricsLoading ? (
               <>
@@ -109,12 +112,12 @@ export default function DashboardPage() {
             ) : (
               <>
                 <KpiCard
-                  label="Total Requests"
+                  label={t("dashboard.totalRequests")}
                   value={metrics?.totalRequests || 0}
-                  caption="All time requests"
+                  caption={t("dashboard.totalRequestsCaption")}
                 />
                 <KpiCard
-                  label="Pending"
+                  label={t("dashboard.pending")}
                   value={metrics?.pendingRequests || 0}
                   intent={
                     metrics?.pendingRequests > 100
@@ -123,27 +126,26 @@ export default function DashboardPage() {
                         ? "warning"
                         : "default"
                   }
-                  caption="Needs dispatch attention"
+                  caption={t("dashboard.pendingCaption")}
                 />
                 <KpiCard
-                  label="Dispatched"
+                  label={t("dashboard.dispatched")}
                   value={metrics?.dispatchedRequests || 0}
-                  caption="Relief shipments sent"
+                  caption={t("dashboard.dispatchedCaption")}
                 />
                 <KpiCard
-                  label="Fulfilled"
+                  label={t("dashboard.fulfilled")}
                   value={metrics?.fulfilledRequests || 0}
-                  caption="Requests completed"
+                  caption={t("dashboard.fulfilledCaption")}
                 />
               </>
             )}
           </div>
 
-          {/* Secondary Panels */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6">
               <h2 className="text-sm font-semibold text-neutral-700 mb-4">
-                Top Regions by Volume
+                {t("dashboard.topRegions")}
               </h2>
               <RegionRankList
                 regions={regions || []}
@@ -152,7 +154,7 @@ export default function DashboardPage() {
             </div>
             <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6">
               <h2 className="text-sm font-semibold text-neutral-700 mb-4">
-                Breakdown by Need Type
+                {t("dashboard.breakdownByNeed")}
               </h2>
               <NeedTypeBreakdown
                 bottles={breakdown?.bottles}
@@ -162,10 +164,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Requests Table */}
           <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6">
             <h2 className="text-sm font-semibold text-neutral-700 mb-4">
-              Recent Requests
+              {t("dashboard.recentRequests")}
             </h2>
             <RequestTable
               requests={requests}

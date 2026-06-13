@@ -198,6 +198,36 @@ table,
   animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
+@keyframes slideInEndLtr {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInEndRtl {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-end {
+  animation: slideInEndLtr 200ms ease-out both;
+}
+
+[dir="rtl"] .animate-slide-in-end {
+  animation-name: slideInEndRtl;
+}
+
 /* ── Reduced motion ─────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,

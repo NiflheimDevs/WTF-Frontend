@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { relativeTime } from "../../utils/formatters";
+import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 
 export function RequestRow({
@@ -10,6 +11,7 @@ export function RequestRow({
   onRowClick,
   isUpdating,
 }) {
+  const { t, locale } = useTranslation();
   const [confirming, setConfirming] = useState(false);
   const [localUpdating, setLocalUpdating] = useState(false);
 
@@ -24,8 +26,12 @@ export function RequestRow({
 
     const action =
       request.status === "pending"
-        ? { label: "Dispatch", next: "dispatched", variant: "info" }
-        : { label: "Mark Fulfilled", next: "fulfilled", variant: "success" };
+        ? { label: t("requests.dispatch"), next: "dispatched", variant: "info" }
+        : {
+            label: t("requests.markFulfilled"),
+            next: "fulfilled",
+            variant: "success",
+          };
 
     if (confirming) {
       return (
@@ -42,14 +48,14 @@ export function RequestRow({
             {localUpdating ? (
               <Loader2 size={12} className="animate-spin" />
             ) : (
-              "Confirm"
+              t("common.confirm")
             )}
           </button>
           <button
             onClick={() => setConfirming(false)}
             className="text-xs font-semibold text-neutral-500 hover:text-neutral-700 px-1"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
         </div>
       );
@@ -86,19 +92,19 @@ export function RequestRow({
         {request.id.slice(0, 8)}
       </td>
       <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">
-        {request.region_name || request.region_id?.slice(0, 8) || "Unknown"}
+        {request.region_name || request.region_id?.slice(0, 8) || t("common.unknown")}
       </td>
       <td className="px-4 py-3 text-center text-lg">
         {getNeedIcon(request.need_type)}
       </td>
-      <td className="px-4 py-3 font-mono text-neutral-700 text-right">
+      <td className="px-4 py-3 font-mono text-neutral-700 text-end">
         {request.quantity}
       </td>
       <td className="px-4 py-3">
         <StatusBadge status={request.status} size="sm" />
       </td>
       <td className="px-4 py-3 text-xs text-neutral-500 font-mono whitespace-nowrap">
-        {relativeTime(request.created_at)}
+        {relativeTime(request.created_at, locale)}
       </td>
       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
         {getActionButton()}

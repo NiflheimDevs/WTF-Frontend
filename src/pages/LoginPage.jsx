@@ -2,12 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Droplets, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 
-// #backend-needed: replace with real API calls
-// import api from '../api/axios'
-
-// ── Input Field ────────────────────────────────────────────────────
 function Field({
   label,
   type = "text",
@@ -29,7 +26,7 @@ function Field({
           placeholder={placeholder}
           className={`w-full h-11 px-3 rounded-md text-base font-sans bg-neutral-100 text-neutral-700 outline-none border transition-colors duration-100 box-border
             ${error ? "border-danger-fg" : "border-neutral-200 focus:border-primary-500"}
-            ${children ? "pr-11" : ""}
+            ${children ? "pe-11" : ""}
           `}
         />
         {children}
@@ -40,7 +37,6 @@ function Field({
   );
 }
 
-// ── Inline Alert ───────────────────────────────────────────────────
 function Alert({ message, type = "danger" }) {
   if (!message) return null;
   const styles = {
@@ -56,9 +52,9 @@ function Alert({ message, type = "danger" }) {
   );
 }
 
-// ── Login Form ─────────────────────────────────────────────────────
 function LoginForm({ onSwitch }) {
   const { login } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -69,13 +65,12 @@ function LoginForm({ onSwitch }) {
   const [error, setError] = useState(null);
   const [attempts, setAttempts] = useState(0);
   const [locked, setLocked] = useState(false);
-
   const [fieldErrors, setFieldErrors] = useState({});
 
   const validate = () => {
     const errs = {};
-    if (!email) errs.email = "Email is required.";
-    if (!password) errs.password = "Password is required.";
+    if (!email) errs.email = t("auth.emailRequired");
+    if (!password) errs.password = t("auth.passwordRequired");
     return errs;
   };
 
@@ -95,7 +90,7 @@ function LoginForm({ onSwitch }) {
     try {
       await login(email, password);
       navigate("/dispatcher", { replace: true });
-      toast.success(`Welcome back!`);
+      toast.success(t("auth.welcomeBack"));
     } catch (err) {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
@@ -103,7 +98,7 @@ function LoginForm({ onSwitch }) {
 
       if (newAttempts >= 5) {
         setLocked(true);
-        setError("Too many attempts. Try again in 15 minutes.");
+        setError(t("auth.tooManyAttempts"));
         setTimeout(
           () => {
             setLocked(false);
@@ -112,13 +107,11 @@ function LoginForm({ onSwitch }) {
           15 * 60 * 1000,
         );
       } else if (err.response?.status === 401) {
-        setError("Email or password is incorrect.");
+        setError(t("auth.invalidCredentials"));
       } else if (err.response?.status === 400) {
-        setError("Invalid request format.");
+        setError(t("auth.invalidRequest"));
       } else {
-        setError(
-          "We couldn't reach the server. Check your connection and try again.",
-        );
+        setError(t("auth.serverUnreachable"));
       }
     } finally {
       setLoading(false);
@@ -128,19 +121,19 @@ function LoginForm({ onSwitch }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field
-        label="Email"
+        label={t("auth.email")}
         type="email"
         value={email}
         onChange={(val) => {
           setEmail(val);
           setFieldErrors((e) => ({ ...e, email: null }));
         }}
-        placeholder="dispatcher@hq.gov"
+        placeholder={t("auth.emailPlaceholder")}
         error={fieldErrors.email}
       />
 
       <Field
-        label="Password"
+        label={t("auth.password")}
         type={showPass ? "text" : "password"}
         value={password}
         onChange={(val) => {
@@ -153,14 +146,13 @@ function LoginForm({ onSwitch }) {
         <button
           type="button"
           onClick={() => setShowPass((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
+          className="absolute end-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
           tabIndex={-1}
         >
           {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
       </Field>
 
-      {/* Remember me */}
       <label className="flex items-center gap-2 cursor-pointer select-none">
         <input
           type="checkbox"
@@ -168,13 +160,11 @@ function LoginForm({ onSwitch }) {
           onChange={(e) => setRemember(e.target.checked)}
           className="w-4 h-4 accent-primary-500 cursor-pointer"
         />
-        <span className="text-sm text-neutral-500">Remember me</span>
+        <span className="text-sm text-neutral-500">{t("auth.rememberMe")}</span>
       </label>
 
-      {/* Inline error */}
       <Alert message={error} type={locked ? "warning" : "danger"} />
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={loading || locked}
@@ -189,32 +179,31 @@ function LoginForm({ onSwitch }) {
               size={15}
               style={{ animation: "spin 0.7s linear infinite" }}
             />{" "}
-            SIGNING IN…
+            {t("auth.signingIn")}
           </>
         ) : (
           <>
-            {" "}
-            SIGN IN <ArrowRight size={15} />
+            {t("auth.signIn")} <ArrowRight size={15} />
           </>
         )}
       </button>
 
       <p className="text-center text-sm text-neutral-500">
-        New dispatcher?{" "}
+        {t("auth.newDispatcher")}{" "}
         <button
           type="button"
           onClick={onSwitch}
           className="text-primary-500 font-semibold bg-transparent border-none cursor-pointer font-sans p-0"
         >
-          Create an account
+          {t("auth.createAccount")}
         </button>
       </p>
     </form>
   );
 }
 
-// ── Signup Form ────────────────────────────────────────────────────
 function SignupForm({ onSwitch }) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -227,11 +216,11 @@ function SignupForm({ onSwitch }) {
 
   const validate = () => {
     const errs = {};
-    if (!name.trim()) errs.name = "Full name is required.";
-    if (!email.trim()) errs.email = "Email is required.";
+    if (!name.trim()) errs.name = t("auth.fullNameRequired");
+    if (!email.trim()) errs.email = t("auth.emailRequired");
     if (password.length < 8)
-      errs.password = "Password must be at least 8 characters.";
-    if (password !== confirm) errs.confirm = "Passwords do not match.";
+      errs.password = t("auth.passwordMinLength");
+    if (password !== confirm) errs.confirm = t("auth.passwordsNoMatch");
     return errs;
   };
 
@@ -247,65 +236,58 @@ function SignupForm({ onSwitch }) {
     setLoading(true);
 
     try {
-      // #backend-needed: replace this block with:
-      // await api.post('/auth/register', { name, email, password })
-      // then either auto-login or redirect to login tab
-
       await new Promise((r) => setTimeout(r, 1000));
       throw new Error("backend-needed");
     } catch (err) {
       if (err.message === "backend-needed") {
-        setError("Backend not connected yet. Come back soon.");
+        setError(t("auth.backendNotConnected"));
       } else if (err.response?.status === 409) {
-        setError("An account with this email already exists.");
+        setError(t("auth.emailExists"));
       } else {
-        setError(
-          "We couldn't reach the server. Check your connection and try again.",
-        );
+        setError(t("auth.serverUnreachable"));
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Password strength indicator
   const strength = (() => {
     if (password.length === 0) return null;
     if (password.length < 8)
-      return { level: 1, label: "Too short", color: "bg-danger-fg" };
+      return { level: 1, label: t("auth.passwordTooShort"), color: "bg-danger-fg" };
     if (password.length < 12)
-      return { level: 2, label: "Fair", color: "bg-warning-fg" };
-    return { level: 3, label: "Strong", color: "bg-success-fg" };
+      return { level: 2, label: t("auth.passwordFair"), color: "bg-warning-fg" };
+    return { level: 3, label: t("auth.passwordStrong"), color: "bg-success-fg" };
   })();
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field
-        label="Full name"
+        label={t("auth.fullName")}
         value={name}
         onChange={(val) => {
           setName(val);
           setFieldErrors((e) => ({ ...e, name: null }));
         }}
-        placeholder="Maryam Ahmadi"
+        placeholder={t("auth.namePlaceholder")}
         error={fieldErrors.name}
       />
 
       <Field
-        label="Email"
+        label={t("auth.email")}
         type="email"
         value={email}
         onChange={(val) => {
           setEmail(val);
           setFieldErrors((e) => ({ ...e, email: null }));
         }}
-        placeholder="dispatcher@hq.gov"
+        placeholder={t("auth.emailPlaceholder")}
         error={fieldErrors.email}
       />
 
       <div className="flex flex-col gap-1.5">
         <Field
-          label="Password"
+          label={t("auth.password")}
           type={showPass ? "text" : "password"}
           value={password}
           onChange={(val) => {
@@ -318,14 +300,13 @@ function SignupForm({ onSwitch }) {
           <button
             type="button"
             onClick={() => setShowPass((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
+            className="absolute end-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
             tabIndex={-1}
           >
             {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </Field>
 
-        {/* Password strength bar */}
         {strength && (
           <div className="flex items-center gap-2">
             <div className="flex gap-1 flex-1">
@@ -342,7 +323,7 @@ function SignupForm({ onSwitch }) {
       </div>
 
       <Field
-        label="Confirm password"
+        label={t("auth.confirmPassword")}
         type={showConf ? "text" : "password"}
         value={confirm}
         onChange={(val) => {
@@ -355,17 +336,15 @@ function SignupForm({ onSwitch }) {
         <button
           type="button"
           onClick={() => setShowConf((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
+          className="absolute end-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
           tabIndex={-1}
         >
           {showConf ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
       </Field>
 
-      {/* Inline error */}
       <Alert message={error} />
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={loading}
@@ -380,41 +359,41 @@ function SignupForm({ onSwitch }) {
               size={15}
               style={{ animation: "spin 0.7s linear infinite" }}
             />{" "}
-            CREATING ACCOUNT…
+            {t("auth.creatingAccount")}
           </>
         ) : (
           <>
-            {" "}
-            CREATE ACCOUNT <ArrowRight size={15} />
+            {t("auth.signUp")} <ArrowRight size={15} />
           </>
         )}
       </button>
 
       <p className="text-center text-sm text-neutral-500">
-        Already have an account?{" "}
+        {t("auth.alreadyHaveAccount")}{" "}
         <button
           type="button"
           onClick={onSwitch}
           className="text-primary-500 font-semibold bg-transparent border-none cursor-pointer font-sans p-0"
         >
-          Sign in
+          {t("auth.signIn")}
         </button>
       </p>
     </form>
   );
 }
 
-// ── Main Login Page ────────────────────────────────────────────────
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const tabFromUrl = searchParams.get("tab");
   const [tab, setTab] = useState(() => {
     if (tabFromUrl === "signup") return "signup";
     return "login";
   });
+
   useEffect(() => {
     if (user) navigate("/dispatcher", { replace: true });
   }, [user, navigate]);
@@ -427,42 +406,40 @@ export default function LoginPage() {
           "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
       }}
     >
-      {/* Card */}
       <div className="w-full max-w-sm bg-neutral-50 border border-neutral-200 rounded-lg p-8 shadow-overlay animate-fade-in">
-        {/* Logo + heading */}
         <div className="flex flex-col items-start gap-3 mb-6">
           <div className="w-8 h-8 rounded-md bg-primary-500 flex items-center justify-center">
             <Droplets size={18} color="white" />
           </div>
           <div>
             <h1 className="text-xl font-semibold text-neutral-900 leading-tight">
-              {tab === "login" ? "Dispatcher Console" : "Create Account"}
+              {tab === "login"
+                ? t("auth.dispatcherConsole")
+                : t("auth.createAccountTitle")}
             </h1>
             <p className="text-sm text-neutral-500 mt-0.5">
               {tab === "login"
-                ? "Sign in to coordinate relief"
-                : "Register as a new dispatcher"}
+                ? t("auth.signInSubtitle")
+                : t("auth.signUpSubtitle")}
             </p>
           </div>
         </div>
 
-        {/* Tab switcher */}
         <div className="flex bg-neutral-100 rounded-md p-1 mb-6">
-          {["login", "signup"].map((t) => (
+          {["login", "signup"].map((tabKey) => (
             <button
-              key={t}
+              key={tabKey}
               type="button"
-              onClick={() => setTab(t)}
+              onClick={() => setTab(tabKey)}
               className={`flex-1 h-8 rounded text-sm font-semibold font-sans border-none cursor-pointer transition-colors duration-150
-                ${tab === t ? "bg-neutral-0 text-neutral-900 shadow-card" : "bg-transparent text-neutral-500"}
+                ${tab === tabKey ? "bg-neutral-0 text-neutral-900 shadow-card" : "bg-transparent text-neutral-500"}
               `}
             >
-              {t === "login" ? "Sign In" : "Sign Up"}
+              {tabKey === "login" ? t("auth.signIn") : t("auth.signUp")}
             </button>
           ))}
         </div>
 
-        {/* Forms */}
         {tab === "login" ? (
           <LoginForm onSwitch={() => setTab("signup")} />
         ) : (
@@ -470,9 +447,8 @@ export default function LoginPage() {
         )}
       </div>
 
-      {/* Footer */}
       <p className="mt-6 text-[11px] text-neutral-400 uppercase tracking-widest font-medium">
-        v1.0 · Provincial Crisis HQ
+        {t("common.version")}
       </p>
     </div>
   );

@@ -12,11 +12,13 @@ import {
 import { Button } from "../components/primitives/Button";
 import { Input } from "../components/primitives/Input";
 import { User, Bell, Shield, Moon, Sun, Globe, Save, Key } from "lucide-react";
+import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme, setTheme } = useTheme();
+  const { t, locale, setLocale } = useTranslation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileForm, setProfileForm] = useState({
@@ -36,36 +38,34 @@ export default function SettingsPage() {
 
   const handleProfileUpdate = useCallback(async () => {
     try {
-      // API call to update profile
-      toast.success("Profile updated successfully");
+      toast.success(t("settings.profileUpdated"));
     } catch {
-      toast.error("Failed to update profile");
+      toast.error(t("settings.profileUpdateFailed"));
     }
-  }, []);
+  }, [t]);
 
   const handlePasswordUpdate = useCallback(async () => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("settings.passwordsNoMatch"));
       return;
     }
 
     if (passwordForm.newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error(t("settings.passwordMinLength"));
       return;
     }
 
     try {
-      // API call to update password
-      toast.success("Password updated successfully");
+      toast.success(t("settings.passwordUpdated"));
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     } catch {
-      toast.error("Failed to update password");
+      toast.error(t("settings.passwordUpdateFailed"));
     }
-  }, [passwordForm]);
+  }, [passwordForm, t]);
 
   return (
     <div className="min-h-screen bg-neutral-0">
@@ -84,29 +84,29 @@ export default function SettingsPage() {
         refreshing={false}
       />
 
-      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
+      <main className="pt-14 min-h-screen transition-all duration-200 ms-0 lg:ms-60">
         <div className="p-6 max-w-4xl mx-auto">
-          {/* Header */}
           <div className="mb-6">
-            <h1 className="text-xl font-semibold text-neutral-900">Settings</h1>
+            <h1 className="text-xl font-semibold text-neutral-900">
+              {t("settings.title")}
+            </h1>
             <p className="text-xs text-neutral-400 mt-0.5">
-              Manage your account and application preferences
+              {t("settings.subtitle")}
             </p>
           </div>
 
           <div className="space-y-6">
-            {/* Profile Settings */}
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <User size={18} className="text-primary-500" />
-                  <CardTitle>Profile Information</CardTitle>
+                  <CardTitle>{t("settings.profileInfo")}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <Input
-                    label="Full Name"
+                    label={t("settings.fullName")}
                     value={profileForm.fullName}
                     onChange={(e) =>
                       setProfileForm((prev) => ({
@@ -114,10 +114,10 @@ export default function SettingsPage() {
                         fullName: e.target.value,
                       }))
                     }
-                    placeholder="Your full name"
+                    placeholder={t("settings.fullNamePlaceholder")}
                   />
                   <Input
-                    label="Email Address"
+                    label={t("settings.emailAddress")}
                     type="email"
                     value={profileForm.email}
                     onChange={(e) =>
@@ -126,29 +126,28 @@ export default function SettingsPage() {
                         email: e.target.value,
                       }))
                     }
-                    placeholder="your@email.com"
+                    placeholder={t("settings.emailPlaceholder")}
                     disabled
-                    hint="Email cannot be changed"
+                    hint={t("settings.emailCannotChange")}
                   />
                   <Button onClick={handleProfileUpdate} icon={Save}>
-                    Save Changes
+                    {t("settings.saveChanges")}
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Password Settings */}
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Key size={18} className="text-primary-500" />
-                  <CardTitle>Change Password</CardTitle>
+                  <CardTitle>{t("settings.changePassword")}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <Input
-                    label="Current Password"
+                    label={t("settings.currentPassword")}
                     type="password"
                     value={passwordForm.currentPassword}
                     onChange={(e) =>
@@ -157,10 +156,10 @@ export default function SettingsPage() {
                         currentPassword: e.target.value,
                       }))
                     }
-                    placeholder="Enter current password"
+                    placeholder={t("settings.currentPasswordPlaceholder")}
                   />
                   <Input
-                    label="New Password"
+                    label={t("settings.newPassword")}
                     type="password"
                     value={passwordForm.newPassword}
                     onChange={(e) =>
@@ -169,10 +168,10 @@ export default function SettingsPage() {
                         newPassword: e.target.value,
                       }))
                     }
-                    placeholder="At least 8 characters"
+                    placeholder={t("settings.newPasswordPlaceholder")}
                   />
                   <Input
-                    label="Confirm New Password"
+                    label={t("settings.confirmNewPassword")}
                     type="password"
                     value={passwordForm.confirmPassword}
                     onChange={(e) =>
@@ -181,25 +180,24 @@ export default function SettingsPage() {
                         confirmPassword: e.target.value,
                       }))
                     }
-                    placeholder="Confirm new password"
+                    placeholder={t("settings.confirmNewPasswordPlaceholder")}
                   />
                   <Button
                     onClick={handlePasswordUpdate}
                     icon={Key}
                     variant="secondary"
                   >
-                    Update Password
+                    {t("settings.updatePassword")}
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Appearance Settings */}
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Globe size={18} className="text-primary-500" />
-                  <CardTitle>Appearance</CardTitle>
+                  <CardTitle>{t("settings.appearance")}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -207,10 +205,10 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold text-neutral-700">
-                        Theme
+                        {t("settings.theme")}
                       </p>
                       <p className="text-xs text-neutral-400">
-                        Choose your preferred theme
+                        {t("settings.themeHint")}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -220,7 +218,7 @@ export default function SettingsPage() {
                         icon={Sun}
                         onClick={() => setTheme("light")}
                       >
-                        Light
+                        {t("settings.light")}
                       </Button>
                       <Button
                         variant={theme === "dark" ? "primary" : "secondary"}
@@ -228,7 +226,34 @@ export default function SettingsPage() {
                         icon={Moon}
                         onClick={() => setTheme("dark")}
                       >
-                        Dark
+                        {t("settings.dark")}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-neutral-200">
+                    <div>
+                      <p className="text-sm font-semibold text-neutral-700">
+                        {t("settings.language")}
+                      </p>
+                      <p className="text-xs text-neutral-400">
+                        {t("settings.languageHint")}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={locale === "fa" ? "primary" : "secondary"}
+                        size="sm"
+                        onClick={() => setLocale("fa")}
+                      >
+                        {t("settings.persian")}
+                      </Button>
+                      <Button
+                        variant={locale === "en" ? "primary" : "secondary"}
+                        size="sm"
+                        onClick={() => setLocale("en")}
+                      >
+                        {t("settings.english")}
                       </Button>
                     </div>
                   </div>
@@ -236,12 +261,11 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
-            {/* Notification Settings */}
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Bell size={18} className="text-primary-500" />
-                  <CardTitle>Notifications</CardTitle>
+                  <CardTitle>{t("settings.notifications")}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -249,10 +273,10 @@ export default function SettingsPage() {
                   <label className="flex items-center justify-between cursor-pointer">
                     <div>
                       <p className="text-sm font-semibold text-neutral-700">
-                        Email Alerts
+                        {t("settings.emailAlerts")}
                       </p>
                       <p className="text-xs text-neutral-400">
-                        Receive email notifications for status updates
+                        {t("settings.emailAlertsHint")}
                       </p>
                     </div>
                     <input
@@ -270,10 +294,10 @@ export default function SettingsPage() {
                   <label className="flex items-center justify-between cursor-pointer">
                     <div>
                       <p className="text-sm font-semibold text-neutral-700">
-                        Sound Alerts
+                        {t("settings.soundAlerts")}
                       </p>
                       <p className="text-xs text-neutral-400">
-                        Play sound for new requests
+                        {t("settings.soundAlertsHint")}
                       </p>
                     </div>
                     <input
@@ -291,10 +315,10 @@ export default function SettingsPage() {
                   <label className="flex items-center justify-between cursor-pointer">
                     <div>
                       <p className="text-sm font-semibold text-neutral-700">
-                        Desktop Notifications
+                        {t("settings.desktopNotifications")}
                       </p>
                       <p className="text-xs text-neutral-400">
-                        Show desktop notifications
+                        {t("settings.desktopNotificationsHint")}
                       </p>
                     </div>
                     <input
@@ -313,12 +337,11 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
-            {/* Danger Zone */}
             <Card className="border-danger-fg/20">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Shield size={18} className="text-danger-fg" />
-                  <CardTitle>Danger Zone</CardTitle>
+                  <CardTitle>{t("settings.dangerZone")}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -326,37 +349,37 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold text-danger-fg">
-                        Clear All Data
+                        {t("settings.clearAllData")}
                       </p>
                       <p className="text-xs text-neutral-400">
-                        Permanently remove all dashboard data
+                        {t("settings.clearAllDataHint")}
                       </p>
                     </div>
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => toast.error("This action is destructive")}
+                      onClick={() => toast.error(t("settings.destructiveAction"))}
                     >
-                      Clear Data
+                      {t("settings.clearData")}
                     </Button>
                   </div>
                   <div className="flex items-center justify-between pt-3 border-t border-neutral-200">
                     <div>
                       <p className="text-sm font-semibold text-danger-fg">
-                        Delete Account
+                        {t("settings.deleteAccount")}
                       </p>
                       <p className="text-xs text-neutral-400">
-                        Permanently delete your account and all data
+                        {t("settings.deleteAccountHint")}
                       </p>
                     </div>
                     <Button
                       variant="danger"
                       size="sm"
                       onClick={() =>
-                        toast.error("Contact support to delete account")
+                        toast.error(t("settings.contactSupportDelete"))
                       }
                     >
-                      Delete Account
+                      {t("settings.deleteAccount")}
                     </Button>
                   </div>
                 </div>

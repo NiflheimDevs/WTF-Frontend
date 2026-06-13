@@ -1,10 +1,11 @@
 import { cn } from "../../utils/cn";
+import { useTranslation } from "../../context/LocaleContext";
 
-const statusConfig = {
-  pending: { label: "Pending", variant: "warning", icon: "⏳" },
-  dispatched: { label: "Dispatched", variant: "info", icon: "🚛" },
-  fulfilled: { label: "Fulfilled", variant: "success", icon: "✓" },
-  cancelled: { label: "Cancelled", variant: "danger", icon: "✗" },
+const statusVariants = {
+  pending: { variant: "warning", icon: "⏳" },
+  dispatched: { variant: "info", icon: "🚛" },
+  fulfilled: { variant: "success", icon: "✓" },
+  cancelled: { variant: "danger", icon: "✗" },
 };
 
 const variantStyles = {
@@ -21,11 +22,13 @@ export function Badge({
   showIcon = true,
   className = "",
 }) {
-  const config = statusConfig[status] || {
-    label: status,
+  const { t } = useTranslation();
+  const config = statusVariants[status] || {
     variant: "default",
     icon: null,
   };
+  const label = statusVariants[status] ? t(`status.${status}`) : status;
+
   const sizes = {
     sm: "px-2 py-0.5 text-xs gap-1",
     md: "px-2.5 py-1 text-sm gap-1.5",
@@ -45,7 +48,7 @@ export function Badge({
         <span className="text-current opacity-80">{config.icon}</span>
       )}
       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
-      {config.label}
+      {label}
     </span>
   );
 }

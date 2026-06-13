@@ -2,8 +2,10 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { Input } from "../primitives/Input";
+import { useTranslation } from "../../context/LocaleContext";
 
 export function RequestFilters({ filters, onChange, onClose }) {
+  const { t } = useTranslation();
   const [localFilters, setLocalFilters] = useState({
     status: filters.status || "all",
     regionId: filters.regionId || "",
@@ -27,7 +29,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-neutral-700">
-          Filter Requests
+          {t("requests.filterTitle")}
         </h3>
         <button onClick={onClose} className="p-1 rounded hover:bg-neutral-100">
           <X size={16} className="text-neutral-400" />
@@ -37,7 +39,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
       <div className="space-y-3">
         <div>
           <label className="block text-xs font-semibold text-neutral-600 mb-1">
-            Status
+            {t("requests.table.status")}
           </label>
           <select
             value={localFilters.status}
@@ -46,26 +48,26 @@ export function RequestFilters({ filters, onChange, onClose }) {
             }
             className="w-full h-10 px-3 rounded-md border border-neutral-200 bg-neutral-0 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           >
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="dispatched">Dispatched</option>
-            <option value="fulfilled">Fulfilled</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="all">{t("requests.allStatuses")}</option>
+            <option value="pending">{t("status.pending")}</option>
+            <option value="dispatched">{t("status.dispatched")}</option>
+            <option value="fulfilled">{t("status.fulfilled")}</option>
+            <option value="cancelled">{t("status.cancelled")}</option>
           </select>
         </div>
 
         <Input
-          label="Region ID"
+          label={t("requests.regionId")}
           value={localFilters.regionId}
           onChange={(e) =>
             setLocalFilters((prev) => ({ ...prev, regionId: e.target.value }))
           }
-          placeholder="Filter by region UUID"
+          placeholder={t("requests.regionIdPlaceholder")}
         />
 
         <div>
           <label className="block text-xs font-semibold text-neutral-600 mb-1">
-            Date Range
+            {t("requests.dateRange")}
           </label>
           <div className="grid grid-cols-2 gap-2">
             <Input
@@ -74,7 +76,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
               onChange={(e) =>
                 setLocalFilters((prev) => ({ ...prev, from: e.target.value }))
               }
-              placeholder="From"
+              placeholder={t("common.from")}
             />
             <Input
               type="datetime-local"
@@ -82,7 +84,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
               onChange={(e) =>
                 setLocalFilters((prev) => ({ ...prev, to: e.target.value }))
               }
-              placeholder="To"
+              placeholder={t("common.to")}
             />
           </div>
         </div>
@@ -90,10 +92,10 @@ export function RequestFilters({ filters, onChange, onClose }) {
 
       <div className="flex gap-2 pt-2">
         <Button onClick={handleApply} fullWidth>
-          Apply Filters
+          {t("requests.applyFilters")}
         </Button>
         <Button onClick={handleReset} variant="secondary" fullWidth>
-          Reset
+          {t("common.reset")}
         </Button>
       </div>
     </div>
