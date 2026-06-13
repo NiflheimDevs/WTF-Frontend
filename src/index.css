@@ -228,7 +228,11 @@ table,
   animation-name: slideInEndRtl;
 }
 
-/* ── Reduced motion ─────────────────────────────────── */
+/* Keep numbers, IDs, and phone numbers readable in RTL layouts */
+.ltr-isolate {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

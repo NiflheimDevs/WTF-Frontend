@@ -16,11 +16,26 @@ export const requestsKeys = {
   detail: (id) => [...requestsKeys.details(), id],
 };
 
+export function buildRequestParams(filters = {}) {
+  const params = {};
+
+  if (filters.page) params.page = filters.page;
+  if (filters.pageSize) params.page_size = filters.pageSize;
+  if (filters.status && filters.status !== "all") params.status = filters.status;
+  if (filters.regionId) params.region_id = filters.regionId;
+  if (filters.from) params.from = filters.from;
+  if (filters.to) params.to = filters.to;
+
+  return params;
+}
+
 export function useRequests(filters = {}) {
+  const params = buildRequestParams(filters);
+
   return useQuery({
     queryKey: requestsKeys.list(filters),
     queryFn: async () => {
-      const { data } = await dispatcherApi.getRequests(filters);
+      const { data } = await dispatcherApi.getRequests(params);
       return data;
     },
     refetchInterval: 15000,
@@ -30,11 +45,13 @@ export function useRequests(filters = {}) {
 }
 
 export function useInfiniteRequests(filters = {}) {
+  const params = buildRequestParams(filters);
+
   return useInfiniteQuery({
     queryKey: requestsKeys.list(filters),
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await dispatcherApi.getRequests({
-        ...filters,
+        ...params,
         page: pageParam,
       });
       return data;

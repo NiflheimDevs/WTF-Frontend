@@ -1,5 +1,21 @@
 import { getDateLocale, getLocale, translate as t } from "../i18n";
 
+const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+
+function toAsciiDigits(value) {
+  return String(value).replace(/[۰-۹٠-٩]/g, (char) => {
+    const code = char.charCodeAt(0);
+    if (code >= 0x06f0 && code <= 0x06f9) return String(code - 0x06f0);
+    if (code >= 0x0660 && code <= 0x0669) return String(code - 0x0660);
+    return char;
+  });
+}
+
+function toLocaleDigits(value, locale = getLocale()) {
+  if (locale !== "fa") return value;
+  return value.replace(/\d/g, (digit) => PERSIAN_DIGITS[Number(digit)]);
+}
+
 export const formatters = {
   date: {
     short: (date, locale = getLocale()) =>
@@ -35,16 +51,14 @@ export const formatters = {
   },
 
   phone: {
-    format: (phone) => {
+    format: (phone, locale = getLocale()) => {
       if (!phone) return "";
-      const cleaned = phone.replace(/\D/g, "");
-      if (cleaned.length === 11) {
-        return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
-      }
-      return phone;
+      const cleaned = toAsciiDigits(phone).replace(/\D/g, "");
+      const formatted = cleaned.length === 11 ? cleaned : toAsciiDigits(phone);
+      return toLocaleDigits(formatted, locale);
     },
     validate: (phone) => {
-      const cleaned = phone.replace(/\D/g, "");
+      const cleaned = toAsciiDigits(phone).replace(/\D/g, "");
       return cleaned.length === 11 && cleaned.startsWith("09");
     },
   },

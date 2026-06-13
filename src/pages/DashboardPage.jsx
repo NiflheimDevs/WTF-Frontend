@@ -13,6 +13,7 @@ import { KpiCard } from "../components/dispatcher/KpiCard";
 import { RegionRankList } from "../components/dispatcher/RegionRankList";
 import { NeedTypeBreakdown } from "../components/dispatcher/NeedTypeBreakdown";
 import { RequestTable } from "../components/dispatcher/RequestTable";
+import { RequestDetailDrawer } from "../components/dispatcher/RequestDetailDrawer";
 import { KpiCardSkeleton } from "../components/primitives/Skeleton";
 import { useTheme } from "../hooks/useTheme";
 import { useTranslation } from "../context/LocaleContext";
@@ -26,6 +27,7 @@ export default function DashboardPage() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
 
   const { data: metrics, isLoading: metricsLoading } = useMetricsSummary();
   const { data: regions, isLoading: regionsLoading } = useMetricsByRegion(8);
@@ -35,9 +37,7 @@ export default function DashboardPage() {
     data: requestsData,
     isLoading: requestsLoading,
     refetch,
-  } = useRequests({
-    status: filterStatus !== "all" ? filterStatus : undefined,
-  });
+  } = useRequests({ status: filterStatus });
 
   const updateStatus = useUpdateRequestStatus();
 
@@ -175,10 +175,18 @@ export default function DashboardPage() {
               filter={filterStatus}
               onFilterChange={setFilterStatus}
               updatingId={updateStatus.variables?.id}
+              onRowClick={setSelectedRequestId}
             />
           </div>
         </div>
       </main>
+
+      <RequestDetailDrawer
+        requestId={selectedRequestId}
+        isOpen={!!selectedRequestId}
+        onClose={() => setSelectedRequestId(null)}
+        onUpdateStatus={handleUpdateStatus}
+      />
     </div>
   );
 }

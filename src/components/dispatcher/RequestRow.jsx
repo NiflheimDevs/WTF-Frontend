@@ -43,7 +43,7 @@ export function RequestRow({
               await onUpdateStatus(request.id, action.next);
               setLocalUpdating(false);
             }}
-            className="text-xs font-semibold text-success-fg bg-success-bg rounded px-2 py-1 hover:bg-success-bg/80 transition-colors"
+            className="text-xs font-semibold text-success-fg bg-success-bg rounded px-2 py-1 hover:bg-success-bg/80 transition-colors cursor-pointer"
           >
             {localUpdating ? (
               <Loader2 size={12} className="animate-spin" />
@@ -53,7 +53,7 @@ export function RequestRow({
           </button>
           <button
             onClick={() => setConfirming(false)}
-            className="text-xs font-semibold text-neutral-500 hover:text-neutral-700 px-1"
+            className="text-xs font-semibold text-red-400 hover:text-neutral-700 px-1 cursor-pointer"
           >
             {t("common.cancel")}
           </button>
@@ -66,7 +66,7 @@ export function RequestRow({
         onClick={() => setConfirming(true)}
         disabled={isUpdating}
         className={cn(
-          "text-xs font-semibold rounded-md px-2.5 py-1 transition-colors duration-100 whitespace-nowrap",
+          "text-xs font-semibold rounded-md px-2.5 py-1 transition-colors duration-100 whitespace-nowrap cursor-pointer",
           action.variant === "info" &&
             "bg-info-bg text-info-fg hover:bg-info-bg/80",
           action.variant === "success" &&

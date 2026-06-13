@@ -61,7 +61,7 @@ export function RequestDetailDrawer({
             <h2 className="text-lg font-semibold text-neutral-900">
               {t("requests.detailTitle")}
             </h2>
-            <p className="text-xs text-neutral-400 font-mono mt-1">
+            <p className="text-xs text-neutral-400 font-mono mt-1 ltr-isolate">
               {requestId}
             </p>
           </div>
@@ -162,7 +162,7 @@ export function RequestDetailDrawer({
                     <span className="text-neutral-700">
                       {t("requests.quantityLabel")}{" "}
                     </span>
-                    <span className="text-neutral-900 font-mono font-semibold">
+                    <span className="text-neutral-900 font-mono font-semibold ltr-isolate">
                       {request.quantity}
                     </span>
                   </div>
@@ -176,8 +176,8 @@ export function RequestDetailDrawer({
                   </h3>
                   <div className="flex items-center gap-3 text-sm p-3 bg-neutral-0 rounded-lg border border-neutral-200">
                     <Phone size={16} className="text-neutral-400" />
-                    <span className="text-neutral-900">
-                      {formatPhone(request.contact_phone)}
+                    <span className="text-neutral-900 font-mono ltr-isolate">
+                      {formatPhone(request.contact_phone, locale)}
                     </span>
                   </div>
                 </div>
