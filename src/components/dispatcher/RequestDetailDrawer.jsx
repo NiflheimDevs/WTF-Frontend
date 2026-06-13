@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X, Calendar, MapPin, Phone, Clock } from "lucide-react";
 import { useRequestDetail } from "../../hooks/useRequests";
 import { useUpdateRequestStatus } from "../../hooks/useRequests";
+import { useRegions } from "../../hooks/useRegions";
 import { StatusBadge } from "./StatusBadge";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
 import { formatPhone } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { getDateLocale } from "../../i18n";
+import { getRequestRegionName } from "../../utils/regionName";
 
 export function RequestDetailDrawer({
   requestId,
@@ -17,7 +19,18 @@ export function RequestDetailDrawer({
 }) {
   const { t, locale } = useTranslation();
   const { data, isLoading } = useRequestDetail(requestId);
+  const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+
+  const regionsById = useMemo(
+    () => new Map(regions.map((region) => [region.id, region])),
+    [regions],
+  );
+
+  useEffect(() => {
+    setConfirmingCancel(false);
+  }, [requestId, isOpen]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -42,8 +55,12 @@ export function RequestDetailDrawer({
 
   const handleStatusChange = async (newStatus) => {
     await updateStatus.mutateAsync({ id: requestId, status: newStatus });
+    setConfirmingCancel(false);
     onUpdateStatus?.(requestId, newStatus);
   };
+
+  const canCancel =
+    request?.status === "pending" || request?.status === "dispatched";
 
   const formatDate = (date) =>
     new Date(date).toLocaleString(getDateLocale(locale));
@@ -91,25 +108,60 @@ export function RequestDetailDrawer({
                     <StatusBadge status={request.status} size="lg" />
                   </div>
                 </div>
-                {request.status === "pending" && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleStatusChange("dispatched")}
-                    loading={updateStatus.isPending}
-                  >
-                    {t("requests.markAsDispatched")}
-                  </Button>
-                )}
-                {request.status === "dispatched" && (
-                  <Button
-                    size="sm"
-                    variant="success"
-                    onClick={() => handleStatusChange("fulfilled")}
-                    loading={updateStatus.isPending}
-                  >
-                    {t("requests.markAsFulfilled")}
-                  </Button>
-                )}
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  {confirmingCancel ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleStatusChange("cancelled")}
+                        loading={updateStatus.isPending}
+                      >
+                        {t("requests.confirmCancel")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setConfirmingCancel(false)}
+                        disabled={updateStatus.isPending}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {request.status === "pending" && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleStatusChange("dispatched")}
+                          loading={updateStatus.isPending}
+                        >
+                          {t("requests.markAsDispatched")}
+                        </Button>
+                      )}
+                      {request.status === "dispatched" && (
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => handleStatusChange("fulfilled")}
+                          loading={updateStatus.isPending}
+                        >
+                          {t("requests.markAsFulfilled")}
+                        </Button>
+                      )}
+                      {canCancel && (
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => setConfirmingCancel(true)}
+                          disabled={updateStatus.isPending}
+                        >
+                          {t("requests.cancelRequest")}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -123,7 +175,8 @@ export function RequestDetailDrawer({
                       {t("requests.regionLabel")}{" "}
                     </span>
                     <span className="text-neutral-900 font-medium">
-                      {request.region_name || t("common.unknown")}
+                      {getRequestRegionName(request, locale, regionsById) ||
+                        t("common.unknown")}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">

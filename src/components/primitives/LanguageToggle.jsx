@@ -1,4 +1,4 @@
-import { Languages } from "lucide-react";
+import { Globe } from "lucide-react";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 
@@ -17,7 +17,7 @@ export function LanguageToggle({ className = "" }) {
       aria-label={t("a11y.toggleLanguage")}
       title={locale === "fa" ? "English" : "فارسی"}
     >
-      <Languages size={18} className="text-neutral-600 dark:text-neutral-300" />
+      <Globe size={18} className="text-neutral-600 dark:text-neutral-300" />
       <span
         className={cn(
           "absolute -bottom-0.5 -end-0.5 text-[9px] font-bold leading-none",

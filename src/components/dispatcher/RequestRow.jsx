@@ -4,27 +4,36 @@ import { StatusBadge } from "./StatusBadge";
 import { relativeTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
+import { getRequestRegionName } from "../../utils/regionName";
 
 export function RequestRow({
   request,
   onUpdateStatus,
   onRowClick,
   isUpdating,
+  regionsById,
 }) {
   const { t, locale } = useTranslation();
-  const [confirming, setConfirming] = useState(false);
+  const [confirmingAction, setConfirmingAction] = useState(null);
   const [localUpdating, setLocalUpdating] = useState(false);
 
   const getNeedIcon = (needType) => {
     return needType === "bottled_water" ? "💧" : "🚛";
   };
 
-  const getActionButton = () => {
+  const handleConfirm = async (nextStatus) => {
+    setLocalUpdating(true);
+    setConfirmingAction(null);
+    await onUpdateStatus(request.id, nextStatus);
+    setLocalUpdating(false);
+  };
+
+  const getActionButtons = () => {
     if (request.status === "fulfilled" || request.status === "cancelled") {
       return <span className="text-neutral-400 text-sm">—</span>;
     }
 
-    const action =
+    const primaryAction =
       request.status === "pending"
         ? { label: t("requests.dispatch"), next: "dispatched", variant: "info" }
         : {
@@ -33,26 +42,32 @@ export function RequestRow({
             variant: "success",
           };
 
-    if (confirming) {
+    if (confirmingAction) {
+      const isCancel = confirmingAction === "cancel";
+
       return (
         <div className="flex items-center gap-1">
           <button
-            onClick={async () => {
-              setLocalUpdating(true);
-              setConfirming(false);
-              await onUpdateStatus(request.id, action.next);
-              setLocalUpdating(false);
-            }}
-            className="text-xs font-semibold text-success-fg bg-success-bg rounded px-2 py-1 hover:bg-success-bg/80 transition-colors cursor-pointer"
+            onClick={() =>
+              handleConfirm(isCancel ? "cancelled" : primaryAction.next)
+            }
+            className={cn(
+              "text-xs font-semibold rounded px-2 py-1 transition-colors cursor-pointer",
+              isCancel
+                ? "text-danger-fg bg-danger-bg hover:bg-danger-bg/80"
+                : "text-success-fg bg-success-bg hover:bg-success-bg/80",
+            )}
           >
             {localUpdating ? (
               <Loader2 size={12} className="animate-spin" />
+            ) : isCancel ? (
+              t("requests.confirmCancel")
             ) : (
               t("common.confirm")
             )}
           </button>
           <button
-            onClick={() => setConfirming(false)}
+            onClick={() => setConfirmingAction(null)}
             className="text-xs font-semibold text-red-400 hover:text-neutral-700 px-1 cursor-pointer"
           >
             {t("common.cancel")}
@@ -62,24 +77,37 @@ export function RequestRow({
     }
 
     return (
-      <button
-        onClick={() => setConfirming(true)}
-        disabled={isUpdating}
-        className={cn(
-          "text-xs font-semibold rounded-md px-2.5 py-1 transition-colors duration-100 whitespace-nowrap cursor-pointer",
-          action.variant === "info" &&
-            "bg-info-bg text-info-fg hover:bg-info-bg/80",
-          action.variant === "success" &&
-            "bg-success-bg text-success-fg hover:bg-success-bg/80",
-          isUpdating && "opacity-50 cursor-not-allowed",
-        )}
-      >
-        {isUpdating ? (
-          <Loader2 size={12} className="animate-spin" />
-        ) : (
-          action.label
-        )}
-      </button>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setConfirmingAction("primary")}
+          disabled={isUpdating}
+          className={cn(
+            "text-xs font-semibold rounded-md px-2.5 py-1 transition-colors duration-100 whitespace-nowrap cursor-pointer",
+            primaryAction.variant === "info" &&
+              "bg-info-bg text-info-fg hover:bg-info-bg/80",
+            primaryAction.variant === "success" &&
+              "bg-success-bg text-success-fg hover:bg-success-bg/80",
+            isUpdating && "opacity-50 cursor-not-allowed",
+          )}
+        >
+          {isUpdating ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : (
+            primaryAction.label
+          )}
+        </button>
+        <button
+          onClick={() => setConfirmingAction("cancel")}
+          disabled={isUpdating}
+          className={cn(
+            "text-xs font-semibold rounded-md px-2.5 py-1 transition-colors duration-100 whitespace-nowrap cursor-pointer",
+            "bg-danger-bg text-danger-fg hover:bg-danger-bg/80",
+            isUpdating && "opacity-50 cursor-not-allowed",
+          )}
+        >
+          {t("requests.cancelRequest")}
+        </button>
+      </div>
     );
   };
 
@@ -92,7 +120,8 @@ export function RequestRow({
         {request.id.slice(0, 8)}
       </td>
       <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">
-        {request.region_name || request.region_id?.slice(0, 8) || t("common.unknown")}
+        {getRequestRegionName(request, locale, regionsById) ||
+          t("common.unknown")}
       </td>
       <td className="px-4 py-3 text-center text-lg">
         {getNeedIcon(request.need_type)}
@@ -107,7 +136,7 @@ export function RequestRow({
         {relativeTime(request.created_at, locale)}
       </td>
       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-        {getActionButton()}
+        {getActionButtons()}
       </td>
     </tr>
   );

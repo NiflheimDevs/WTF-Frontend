@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { Filter, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { RequestRow } from "./RequestRow";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
 import { useTranslation } from "../../context/LocaleContext";
+import { useRegions } from "../../hooks/useRegions";
 import { cn } from "../../utils/cn";
 
 export function RequestTable({
@@ -17,6 +19,11 @@ export function RequestTable({
   onPageChange,
 }) {
   const { t } = useTranslation();
+  const { data: regions = [] } = useRegions();
+  const regionsById = useMemo(
+    () => new Map(regions.map((region) => [region.id, region])),
+    [regions],
+  );
   const statuses = ["all", "pending", "dispatched", "fulfilled", "cancelled"];
 
   if (loading) {
@@ -100,6 +107,7 @@ export function RequestTable({
                   onUpdateStatus={onUpdateStatus}
                   onRowClick={onRowClick}
                   isUpdating={updatingId === request.id}
+                  regionsById={regionsById}
                 />
               ))
             )}

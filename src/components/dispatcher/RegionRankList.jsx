@@ -1,8 +1,9 @@
 import { Skeleton } from "../primitives/Skeleton";
 import { useTranslation } from "../../context/LocaleContext";
+import { getRegionName } from "../../utils/regionName";
 
 export function RegionRankList({ regions, loading, maxItems = 8 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   if (loading) {
     return (
@@ -36,7 +37,7 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
           </span>
 
           <span className="text-sm text-neutral-700 w-28 truncate shrink-0 group-hover:text-primary-500 transition-colors">
-            {region.name}
+            {getRegionName(region, locale)}
           </span>
 
           <div className="flex-1 bg-neutral-200 rounded-full h-1.5 overflow-hidden">

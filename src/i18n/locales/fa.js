@@ -152,6 +152,8 @@ export default {
     },
     dispatch: "اعزام",
     markFulfilled: "علامت تکمیل",
+    cancelRequest: "لغو درخواست",
+    confirmCancel: "تأیید لغو",
     detailTitle: "جزئیات درخواست",
     currentStatus: "وضعیت فعلی",
     markAsDispatched: "علامت‌گذاری اعزام‌شده",

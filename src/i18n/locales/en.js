@@ -152,6 +152,8 @@ export default {
     },
     dispatch: "Dispatch",
     markFulfilled: "Mark Fulfilled",
+    cancelRequest: "Cancel Request",
+    confirmCancel: "Confirm Cancel",
     detailTitle: "Request Details",
     currentStatus: "Current Status",
     markAsDispatched: "Mark as Dispatched",
