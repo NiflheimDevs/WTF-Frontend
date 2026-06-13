@@ -5,7 +5,6 @@ import {
   Menu,
   X,
   LogIn,
-  UserPlus,
   LayoutDashboard,
 } from "lucide-react";
 import { ThemeToggle } from "../primitives/ThemeToggle";
@@ -57,7 +56,7 @@ export default function AppHeader() {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link
-              to={isDispatcherRoute ? "/dispatcher" : "/"}
+              to="/"
               className="flex items-center gap-2.5 group cursor-pointer"
             >
               <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
@@ -156,24 +155,14 @@ export default function AppHeader() {
                       </Button>
                     </div>
                   ) : (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={LogIn}
-                        onClick={() => navigate("/dispatcher/login")}
-                      >
-                        {t("auth.login")}
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        icon={UserPlus}
-                        onClick={() => navigate("/dispatcher/login?tab=signup")}
-                      >
-                        {t("auth.signUp")}
-                      </Button>
-                    </>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={LogIn}
+                      onClick={() => navigate("/dispatcher/login")}
+                    >
+                      {t("auth.login")}
+                    </Button>
                   )}
                 </>
               )}
@@ -274,26 +263,15 @@ export default function AppHeader() {
                   </button>
                 </>
               ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      navigate("/dispatcher/login");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-start px-3 py-2 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
-                  >
-                    {t("auth.login")}
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate("/dispatcher/login?tab=signup");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
-                  >
-                    {t("auth.signUp")}
-                  </button>
-                </>
+                <button
+                  onClick={() => {
+                    navigate("/dispatcher/login");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
+                >
+                  {t("auth.login")}
+                </button>
               )}
             </>
           )}
