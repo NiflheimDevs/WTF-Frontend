@@ -5,6 +5,7 @@ import { relativeTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 import { getRequestRegionName } from "../../utils/regionName";
+import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
 
 export function RequestRow({
   request,
@@ -117,7 +118,7 @@ export function RequestRow({
       className="border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-100 cursor-pointer group"
     >
       <td className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors">
-        {request.id.slice(0, 8)}
+        {toLocaleDigits(request.id.slice(0, 8), locale)}
       </td>
       <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">
         {getRequestRegionName(request, locale, regionsById) ||
@@ -127,7 +128,7 @@ export function RequestRow({
         {getNeedIcon(request.need_type)}
       </td>
       <td className="px-4 py-3 font-mono text-neutral-700 text-end">
-        {request.quantity}
+        {formatNumber(request.quantity, locale)}
       </td>
       <td className="px-4 py-3">
         <StatusBadge status={request.status} size="sm" />

@@ -1,5 +1,6 @@
 import en from "./locales/en";
 import fa from "./locales/fa";
+import { toLocaleDigits } from "../utils/localeDigits";
 
 export const LOCALES = {
   en: { label: "English", dir: "ltr", code: "en" },
@@ -36,9 +37,11 @@ export function translate(key, params = {}, locale = currentLocale) {
   const template = getNestedValue(localeMessages[locale], key);
   if (typeof template !== "string") return key;
 
-  return template.replace(/\{\{(\w+)\}\}/g, (_, name) =>
+  const result = template.replace(/\{\{(\w+)\}\}/g, (_, name) =>
     params[name] !== undefined ? String(params[name]) : "",
   );
+
+  return locale === "fa" ? toLocaleDigits(result, locale) : result;
 }
 
 export function t(key, params) {

@@ -12,9 +12,10 @@ import { createFieldValidators } from "../utils/validators";
 import { NEED_TYPES } from "../api/types";
 import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
+import { toLocaleDigits } from "../utils/localeDigits";
 
 export default function ReporterPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { validateRegion, validateQuantity, validateTankerQuantity } =
     useMemo(() => createFieldValidators(t), [t]);
 
@@ -164,7 +165,7 @@ export default function ReporterPage() {
                 <p
                   className={`mt-1 text-xs text-end ${note.length >= 270 ? "text-warning-fg" : "text-neutral-400"}`}
                 >
-                  {note.length}/280
+                  {toLocaleDigits(`${note.length}/280`, locale)}
                 </p>
               )}
             </div>

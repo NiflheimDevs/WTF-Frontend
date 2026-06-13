@@ -6,6 +6,7 @@ import { LanguageToggle } from "../primitives/LanguageToggle";
 import { useTranslation } from "../../context/LocaleContext";
 import { getDateLocale } from "../../i18n";
 import { cn } from "../../utils/cn";
+import { toLocaleDigits } from "../../utils/localeDigits";
 
 function useActiveNavLabel() {
   const { pathname } = useLocation();
@@ -27,10 +28,13 @@ function useClock() {
     const id = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
-  return time.toLocaleTimeString(getDateLocale(locale), {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return toLocaleDigits(
+    time.toLocaleTimeString(getDateLocale(locale), {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    locale,
+  );
 }
 
 export function TopBar({

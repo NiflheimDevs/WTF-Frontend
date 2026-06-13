@@ -1,6 +1,7 @@
 import { Skeleton } from "../primitives/Skeleton";
 import { useTranslation } from "../../context/LocaleContext";
 import { getRegionName } from "../../utils/regionName";
+import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
 
 export function RegionRankList({ regions, loading, maxItems = 8 }) {
   const { t, locale } = useTranslation();
@@ -33,7 +34,7 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
           className="flex items-center gap-3 py-1.5 rounded-md px-2 hover:bg-neutral-100 transition-colors duration-100 cursor-pointer group"
         >
           <span className="font-mono text-xs text-neutral-400 w-5 shrink-0">
-            {String(index + 1).padStart(2, "0")}
+            {toLocaleDigits(String(index + 1).padStart(2, "0"), locale)}
           </span>
 
           <span className="text-sm text-neutral-700 w-28 truncate shrink-0 group-hover:text-primary-500 transition-colors">
@@ -48,7 +49,7 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
           </div>
 
           <span className="font-mono text-xs text-neutral-900 w-6 text-end shrink-0">
-            {region.count}
+            {formatNumber(region.count, locale)}
           </span>
         </div>
       ))}

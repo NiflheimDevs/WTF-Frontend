@@ -1,6 +1,8 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Sparkline } from "./Sparkline";
 import { cn } from "../../utils/cn";
+import { useTranslation } from "../../context/LocaleContext";
+import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
 
 export function KpiCard({
   label,
@@ -11,6 +13,7 @@ export function KpiCard({
   intent = "default",
   loading,
 }) {
+  const { locale } = useTranslation();
   const intentColor = {
     default: "text-neutral-900",
     warning: "text-warning-fg",
@@ -47,7 +50,7 @@ export function KpiCard({
             {delta.direction === "down" && <TrendingDown size={12} />}
             {delta.direction === "neutral" && <Minus size={12} />}
             {delta.value > 0 ? "+" : ""}
-            {delta.value}%
+            {toLocaleDigits(`${delta.value}%`, locale)}
           </span>
         )}
       </div>
@@ -58,7 +61,7 @@ export function KpiCard({
           intentColor[intent],
         )}
       >
-        {value}
+        {formatNumber(value, locale)}
       </p>
 
       {sparkline && <Sparkline data={sparkline} />}

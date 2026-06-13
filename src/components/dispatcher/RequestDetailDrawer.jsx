@@ -6,10 +6,10 @@ import { useRegions } from "../../hooks/useRegions";
 import { StatusBadge } from "./StatusBadge";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
-import { formatPhone } from "../../utils/formatters";
+import { formatPhone, formatDateTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
-import { getDateLocale } from "../../i18n";
 import { getRequestRegionName } from "../../utils/regionName";
+import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
 
 export function RequestDetailDrawer({
   requestId,
@@ -62,8 +62,7 @@ export function RequestDetailDrawer({
   const canCancel =
     request?.status === "pending" || request?.status === "dispatched";
 
-  const formatDate = (date) =>
-    new Date(date).toLocaleString(getDateLocale(locale));
+  const formatDate = (date) => formatDateTime(date, locale);
 
   return (
     <>
@@ -79,7 +78,7 @@ export function RequestDetailDrawer({
               {t("requests.detailTitle")}
             </h2>
             <p className="text-xs text-neutral-400 font-mono mt-1 ltr-isolate">
-              {requestId}
+              {toLocaleDigits(requestId, locale)}
             </p>
           </div>
           <button
@@ -216,7 +215,7 @@ export function RequestDetailDrawer({
                       {t("requests.quantityLabel")}{" "}
                     </span>
                     <span className="text-neutral-900 font-mono font-semibold ltr-isolate">
-                      {request.quantity}
+                      {formatNumber(request.quantity, locale)}
                     </span>
                   </div>
                 </div>
@@ -270,7 +269,10 @@ export function RequestDetailDrawer({
                           </p>
                           {log.payload && (
                             <pre className="text-xs text-neutral-500 mt-1 overflow-x-auto">
-                              {JSON.stringify(log.payload, null, 2)}
+                              {toLocaleDigits(
+                                JSON.stringify(log.payload, null, 2),
+                                locale,
+                              )}
                             </pre>
                           )}
                         </div>

@@ -1,8 +1,9 @@
 import { Skeleton } from "../primitives/Skeleton";
 import { useTranslation } from "../../context/LocaleContext";
+import { formatNumber } from "../../utils/localeDigits";
 
 export function NeedTypeBreakdown({ bottles, tanker, loading }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   if (loading) {
     return (
@@ -43,7 +44,7 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
             </div>
             <div className="text-end">
               <span className="font-mono text-base font-semibold text-neutral-900">
-                {data?.request_count || 0}
+                {formatNumber(data?.request_count || 0, locale)}
               </span>
               <span className="text-xs text-neutral-400 ms-1">
                 {t("common.requests")}
@@ -60,7 +61,7 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
 
           <p className="text-xs text-neutral-400">
             {t("dashboard.totalQuantity", {
-              count: (data?.total_quantity || 0).toLocaleString(),
+              count: formatNumber(data?.total_quantity || 0, locale),
             })}
           </p>
         </div>

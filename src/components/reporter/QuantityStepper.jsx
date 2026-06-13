@@ -1,9 +1,10 @@
 import { Plus, Minus } from "lucide-react";
 import { NEED_TYPES } from "../../api/types";
 import { useTranslation } from "../../context/LocaleContext";
+import { formatNumber } from "../../utils/localeDigits";
 
 export function QuantityStepper({ value, onChange, needType, error }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const max = needType === NEED_TYPES.TANKER ? 5 : 50;
   const min = 1;
 
@@ -31,7 +32,7 @@ export function QuantityStepper({ value, onChange, needType, error }) {
         </button>
 
         <div className="w-16 h-11 flex items-center justify-center border-t border-b border-neutral-200 font-mono text-base font-medium text-neutral-900 bg-neutral-0">
-          {value}
+          {formatNumber(value, locale)}
         </div>
 
         <button

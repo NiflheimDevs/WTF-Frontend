@@ -19,6 +19,7 @@ import {
   getRegionName,
   getRegionSecondaryName,
 } from "../utils/regionName";
+import { formatNumber } from "../utils/localeDigits";
 
 export default function RegionsPage() {
   const { user, logout } = useAuth();
@@ -115,7 +116,7 @@ export default function RegionsPage() {
                           <span>{t("regions.totalRequests")}</span>
                         </div>
                         <span className="font-mono text-lg font-semibold text-neutral-900">
-                          {regionMetrics?.count || 0}
+                          {formatNumber(regionMetrics?.count || 0, locale)}
                         </span>
                       </div>
 
