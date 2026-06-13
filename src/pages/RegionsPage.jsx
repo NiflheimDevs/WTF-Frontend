@@ -19,7 +19,7 @@ export default function RegionsPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: regions = [], isLoading: regionsLoading } = useRegions();
@@ -38,27 +38,21 @@ export default function RegionsPage() {
   return (
     <div className="min-h-screen bg-neutral-0">
       <Sidebar
-        activeNav="regions"
-        onNav={() => {}}
         user={user}
         onLogout={logout}
-        collapsed={collapsed}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
       <TopBar
-        activeNav="regions"
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setCollapsed((c) => !c)}
+        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
         onRefresh={() => {}}
         refreshing={false}
-        sidebarCollapsed={collapsed}
       />
 
-      <main
-        className="pt-14 min-h-screen transition-all duration-200"
-        style={{ marginLeft: collapsed ? 64 : 240 }}
-      >
+      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
         <div className="p-6 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-6">

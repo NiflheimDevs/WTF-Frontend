@@ -16,7 +16,7 @@ export default function RequestsPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filters, setFilters] = useState({
     status: "all",
     page: 1,
@@ -65,27 +65,21 @@ export default function RequestsPage() {
   return (
     <div className="min-h-screen bg-neutral-0">
       <Sidebar
-        activeNav="requests"
-        onNav={() => {}}
         user={user}
         onLogout={logout}
-        collapsed={collapsed}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
       <TopBar
-        activeNav="requests"
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setCollapsed((c) => !c)}
+        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
         onRefresh={handleRefresh}
         refreshing={updateStatus.isPending}
-        sidebarCollapsed={collapsed}
       />
 
-      <main
-        className="pt-14 min-h-screen transition-all duration-200"
-        style={{ marginLeft: collapsed ? 64 : 240 }}
-      >
+      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
         <div className="p-6 max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">

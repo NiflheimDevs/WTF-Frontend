@@ -1,5 +1,20 @@
 import { Menu, RefreshCw, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { DISPATCHER_NAV_ITEMS } from "./Sidebar";
+import { cn } from "../../utils/cn";
+
+function useActiveNavLabel() {
+  const { pathname } = useLocation();
+
+  const activeItem = DISPATCHER_NAV_ITEMS.find((item) =>
+    item.id === "overview"
+      ? pathname === item.path
+      : pathname.startsWith(item.path),
+  );
+
+  return activeItem?.label ?? "Overview";
+}
 
 function useClock() {
   const [time, setTime] = useState(() => new Date());
@@ -14,26 +29,20 @@ function useClock() {
 }
 
 export function TopBar({
-  activeNav,
   theme,
   onThemeToggle,
   onMenuToggle,
   onRefresh,
   refreshing,
-  sidebarCollapsed,
 }) {
   const clock = useClock();
-  const breadcrumb = {
-    overview: "Overview",
-    requests: "Requests",
-    regions: "Regions",
-    settings: "Settings",
-  };
+  const breadcrumbLabel = useActiveNavLabel();
 
   return (
     <header
-      className={`fixed top-0 right-0 h-14 bg-neutral-50 border-b border-neutral-200 flex items-center justify-between px-4 z-10 transition-all duration-200`}
-      style={{ left: sidebarCollapsed ? 64 : 240 }}
+      className={cn(
+        "fixed top-0 right-0 left-0 lg:left-60 h-14 bg-neutral-50 border-b border-neutral-200 flex items-center justify-between px-4 z-10 transition-all duration-200",
+      )}
     >
       <div className="flex items-center gap-3">
         <button
@@ -45,7 +54,7 @@ export function TopBar({
         <span className="text-sm text-neutral-400">Dispatch</span>
         <span className="text-neutral-300">›</span>
         <span className="text-sm font-semibold text-neutral-700 capitalize">
-          {breadcrumb[activeNav]}
+          {breadcrumbLabel}
         </span>
       </div>
 

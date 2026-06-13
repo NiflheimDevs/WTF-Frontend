@@ -8,32 +8,25 @@ import { TopBar } from "./TopBar";
 export function DispatcherLayout() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const [collapsed, setCollapsed] = useState(false);
-  const [activeNav, setActiveNav] = useState("overview");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-neutral-0">
       <Sidebar
-        activeNav={activeNav}
-        onNav={setActiveNav}
         user={user}
         onLogout={logout}
-        collapsed={collapsed}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
       <TopBar
-        activeNav={activeNav}
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setCollapsed((c) => !c)}
+        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
         onRefresh={() => {}}
         refreshing={false}
-        sidebarCollapsed={collapsed}
       />
 
-      <main
-        className="pt-14 min-h-screen transition-all duration-200"
-        style={{ marginLeft: collapsed ? 64 : 240 }}
-      >
+      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
         <Outlet />
       </main>
     </div>

@@ -18,7 +18,7 @@ export default function SettingsPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme, setTheme } = useTheme();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileForm, setProfileForm] = useState({
     fullName: user?.full_name || "",
     email: user?.email || "",
@@ -70,27 +70,21 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-neutral-0">
       <Sidebar
-        activeNav="settings"
-        onNav={() => {}}
         user={user}
         onLogout={logout}
-        collapsed={collapsed}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
       <TopBar
-        activeNav="settings"
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setCollapsed((c) => !c)}
+        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
         onRefresh={() => {}}
         refreshing={false}
-        sidebarCollapsed={collapsed}
       />
 
-      <main
-        className="pt-14 min-h-screen transition-all duration-200"
-        style={{ marginLeft: collapsed ? 64 : 240 }}
-      >
+      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
         <div className="p-6 max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-6">
