@@ -5,7 +5,7 @@ import { relativeTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 import { getRequestRegionName } from "../../utils/regionName";
-import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
+import { formatNumber } from "../../utils/localeDigits";
 
 export function RequestRow({
   request,
@@ -114,11 +114,13 @@ export function RequestRow({
 
   return (
     <tr
-      onClick={() => onRowClick?.(request.id)}
+      onClick={() => onRowClick?.(request)}
       className="border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-100 cursor-pointer group"
     >
       <td className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors">
-        {toLocaleDigits(request.id.slice(0, 8), locale)}
+        <span className="ltr-isolate">
+          {String(request.id ?? "").slice(0, 8)}
+        </span>
       </td>
       <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">
         {getRequestRegionName(request, locale, regionsById) ||

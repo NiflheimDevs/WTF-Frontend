@@ -24,7 +24,7 @@ export default function RequestsPage() {
     page: 1,
     pageSize: 20,
   });
-  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
   const { data, isLoading, refetch } = useRequests(filters);
@@ -136,7 +136,7 @@ export default function RequestsPage() {
               filter={filters.status}
               onFilterChange={(status) => handleFilterChange({ status })}
               updatingId={updateStatus.variables?.id}
-              onRowClick={setSelectedRequestId}
+              onRowClick={setSelectedRequest}
               pagination={pagination}
               onPageChange={handlePageChange}
             />
@@ -145,9 +145,10 @@ export default function RequestsPage() {
       </main>
 
       <RequestDetailDrawer
-        requestId={selectedRequestId}
-        isOpen={!!selectedRequestId}
-        onClose={() => setSelectedRequestId(null)}
+        requestId={selectedRequest?.id}
+        fallbackRequest={selectedRequest}
+        isOpen={!!selectedRequest}
+        onClose={() => setSelectedRequest(null)}
         onUpdateStatus={handleUpdateStatus}
       />
     </div>

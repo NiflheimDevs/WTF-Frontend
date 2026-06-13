@@ -33,15 +33,28 @@ function getNestedValue(obj, key) {
   return key.split(".").reduce((acc, part) => acc?.[part], obj);
 }
 
+const PERSIAN_DIGIT_PARAMS = new Set([
+  "count",
+  "from",
+  "to",
+  "total",
+  "min",
+  "max",
+  "time",
+]);
+
 export function translate(key, params = {}, locale = currentLocale) {
   const template = getNestedValue(localeMessages[locale], key);
   if (typeof template !== "string") return key;
 
-  const result = template.replace(/\{\{(\w+)\}\}/g, (_, name) =>
-    params[name] !== undefined ? String(params[name]) : "",
-  );
-
-  return locale === "fa" ? toLocaleDigits(result, locale) : result;
+  return template.replace(/\{\{(\w+)\}\}/g, (_, name) => {
+    if (params[name] === undefined) return "";
+    const value = String(params[name]);
+    if (locale === "fa" && PERSIAN_DIGIT_PARAMS.has(name)) {
+      return toLocaleDigits(value, locale);
+    }
+    return value;
+  });
 }
 
 export function t(key, params) {

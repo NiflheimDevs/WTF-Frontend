@@ -128,6 +128,7 @@ export default function AppHeader() {
                           </p>
                         </div>
                         <Button
+                         className="hover:text-red-300 cursor-pointer"
                           variant="ghost"
                           size="sm"
                           onClick={handleLogout}

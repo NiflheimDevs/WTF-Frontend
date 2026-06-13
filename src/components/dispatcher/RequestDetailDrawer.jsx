@@ -9,16 +9,20 @@ import { Skeleton } from "../primitives/Skeleton";
 import { formatPhone, formatDateTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { getRequestRegionName } from "../../utils/regionName";
-import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
+import { formatNumber } from "../../utils/localeDigits";
 
 export function RequestDetailDrawer({
   requestId,
+  fallbackRequest = null,
   isOpen,
   onClose,
   onUpdateStatus,
 }) {
   const { t, locale } = useTranslation();
-  const { data, isLoading } = useRequestDetail(requestId);
+  const { data, isLoading } = useRequestDetail(
+    requestId,
+    fallbackRequest,
+  );
   const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
@@ -50,8 +54,9 @@ export function RequestDetailDrawer({
 
   if (!isOpen) return null;
 
-  const request = data?.request;
+  const request = data?.request ?? fallbackRequest;
   const auditLog = data?.audit_log || [];
+  const showLoading = isLoading && !request;
 
   const handleStatusChange = async (newStatus) => {
     await updateStatus.mutateAsync({ id: requestId, status: newStatus });
@@ -78,7 +83,7 @@ export function RequestDetailDrawer({
               {t("requests.detailTitle")}
             </h2>
             <p className="text-xs text-neutral-400 font-mono mt-1 ltr-isolate">
-              {toLocaleDigits(requestId, locale)}
+              {String(requestId ?? "")}
             </p>
           </div>
           <button
@@ -90,7 +95,7 @@ export function RequestDetailDrawer({
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {isLoading ? (
+          {showLoading ? (
             <div className="space-y-4">
               <Skeleton className="h-20 w-full" />
               <Skeleton className="h-32 w-full" />
@@ -268,11 +273,8 @@ export function RequestDetailDrawer({
                             {log.event_type?.replace(/_/g, " ")}
                           </p>
                           {log.payload && (
-                            <pre className="text-xs text-neutral-500 mt-1 overflow-x-auto">
-                              {toLocaleDigits(
-                                JSON.stringify(log.payload, null, 2),
-                                locale,
-                              )}
+                            <pre className="text-xs text-neutral-500 mt-1 overflow-x-auto ltr-isolate">
+                              {JSON.stringify(log.payload, null, 2)}
                             </pre>
                           )}
                         </div>

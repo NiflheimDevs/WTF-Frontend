@@ -18,9 +18,13 @@ export const authApi = {
 // Dispatcher endpoints
 export const dispatcherApi = {
   getRequests: (params) => api.get("/dispatcher/requests", { params }),
-  getRequest: (id) => api.get(`/dispatcher/requests/${id}`),
+  getRequest: (id) =>
+    api.get(`/dispatcher/requests/${encodeURIComponent(id)}`),
   updateStatus: (id, status) =>
-    api.patch(`/dispatcher/requests/${id}/status`, { status }),
+    api.patch(
+      `/dispatcher/requests/${encodeURIComponent(id)}/status`,
+      { status },
+    ),
 
   getMetricsSummary: () => api.get("/dispatcher/metrics/summary"),
   getMetricsByRegion: (limit = 10) =>

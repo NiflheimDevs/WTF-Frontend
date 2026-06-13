@@ -1,10 +1,9 @@
 import { CheckCircle } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { useTranslation } from "../../context/LocaleContext";
-import { toLocaleDigits } from "../../utils/localeDigits";
 
 export function SuccessView({ requestId, onReset }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const shortId = requestId?.slice(0, 8).toUpperCase();
 
   return (
@@ -26,8 +25,8 @@ export function SuccessView({ requestId, onReset }) {
         <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">
           {t("reporter.referenceId")}
         </p>
-        <p className="font-mono text-lg font-semibold text-neutral-900">
-          {toLocaleDigits(shortId, locale)}
+        <p className="font-mono text-lg font-semibold text-neutral-900 ltr-isolate">
+          {shortId}
         </p>
       </div>
 

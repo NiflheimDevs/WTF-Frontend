@@ -27,7 +27,7 @@ export default function DashboardPage() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   const { data: metrics, isLoading: metricsLoading } = useMetricsSummary();
   const { data: regions, isLoading: regionsLoading } = useMetricsByRegion(8);
@@ -175,16 +175,17 @@ export default function DashboardPage() {
               filter={filterStatus}
               onFilterChange={setFilterStatus}
               updatingId={updateStatus.variables?.id}
-              onRowClick={setSelectedRequestId}
+              onRowClick={setSelectedRequest}
             />
           </div>
         </div>
       </main>
 
       <RequestDetailDrawer
-        requestId={selectedRequestId}
-        isOpen={!!selectedRequestId}
-        onClose={() => setSelectedRequestId(null)}
+        requestId={selectedRequest?.id}
+        fallbackRequest={selectedRequest}
+        isOpen={!!selectedRequest}
+        onClose={() => setSelectedRequest(null)}
         onUpdateStatus={handleUpdateStatus}
       />
     </div>

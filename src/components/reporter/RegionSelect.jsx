@@ -21,8 +21,16 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
       )
     : regions;
 
+  const regionsById = new Map((regions || []).map((r) => [r.id, r]));
+
+  const getDistrictName = (region) => {
+    if (!region.parent_id) return t("common.other");
+    const parent = regionsById.get(region.parent_id);
+    return parent ? getRegionName(parent, locale) : t("common.other");
+  };
+
   const grouped = filtered?.reduce((acc, region) => {
-    const district = region.parent_id || t("common.other");
+    const district = getDistrictName(region);
     if (!acc[district]) acc[district] = [];
     acc[district].push(region);
     return acc;

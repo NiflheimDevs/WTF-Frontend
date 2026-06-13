@@ -8,6 +8,51 @@ import { dispatcherApi } from "../api/endpoints";
 import { t } from "../i18n";
 import toast from "react-hot-toast";
 
+function isRequestObject(value) {
+  return (
+    value &&
+    typeof value === "object" &&
+    "id" in value &&
+    "status" in value
+  );
+}
+
+export function normalizeRequestDetail(data) {
+  if (!data) return null;
+
+  if (isRequestObject(data.request)) {
+    return {
+      request: data.request,
+      audit_log: data.audit_log ?? data.auditLog ?? [],
+    };
+  }
+
+  if (isRequestObject(data)) {
+    const { audit_log: auditLogSnake, auditLog, ...request } = data;
+    return {
+      request,
+      audit_log: auditLogSnake ?? auditLog ?? [],
+    };
+  }
+
+  return null;
+}
+
+function findRequestInListCache(queryClient, id) {
+  const listQueries = queryClient.getQueriesData({
+    queryKey: requestsKeys.lists(),
+  });
+
+  for (const [, listData] of listQueries) {
+    const match = listData?.requests?.find((request) => request.id === id);
+    if (match) {
+      return { request: match, audit_log: [] };
+    }
+  }
+
+  return undefined;
+}
+
 export const requestsKeys = {
   all: ["requests"],
   lists: () => [...requestsKeys.all, "list"],
@@ -68,15 +113,23 @@ export function useInfiniteRequests(filters = {}) {
   });
 }
 
-export function useRequestDetail(id) {
+export function useRequestDetail(id, fallbackRequest = null) {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: requestsKeys.detail(id),
     queryFn: async () => {
       const { data } = await dispatcherApi.getRequest(id);
-      return data;
+      return normalizeRequestDetail(data);
     },
     enabled: !!id,
     staleTime: 30000,
+    placeholderData: () => {
+      if (fallbackRequest?.id === id) {
+        return { request: fallbackRequest, audit_log: [] };
+      }
+      return findRequestInListCache(queryClient, id);
+    },
   });
 }
 
