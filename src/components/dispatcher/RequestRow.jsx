@@ -6,6 +6,7 @@ import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 import { getRequestRegionName } from "../../utils/regionName";
 import { formatNumber } from "../../utils/localeDigits";
+import { Droplet, Truck } from "lucide-react";
 
 export function RequestRow({
   request,
@@ -19,7 +20,11 @@ export function RequestRow({
   const [localUpdating, setLocalUpdating] = useState(false);
 
   const getNeedIcon = (needType) => {
-    return needType === "bottled_water" ? "💧" : "🚛";
+    return needType === "bottled_water" ? (
+      <Droplet size={18} className="text-cyan-600 dark:text-cyan-400" />
+    ) : (
+      <Truck size={18} className="text-orange-500 dark:text-orange-400" />
+    );
   };
 
   const handleConfirm = async (nextStatus) => {

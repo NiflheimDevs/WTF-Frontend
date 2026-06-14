@@ -23,7 +23,7 @@ export function ThemeToggle({ className = "" }) {
       <Sun
         size={18}
         className={cn(
-          "absolute transition-all duration-300 rotate-0 scale-100",
+          "absolute transition-all duration-300 rotate-0 scale-100 text-neutral-600 dark:text-neutral-900",
           theme === "dark"
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 rotate-90 scale-0",

@@ -15,10 +15,7 @@ import { Input } from "../components/primitives/Input";
 import { Badge } from "../components/primitives/Badge";
 import { Search, MapPin, TrendingUp, Activity } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
-import {
-  getRegionName,
-  getRegionSecondaryName,
-} from "../utils/regionName";
+import { getRegionName, getRegionSecondaryName } from "../utils/regionName";
 import { formatNumber } from "../utils/localeDigits";
 
 export default function RegionsPage() {
@@ -73,7 +70,7 @@ export default function RegionsPage() {
           <Card className="mb-6">
             <div className="relative">
               <Search
-                className="absolute start-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-neutral-400"
                 size={18}
               />
               <Input
@@ -89,7 +86,7 @@ export default function RegionsPage() {
             {filteredRegions.map((region) => {
               const regionMetrics = getMetricsForRegion(region.id);
               return (
-                <Card key={region.id} hover className="cursor-pointer">
+                <Card key={region.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">

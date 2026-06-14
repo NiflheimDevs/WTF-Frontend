@@ -17,10 +17,10 @@ export function LanguageToggle({ className = "" }) {
       aria-label={t("a11y.toggleLanguage")}
       title={locale === "fa" ? "English" : "فارسی"}
     >
-      <Globe size={18} className="text-neutral-600 dark:text-neutral-300" />
+      <Globe size={18} className="text-neutral-600 dark:text-neutral-700" />
       <span
         className={cn(
-          "absolute -bottom-0.5 -end-0.5 text-[9px] font-bold leading-none",
+          "absolute -bottom-0.5 -inset-e-0.5 text-[9px] font-bold leading-none",
           "bg-primary-500 text-white rounded px-0.5 py-px min-w-3.5 text-center",
         )}
       >

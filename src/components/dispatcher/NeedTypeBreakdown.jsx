@@ -1,6 +1,7 @@
 import { Skeleton } from "../primitives/Skeleton";
 import { useTranslation } from "../../context/LocaleContext";
 import { formatNumber } from "../../utils/localeDigits";
+import { Droplet, Truck } from "lucide-react";
 
 export function NeedTypeBreakdown({ bottles, tanker, loading }) {
   const { t, locale } = useTranslation();
@@ -18,14 +19,16 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
     {
       type: "bottles",
       label: t("reporter.waterBottles"),
-      icon: "💧",
+      icon: <Droplet size={18} className="text-cyan-600 dark:text-cyan-400" />,
       data: bottles,
       max: Math.max(bottles?.request_count || 0, tanker?.request_count || 0),
     },
     {
       type: "tanker",
       label: t("reporter.tankerTruck"),
-      icon: "🚛",
+      icon: (
+        <Truck size={18} className="text-orange-500 dark:text-orange-400" />
+      ),
       data: tanker,
       max: Math.max(bottles?.request_count || 0, tanker?.request_count || 0),
     },
@@ -37,7 +40,7 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
         <div key={type} className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xl">{icon}</span>
+              <>{icon}</>
               <span className="text-sm font-medium text-neutral-700">
                 {label}
               </span>

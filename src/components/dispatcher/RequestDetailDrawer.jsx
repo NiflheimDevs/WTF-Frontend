@@ -19,10 +19,7 @@ export function RequestDetailDrawer({
   onUpdateStatus,
 }) {
   const { t, locale } = useTranslation();
-  const { data, isLoading } = useRequestDetail(
-    requestId,
-    fallbackRequest,
-  );
+  const { data, isLoading } = useRequestDetail(requestId, fallbackRequest);
   const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
@@ -76,7 +73,7 @@ export function RequestDetailDrawer({
         onClick={onClose}
       />
 
-      <div className="fixed top-0 end-0 h-full w-full max-w-lg bg-neutral-50 shadow-overlay z-50 animate-slide-in-end">
+      <div className="fixed top-0 inset-e-0 h-full w-full overflow-y-auto max-w-lg bg-neutral-50 shadow-overlay z-50 animate-slide-in-end">
         <div className="flex items-center justify-between p-6 border-b border-neutral-200">
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">

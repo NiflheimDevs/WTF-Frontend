@@ -1,11 +1,26 @@
 import { cn } from "../../utils/cn";
 import { useTranslation } from "../../context/LocaleContext";
+import { CheckCircle, Clock, Truck, XCircle } from "lucide-react";
 
 const statusVariants = {
-  pending: { variant: "warning", icon: "⏳" },
-  dispatched: { variant: "info", icon: "🚛" },
-  fulfilled: { variant: "success", icon: "✓" },
-  cancelled: { variant: "danger", icon: "✗" },
+  pending: {
+    variant: "warning",
+    icon: <Clock size={14} className="text-yellow-500 dark:text-yellow-400" />,
+  },
+  dispatched: {
+    variant: "info",
+    icon: <Truck size={14} className="text-blue-500 dark:text-blue-400" />,
+  },
+  fulfilled: {
+    variant: "success",
+    icon: (
+      <CheckCircle size={14} className="text-green-500 dark:text-green-400" />
+    ),
+  },
+  cancelled: {
+    variant: "danger",
+    icon: <XCircle size={14} className="text-red-500 dark:text-red-400" />,
+  },
 };
 
 const variantStyles = {
@@ -44,10 +59,7 @@ export function Badge({
         className,
       )}
     >
-      {showIcon && config.icon && (
-        <span className="text-current opacity-80">{config.icon}</span>
-      )}
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
+      {showIcon && config.icon && <>{config.icon}</>}
       {label}
     </span>
   );

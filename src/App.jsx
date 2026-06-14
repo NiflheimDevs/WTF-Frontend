@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import { PageLoader } from "./components/layout/PageLoader";
 import { cn } from "./utils/cn";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const AppHeader = lazy(() => import("./components/layout/AppHeader"));
 const ReporterPage = lazy(() => import("./pages/ReporterPage"));
@@ -37,76 +38,78 @@ function AppShell({ children }) {
 
 export default function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <AppShell>
-              <ReporterPage />
-            </AppShell>
-          }
-        />
-        <Route
-          path="/dispatcher/login"
-          element={
-            <AppShell>
-              <LoginPage />
-            </AppShell>
-          }
-        />
+    <ThemeProvider>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <AppShell>
+                <ReporterPage />
+              </AppShell>
+            }
+          />
+          <Route
+            path="/dispatcher/login"
+            element={
+              <AppShell>
+                <LoginPage />
+              </AppShell>
+            }
+          />
 
-        <Route
-          path="/dispatcher"
-          element={
-            <RequireAuth>
-              <AppShell>
-                <DashboardPage />
-              </AppShell>
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/dispatcher/requests"
-          element={
-            <RequireAuth>
-              <AppShell>
-                <RequestsPage />
-              </AppShell>
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/dispatcher/regions"
-          element={
-            <RequireAuth>
-              <AppShell>
-                <RegionsPage />
-              </AppShell>
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/dispatcher/settings"
-          element={
-            <RequireAuth>
-              <AppShell>
-                <SettingsPage />
-              </AppShell>
-            </RequireAuth>
-          }
-        />
+          <Route
+            path="/dispatcher"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <DashboardPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/dispatcher/requests"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <RequestsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/dispatcher/regions"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <RegionsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/dispatcher/settings"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <SettingsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
 
-        <Route
-          path="/404"
-          element={
-            <AppShell>
-              <NotFoundPage />
-            </AppShell>
-          }
-        />
-        <Route path="*" element={<Navigate to="/404" replace />} />
-      </Routes>
-    </Suspense>
+          <Route
+            path="/404"
+            element={
+              <AppShell>
+                <NotFoundPage />
+              </AppShell>
+            }
+          />
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Routes>
+      </Suspense>
+    </ThemeProvider>
   );
 }
