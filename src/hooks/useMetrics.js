@@ -38,8 +38,8 @@ export function useMetricsByRegion(limit = 10) {
     select: (data) =>
       data.map((region) => ({
         id: region.region_id,
-        name: region.region_name_en,
-        nameFa: region.region_name_fa,
+        name_en: region.region_name_en,
+        name_fa: region.region_name_fa,
         count: region.request_count,
       })),
   });

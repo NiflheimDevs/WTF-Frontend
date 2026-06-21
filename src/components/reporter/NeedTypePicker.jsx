@@ -1,16 +1,23 @@
 import { Droplets, Truck } from "lucide-react";
 import { NEED_TYPES } from "../../api/types";
+import { useTranslation } from "../../context/LocaleContext";
 
 export function NeedTypePicker({ value, onChange }) {
+  const { t } = useTranslation();
+
   const options = [
-    { id: NEED_TYPES.BOTTLED_WATER, label: "Water Bottles", icon: Droplets },
-    { id: NEED_TYPES.TANKER, label: "Tanker Truck", icon: Truck },
+    {
+      id: NEED_TYPES.BOTTLED_WATER,
+      label: t("reporter.waterBottles"),
+      icon: Droplets,
+    },
+    { id: NEED_TYPES.TANKER, label: t("reporter.tankerTruck"), icon: Truck },
   ];
 
   return (
     <div>
       <label className="block mb-1.5 text-sm font-semibold text-neutral-700">
-        What do you need?
+        {t("reporter.whatNeed")}
       </label>
       <div className="grid grid-cols-2 gap-3">
         {options.map(({ id, label, icon: Icon }) => {

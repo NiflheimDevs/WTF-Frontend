@@ -1,6 +1,11 @@
 import { Skeleton } from "../primitives/Skeleton";
+import { useTranslation } from "../../context/LocaleContext";
+import { formatNumber } from "../../utils/localeDigits";
+import { Droplet, Truck } from "lucide-react";
 
 export function NeedTypeBreakdown({ bottles, tanker, loading }) {
+  const { t, locale } = useTranslation();
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4">
@@ -13,15 +18,17 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
   const items = [
     {
       type: "bottles",
-      label: "Water Bottles",
-      icon: "💧",
+      label: t("reporter.waterBottles"),
+      icon: <Droplet size={18} className="text-cyan-600 dark:text-cyan-400" />,
       data: bottles,
       max: Math.max(bottles?.request_count || 0, tanker?.request_count || 0),
     },
     {
       type: "tanker",
-      label: "Tanker Truck",
-      icon: "🚛",
+      label: t("reporter.tankerTruck"),
+      icon: (
+        <Truck size={18} className="text-orange-500 dark:text-orange-400" />
+      ),
       data: tanker,
       max: Math.max(bottles?.request_count || 0, tanker?.request_count || 0),
     },
@@ -33,16 +40,18 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
         <div key={type} className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xl">{icon}</span>
+              <>{icon}</>
               <span className="text-sm font-medium text-neutral-700">
                 {label}
               </span>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <span className="font-mono text-base font-semibold text-neutral-900">
-                {data?.request_count || 0}
+                {formatNumber(data?.request_count || 0, locale)}
               </span>
-              <span className="text-xs text-neutral-400 ml-1">requests</span>
+              <span className="text-xs text-neutral-400 ms-1">
+                {t("common.requests")}
+              </span>
             </div>
           </div>
 
@@ -54,7 +63,9 @@ export function NeedTypeBreakdown({ bottles, tanker, loading }) {
           </div>
 
           <p className="text-xs text-neutral-400">
-            Total quantity: {(data?.total_quantity || 0).toLocaleString()}
+            {t("dashboard.totalQuantity", {
+              count: formatNumber(data?.total_quantity || 0, locale),
+            })}
           </p>
         </div>
       ))}

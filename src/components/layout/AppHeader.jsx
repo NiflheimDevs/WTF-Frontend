@@ -1,23 +1,19 @@
 // src/components/layout/AppHeader.jsx
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  Droplets,
-  Menu,
-  X,
-  LogIn,
-  UserPlus,
-  LayoutDashboard,
-} from "lucide-react";
+import { Droplets, Menu, X, LogIn, LayoutDashboard } from "lucide-react";
 import { ThemeToggle } from "../primitives/ThemeToggle";
+import { LanguageToggle } from "../primitives/LanguageToggle";
 import { Button } from "../primitives/Button";
 import { useAuth } from "../../hooks/useAuth";
 import { useRouteType } from "../../hooks/useRouteType";
+import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 import { useState, useEffect } from "react";
 
 export default function AppHeader() {
   const { user, logout } = useAuth();
   const { isDispatcherRoute } = useRouteType();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -45,7 +41,7 @@ export default function AppHeader() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "fixed top-0 inset-s-0 inset-e-0 z-50 transition-all duration-300",
           scrolled || isDispatcherRoute
             ? "bg-neutral-0/95 dark:bg-neutral-0/95 backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 shadow-sm"
             : "bg-neutral-0 dark:bg-neutral-0 border-b border-neutral-200/50 dark:border-neutral-800/50",
@@ -53,9 +49,8 @@ export default function AppHeader() {
       >
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
             <Link
-              to={isDispatcherRoute ? "/dispatcher" : "/"}
+              to="/"
               className="flex items-center gap-2.5 group cursor-pointer"
             >
               <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
@@ -63,17 +58,19 @@ export default function AppHeader() {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-base text-neutral-900 tracking-tight">
-                  <span>Water</span>
-                  <span className="text-primary-500">Supply</span>
+                  <span>{t("brand.water")}</span>
+                  <span className="text-primary-500">{t("brand.supply")}</span>
                 </span>
                 <span className="text-[10px] font-medium text-neutral-400 dark:text-neutral-500 -mt-0.5">
-                  {isDispatcherRoute ? "Dispatch Console" : "Crisis Response"}
+                  {isDispatcherRoute
+                    ? t("brand.dispatchConsole")
+                    : t("brand.crisisResponse")}
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-3">
+              <LanguageToggle />
               <ThemeToggle />
 
               {isDispatcherRoute ? (
@@ -88,7 +85,7 @@ export default function AppHeader() {
                         : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200",
                     )}
                   >
-                    Dashboard
+                    {t("nav.dashboard")}
                   </Link>
                   <Link
                     to="/dispatcher/requests"
@@ -99,7 +96,7 @@ export default function AppHeader() {
                         : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200",
                     )}
                   >
-                    Requests
+                    {t("nav.requests")}
                   </Link>
                   <Link
                     to="/"
@@ -110,26 +107,27 @@ export default function AppHeader() {
                         : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200",
                     )}
                   >
-                    Reports
+                    {t("nav.reports")}
                   </Link>
                   {user && (
                     <>
                       <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-700" />
                       <div className="flex items-center gap-2">
-                        <div className="text-right">
-                          <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                        <div className="text-end">
+                          <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-700">
                             {user.full_name || user.email?.split("@")[0]}
                           </p>
                           <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
-                            Dispatcher
+                            {t("auth.dispatcher")}
                           </p>
                         </div>
                         <Button
+                          className="hover:text-red-300 cursor-pointer"
                           variant="ghost"
                           size="sm"
                           onClick={handleLogout}
                         >
-                          Logout
+                          {t("auth.logout")}
                         </Button>
                       </div>
                     </>
@@ -145,38 +143,28 @@ export default function AppHeader() {
                         icon={LayoutDashboard}
                         onClick={() => navigate("/dispatcher")}
                       >
-                        Go to Dashboard
+                        {t("auth.goToDashboard")}
                       </Button>
                       <Button variant="ghost" size="sm" onClick={handleLogout}>
-                        Logout
+                        {t("auth.logout")}
                       </Button>
                     </div>
                   ) : (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={LogIn}
-                        onClick={() => navigate("/dispatcher/login")}
-                      >
-                        Login
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        icon={UserPlus}
-                        onClick={() => navigate("/dispatcher/login?tab=signup")}
-                      >
-                        Sign Up
-                      </Button>
-                    </>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={LogIn}
+                      onClick={() => navigate("/dispatcher/login")}
+                    >
+                      {t("auth.login")}
+                    </Button>
                   )}
                 </>
               )}
             </div>
 
-            {/* Mobile Menu Button */}
             <div className="flex items-center gap-2 md:hidden">
+              <LanguageToggle />
               <ThemeToggle />
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -189,10 +177,9 @@ export default function AppHeader() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       <div
         className={cn(
-          "fixed top-16 left-0 right-0 z-40 md:hidden transition-all duration-300",
+          "fixed top-16 inset-s-0 inset-e-0 z-40 md:hidden transition-all duration-300",
           "bg-neutral-0 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800",
           mobileMenuOpen
             ? "max-h-96 opacity-100"
@@ -201,28 +188,27 @@ export default function AppHeader() {
       >
         <div className="px-4 py-4 space-y-2">
           {isDispatcherRoute ? (
-            // منوی موبایل دیسپچر
             <>
               <Link
                 to="/dispatcher"
                 className="block px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Dashboard
+                {t("nav.dashboard")}
               </Link>
               <Link
                 to="/dispatcher/requests"
                 className="block px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Requests
+                {t("nav.requests")}
               </Link>
               <Link
                 to="/"
                 className="block px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Reports
+                {t("nav.reports")}
               </Link>
               {user && (
                 <>
@@ -240,16 +226,15 @@ export default function AppHeader() {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
+                      className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
                     >
-                      Logout
+                      {t("auth.logout")}
                     </button>
                   </div>
                 </>
               )}
             </>
           ) : (
-            // منوی موبایل عمومی
             <>
               {user ? (
                 <>
@@ -258,41 +243,30 @@ export default function AppHeader() {
                       navigate("/dispatcher");
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full text-left px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
+                    className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
                   >
-                    Go to Dashboard
+                    {t("auth.goToDashboard")}
                   </button>
                   <button
                     onClick={() => {
                       handleLogout();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full text-left px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
+                    className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
                   >
-                    Logout
+                    {t("auth.logout")}
                   </button>
                 </>
               ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      navigate("/dispatcher/login");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate("/dispatcher/login?tab=signup");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
-                  >
-                    Sign Up
-                  </button>
-                </>
+                <button
+                  onClick={() => {
+                    navigate("/dispatcher/login");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
+                >
+                  {t("auth.login")}
+                </button>
               )}
             </>
           )}

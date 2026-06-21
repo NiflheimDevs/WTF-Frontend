@@ -5,7 +5,53 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { dispatcherApi } from "../api/endpoints";
+import { t } from "../i18n";
 import toast from "react-hot-toast";
+
+function isRequestObject(value) {
+  return (
+    value &&
+    typeof value === "object" &&
+    "id" in value &&
+    "status" in value
+  );
+}
+
+export function normalizeRequestDetail(data) {
+  if (!data) return null;
+
+  if (isRequestObject(data.request)) {
+    return {
+      request: data.request,
+      audit_log: data.audit_log ?? data.auditLog ?? [],
+    };
+  }
+
+  if (isRequestObject(data)) {
+    const { audit_log: auditLogSnake, auditLog, ...request } = data;
+    return {
+      request,
+      audit_log: auditLogSnake ?? auditLog ?? [],
+    };
+  }
+
+  return null;
+}
+
+function findRequestInListCache(queryClient, id) {
+  const listQueries = queryClient.getQueriesData({
+    queryKey: requestsKeys.lists(),
+  });
+
+  for (const [, listData] of listQueries) {
+    const match = listData?.requests?.find((request) => request.id === id);
+    if (match) {
+      return { request: match, audit_log: [] };
+    }
+  }
+
+  return undefined;
+}
 
 export const requestsKeys = {
   all: ["requests"],
@@ -15,11 +61,26 @@ export const requestsKeys = {
   detail: (id) => [...requestsKeys.details(), id],
 };
 
+export function buildRequestParams(filters = {}) {
+  const params = {};
+
+  if (filters.page) params.page = filters.page;
+  if (filters.pageSize) params.page_size = filters.pageSize;
+  if (filters.status && filters.status !== "all") params.status = filters.status;
+  if (filters.regionId) params.region_id = filters.regionId;
+  if (filters.from) params.from = filters.from;
+  if (filters.to) params.to = filters.to;
+
+  return params;
+}
+
 export function useRequests(filters = {}) {
+  const params = buildRequestParams(filters);
+
   return useQuery({
     queryKey: requestsKeys.list(filters),
     queryFn: async () => {
-      const { data } = await dispatcherApi.getRequests(filters);
+      const { data } = await dispatcherApi.getRequests(params);
       return data;
     },
     refetchInterval: 15000,
@@ -29,11 +90,13 @@ export function useRequests(filters = {}) {
 }
 
 export function useInfiniteRequests(filters = {}) {
+  const params = buildRequestParams(filters);
+
   return useInfiniteQuery({
     queryKey: requestsKeys.list(filters),
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await dispatcherApi.getRequests({
-        ...filters,
+        ...params,
         page: pageParam,
       });
       return data;
@@ -50,15 +113,23 @@ export function useInfiniteRequests(filters = {}) {
   });
 }
 
-export function useRequestDetail(id) {
+export function useRequestDetail(id, fallbackRequest = null) {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: requestsKeys.detail(id),
     queryFn: async () => {
       const { data } = await dispatcherApi.getRequest(id);
-      return data;
+      return normalizeRequestDetail(data);
     },
     enabled: !!id,
     staleTime: 30000,
+    placeholderData: () => {
+      if (fallbackRequest?.id === id) {
+        return { request: fallbackRequest, audit_log: [] };
+      }
+      return findRequestInListCache(queryClient, id);
+    },
   });
 }
 
@@ -94,7 +165,7 @@ export function useUpdateRequestStatus() {
           context.previousRequests,
         );
       }
-      toast.error(`Failed to update status. Please try again.`);
+      toast.error(t("requests.statusUpdateFailed"));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: requestsKeys.all });

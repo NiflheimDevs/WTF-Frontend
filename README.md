@@ -11,7 +11,6 @@ Here's a summary of every `#backend-needed` comment across the project and what 
 
 **`LoginPage.jsx`**
 - Login form: call `saveSession(res.data.token, res.data.user)` after successful login
-- Signup form: call `api.post('/auth/register', { name, email, password })`
 
 **`DashboardPage.jsx`**
 - Replace mock KPI data with `GET /api/v1/metrics/summary` via React Query

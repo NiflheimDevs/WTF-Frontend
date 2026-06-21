@@ -1,6 +1,11 @@
 import { Skeleton } from "../primitives/Skeleton";
+import { useTranslation } from "../../context/LocaleContext";
+import { getRegionName } from "../../utils/regionName";
+import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
 
 export function RegionRankList({ regions, loading, maxItems = 8 }) {
+  const { t, locale } = useTranslation();
+
   if (loading) {
     return (
       <div className="flex flex-col gap-3">
@@ -14,7 +19,7 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
   if (!regions || regions.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-neutral-400">No region data available</p>
+        <p className="text-sm text-neutral-400">{t("dashboard.noRegionData")}</p>
       </div>
     );
   }
@@ -29,11 +34,11 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
           className="flex items-center gap-3 py-1.5 rounded-md px-2 hover:bg-neutral-100 transition-colors duration-100 cursor-pointer group"
         >
           <span className="font-mono text-xs text-neutral-400 w-5 shrink-0">
-            {String(index + 1).padStart(2, "0")}
+            {toLocaleDigits(String(index + 1).padStart(2, "0"), locale)}
           </span>
 
           <span className="text-sm text-neutral-700 w-28 truncate shrink-0 group-hover:text-primary-500 transition-colors">
-            {region.name}
+            {getRegionName(region, locale)}
           </span>
 
           <div className="flex-1 bg-neutral-200 rounded-full h-1.5 overflow-hidden">
@@ -43,8 +48,8 @@ export function RegionRankList({ regions, loading, maxItems = 8 }) {
             />
           </div>
 
-          <span className="font-mono text-xs text-neutral-900 w-6 text-right shrink-0">
-            {region.count}
+          <span className="font-mono text-xs text-neutral-900 w-6 text-end shrink-0">
+            {formatNumber(region.count, locale)}
           </span>
         </div>
       ))}
