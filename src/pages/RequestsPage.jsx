@@ -10,11 +10,13 @@ import { RequestFilters } from "../components/dispatcher/RequestFilters";
 import { Card } from "../components/primitives/Card";
 import { Button } from "../components/primitives/Button";
 import { Filter, Download, RefreshCw } from "lucide-react";
+import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 
 export default function RequestsPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -22,7 +24,7 @@ export default function RequestsPage() {
     page: 1,
     pageSize: 20,
   });
-  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
   const { data, isLoading, refetch } = useRequests(filters);
@@ -45,14 +47,13 @@ export default function RequestsPage() {
   );
 
   const handleExport = useCallback(() => {
-    toast.success("Export started. Download will begin shortly.");
-    // Implement export logic
-  }, []);
+    toast.success(t("requests.exportStarted"));
+  }, [t]);
 
   const handleRefresh = useCallback(async () => {
     await refetch();
-    toast.success("Requests refreshed");
-  }, [refetch]);
+    toast.success(t("requests.refreshed"));
+  }, [refetch, t]);
 
   const requests = data?.requests || [];
   const pagination = {
@@ -79,16 +80,15 @@ export default function RequestsPage() {
         refreshing={updateStatus.isPending}
       />
 
-      <main className="pt-14 min-h-screen transition-all duration-200 ml-0 lg:ml-60">
+      <main className="pt-14 min-h-screen transition-all duration-200 ms-0 lg:ms-60">
         <div className="p-6 max-w-7xl mx-auto">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-xl font-semibold text-neutral-900">
-                Requests
+                {t("requests.title")}
               </h1>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Manage and track water supply requests
+                {t("requests.subtitle")}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ export default function RequestsPage() {
                 icon={Filter}
                 onClick={() => setShowFilters(!showFilters)}
               >
-                Filters
+                {t("common.filters")}
               </Button>
               <Button
                 variant="secondary"
@@ -106,7 +106,7 @@ export default function RequestsPage() {
                 icon={Download}
                 onClick={handleExport}
               >
-                Export
+                {t("common.export")}
               </Button>
               <Button
                 variant="secondary"
@@ -118,7 +118,6 @@ export default function RequestsPage() {
             </div>
           </div>
 
-          {/* Filters Panel */}
           {showFilters && (
             <Card className="mb-6">
               <RequestFilters
@@ -129,7 +128,6 @@ export default function RequestsPage() {
             </Card>
           )}
 
-          {/* Requests Table */}
           <Card>
             <RequestTable
               requests={requests}
@@ -138,7 +136,7 @@ export default function RequestsPage() {
               filter={filters.status}
               onFilterChange={(status) => handleFilterChange({ status })}
               updatingId={updateStatus.variables?.id}
-              onRowClick={setSelectedRequestId}
+              onRowClick={setSelectedRequest}
               pagination={pagination}
               onPageChange={handlePageChange}
             />
@@ -146,11 +144,11 @@ export default function RequestsPage() {
         </div>
       </main>
 
-      {/* Detail Drawer */}
       <RequestDetailDrawer
-        requestId={selectedRequestId}
-        isOpen={!!selectedRequestId}
-        onClose={() => setSelectedRequestId(null)}
+        requestId={selectedRequest?.id}
+        fallbackRequest={selectedRequest}
+        isOpen={!!selectedRequest}
+        onClose={() => setSelectedRequest(null)}
         onUpdateStatus={handleUpdateStatus}
       />
     </div>

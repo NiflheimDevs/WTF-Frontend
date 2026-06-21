@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown, Check, Search } from "lucide-react";
 import { Skeleton } from "../primitives/Skeleton";
+import { useTranslation } from "../../context/LocaleContext";
+import { getRegionName } from "../../utils/regionName";
 
 export function RegionSelect({ value, onChange, regions, loading, error }) {
+  const { t, locale } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const inputRef = useRef(null);
@@ -18,8 +21,16 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
       )
     : regions;
 
+  const regionsById = new Map((regions || []).map((r) => [r.id, r]));
+
+  const getDistrictName = (region) => {
+    if (!region.parent_id) return t("common.other");
+    const parent = regionsById.get(region.parent_id);
+    return parent ? getRegionName(parent, locale) : t("common.other");
+  };
+
   const grouped = filtered?.reduce((acc, region) => {
-    const district = region.parent_id || "Other";
+    const district = getDistrictName(region);
     if (!acc[district]) acc[district] = [];
     acc[district].push(region);
     return acc;
@@ -48,7 +59,7 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
   return (
     <div ref={containerRef} className="relative">
       <label className="block mb-1.5 text-sm font-semibold text-neutral-700">
-        Region <span className="text-danger-fg">*</span>
+        {t("reporter.region")} <span className="text-danger-fg">*</span>
       </label>
 
       <button
@@ -61,7 +72,9 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
           ${selected ? "text-neutral-900 font-semibold" : "text-neutral-400"}
         `}
       >
-        <span>{selected ? selected.name_en : "Select your region…"}</span>
+        <span>
+          {selected ? getRegionName(selected, locale) : t("reporter.selectRegion")}
+        </span>
         <ChevronDown
           size={16}
           className={`text-neutral-500 transition-transform ${open ? "rotate-180" : ""}`}
@@ -76,25 +89,25 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
             <div className="relative">
               <Search
                 size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                className="absolute start-3 top-1/2 -translate-y-1/2 text-neutral-400"
               />
               <input
                 ref={inputRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search region..."
-                className="w-full h-9 pl-9 pr-3 text-sm border border-neutral-200 rounded-md bg-neutral-50 focus:border-primary-500 focus:outline-none"
+                placeholder={t("reporter.searchRegion")}
+                className="w-full h-9 ps-9 pe-3 text-sm border border-neutral-200 rounded-md bg-neutral-50 focus:border-primary-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div className="max-h-64 overflow-y-auto">
-            {Object.entries(grouped || {}).map(([district, regions]) => (
+            {Object.entries(grouped || {}).map(([district, districtRegions]) => (
               <div key={district}>
                 <div className="px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-neutral-400 bg-neutral-50">
                   {district}
                 </div>
-                {regions.map((region) => (
+                {districtRegions.map((region) => (
                   <button
                     key={region.id}
                     type="button"
@@ -104,12 +117,12 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
                       setSearch("");
                     }}
                     className={`
-                      w-full px-3 py-2.5 flex items-center justify-between text-left
+                      w-full px-3 py-2.5 flex items-center justify-between text-start
                       transition-colors duration-100 hover:bg-neutral-50
                       ${value === region.id ? "bg-primary-50 text-primary-700 font-semibold" : "text-neutral-700"}
                     `}
                   >
-                    <span>{region.name_en}</span>
+                    <span>{getRegionName(region, locale)}</span>
                     {value === region.id && (
                       <Check size={16} className="text-primary-500" />
                     )}
@@ -120,7 +133,7 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
 
             {filtered?.length === 0 && (
               <div className="px-3 py-6 text-center text-neutral-500 text-sm">
-                No regions found
+                {t("reporter.noRegionsFound")}
               </div>
             )}
           </div>

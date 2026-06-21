@@ -1,7 +1,9 @@
 import { CheckCircle } from "lucide-react";
 import { Button } from "../primitives/Button";
+import { useTranslation } from "../../context/LocaleContext";
 
 export function SuccessView({ requestId, onReset }) {
+  const { t } = useTranslation();
   const shortId = requestId?.slice(0, 8).toUpperCase();
 
   return (
@@ -12,24 +14,24 @@ export function SuccessView({ requestId, onReset }) {
 
       <div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          Request received
+          {t("reporter.requestReceived")}
         </h2>
         <p className="text-sm text-neutral-500">
-          A dispatcher has been notified — typical response is within 2 hours.
+          {t("reporter.requestReceivedHint")}
         </p>
       </div>
 
       <div className="bg-neutral-50 border border-neutral-200 rounded-lg px-6 py-3">
         <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">
-          Your reference ID
+          {t("reporter.referenceId")}
         </p>
-        <p className="font-mono text-lg font-semibold text-neutral-900">
+        <p className="font-mono text-lg font-semibold text-neutral-900 ltr-isolate">
           {shortId}
         </p>
       </div>
 
       <Button variant="ghost" onClick={onReset} className="mt-2">
-        Submit another request
+        {t("reporter.submitAnother")}
       </Button>
     </div>
   );

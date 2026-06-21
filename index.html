@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -7,17 +7,23 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>Water Supply Reporting System</title>
+    <title>سامانه گزارش‌دهی آب</title>
 
-    <!-- Prevent flash of wrong theme — runs before React loads -->
+    <!-- Prevent flash of wrong theme/locale — runs before React loads -->
     <script>
       (function () {
-        const saved = localStorage.getItem("theme");
+        const savedTheme = localStorage.getItem("theme");
         const path = window.location.pathname;
         const isDispatcher = path.startsWith("/dispatcher");
-        const theme = saved || (isDispatcher ? "dark" : "light");
+        const theme = savedTheme || (isDispatcher ? "dark" : "light");
         document.documentElement.setAttribute("data-theme", theme);
         if (theme === "dark") document.documentElement.classList.add("dark");
+
+        const savedLocale = localStorage.getItem("locale");
+        const locale =
+          savedLocale === "en" || savedLocale === "fa" ? savedLocale : "fa";
+        document.documentElement.lang = locale;
+        document.documentElement.dir = locale === "fa" ? "rtl" : "ltr";
       })();
     </script>
   </head>

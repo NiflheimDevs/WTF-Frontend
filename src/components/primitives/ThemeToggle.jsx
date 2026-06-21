@@ -1,10 +1,12 @@
 // src/components/primitives/ThemeToggle.jsx
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "../../hooks/useTheme";
+import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 
 export function ThemeToggle({ className = "" }) {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <button
@@ -15,13 +17,13 @@ export function ThemeToggle({ className = "" }) {
         "transition-all duration-300",
         className,
       )}
-      aria-label="Toggle theme"
+      aria-label={t("a11y.toggleTheme")}
     >
       {/* Sun icon - shows in dark mode (because clicking it goes to light) */}
       <Sun
         size={18}
         className={cn(
-          "absolute transition-all duration-300 rotate-0 scale-100",
+          "absolute transition-all duration-300 rotate-0 scale-100 text-neutral-600 dark:text-neutral-900",
           theme === "dark"
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 rotate-90 scale-0",

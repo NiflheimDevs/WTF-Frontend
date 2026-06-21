@@ -1,20 +1,37 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X, Calendar, MapPin, Phone, Clock } from "lucide-react";
 import { useRequestDetail } from "../../hooks/useRequests";
 import { useUpdateRequestStatus } from "../../hooks/useRequests";
+import { useRegions } from "../../hooks/useRegions";
 import { StatusBadge } from "./StatusBadge";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
-import { formatPhone } from "../../utils/formatters";
+import { formatPhone, formatDateTime } from "../../utils/formatters";
+import { useTranslation } from "../../context/LocaleContext";
+import { getRequestRegionName } from "../../utils/regionName";
+import { formatNumber } from "../../utils/localeDigits";
 
 export function RequestDetailDrawer({
   requestId,
+  fallbackRequest = null,
   isOpen,
   onClose,
   onUpdateStatus,
 }) {
-  const { data, isLoading } = useRequestDetail(requestId);
+  const { t, locale } = useTranslation();
+  const { data, isLoading } = useRequestDetail(requestId, fallbackRequest);
+  const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+
+  const regionsById = useMemo(
+    () => new Map(regions.map((region) => [region.id, region])),
+    [regions],
+  );
+
+  useEffect(() => {
+    setConfirmingCancel(false);
+  }, [requestId, isOpen]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -34,32 +51,36 @@ export function RequestDetailDrawer({
 
   if (!isOpen) return null;
 
-  const request = data?.request;
+  const request = data?.request ?? fallbackRequest;
   const auditLog = data?.audit_log || [];
+  const showLoading = isLoading && !request;
 
   const handleStatusChange = async (newStatus) => {
     await updateStatus.mutateAsync({ id: requestId, status: newStatus });
+    setConfirmingCancel(false);
     onUpdateStatus?.(requestId, newStatus);
   };
 
+  const canCancel =
+    request?.status === "pending" || request?.status === "dispatched";
+
+  const formatDate = (date) => formatDateTime(date, locale);
+
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 z-40 animate-fade-in"
         onClick={onClose}
       />
 
-      {/* Drawer */}
-      <div className="fixed top-0 right-0 h-full w-full max-w-lg bg-neutral-50 shadow-overlay z-50 animate-slide-in-right">
-        {/* Header */}
+      <div className="fixed top-0 inset-e-0 h-full w-full overflow-y-auto max-w-lg bg-neutral-50 shadow-overlay z-50 animate-slide-in-end">
         <div className="flex items-center justify-between p-6 border-b border-neutral-200">
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">
-              Request Details
+              {t("requests.detailTitle")}
             </h2>
-            <p className="text-xs text-neutral-400 font-mono mt-1">
-              {requestId}
+            <p className="text-xs text-neutral-400 font-mono mt-1 ltr-isolate">
+              {String(requestId ?? "")}
             </p>
           </div>
           <button
@@ -70,9 +91,8 @@ export function RequestDetailDrawer({
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {isLoading ? (
+          {showLoading ? (
             <div className="space-y-4">
               <Skeleton className="h-20 w-full" />
               <Skeleton className="h-32 w-full" />
@@ -80,105 +100,147 @@ export function RequestDetailDrawer({
             </div>
           ) : request ? (
             <>
-              {/* Status Section */}
               <div className="flex items-center justify-between p-4 bg-neutral-0 rounded-lg border border-neutral-200">
                 <div>
                   <p className="text-xs text-neutral-400 uppercase tracking-wider">
-                    Current Status
+                    {t("requests.currentStatus")}
                   </p>
                   <div className="mt-2">
                     <StatusBadge status={request.status} size="lg" />
                   </div>
                 </div>
-                {request.status === "pending" && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleStatusChange("dispatched")}
-                    loading={updateStatus.isPending}
-                  >
-                    Mark as Dispatched
-                  </Button>
-                )}
-                {request.status === "dispatched" && (
-                  <Button
-                    size="sm"
-                    variant="success"
-                    onClick={() => handleStatusChange("fulfilled")}
-                    loading={updateStatus.isPending}
-                  >
-                    Mark as Fulfilled
-                  </Button>
-                )}
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  {confirmingCancel ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleStatusChange("cancelled")}
+                        loading={updateStatus.isPending}
+                      >
+                        {t("requests.confirmCancel")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setConfirmingCancel(false)}
+                        disabled={updateStatus.isPending}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {request.status === "pending" && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleStatusChange("dispatched")}
+                          loading={updateStatus.isPending}
+                        >
+                          {t("requests.markAsDispatched")}
+                        </Button>
+                      )}
+                      {request.status === "dispatched" && (
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => handleStatusChange("fulfilled")}
+                          loading={updateStatus.isPending}
+                        >
+                          {t("requests.markAsFulfilled")}
+                        </Button>
+                      )}
+                      {canCancel && (
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => setConfirmingCancel(true)}
+                          disabled={updateStatus.isPending}
+                        >
+                          {t("requests.cancelRequest")}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
 
-              {/* Request Info */}
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-neutral-700">
-                  Request Information
+                  {t("requests.requestInfo")}
                 </h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-sm">
                     <MapPin size={16} className="text-neutral-400" />
-                    <span className="text-neutral-700">Region: </span>
+                    <span className="text-neutral-700">
+                      {t("requests.regionLabel")}{" "}
+                    </span>
                     <span className="text-neutral-900 font-medium">
-                      {request.region_name || "Unknown"}
+                      {getRequestRegionName(request, locale, regionsById) ||
+                        t("common.unknown")}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Calendar size={16} className="text-neutral-400" />
-                    <span className="text-neutral-700">Created: </span>
+                    <span className="text-neutral-700">
+                      {t("requests.createdLabel")}{" "}
+                    </span>
                     <span className="text-neutral-900">
-                      {new Date(request.created_at).toLocaleString()}
+                      {formatDate(request.created_at)}
                     </span>
                   </div>
                   {request.dispatched_at && (
                     <div className="flex items-center gap-3 text-sm">
                       <Clock size={16} className="text-neutral-400" />
-                      <span className="text-neutral-700">Dispatched: </span>
+                      <span className="text-neutral-700">
+                        {t("requests.dispatchedLabel")}{" "}
+                      </span>
                       <span className="text-neutral-900">
-                        {new Date(request.dispatched_at).toLocaleString()}
+                        {formatDate(request.dispatched_at)}
                       </span>
                     </div>
                   )}
                   <div className="flex items-center gap-3 text-sm">
                     <span className="w-4" />
-                    <span className="text-neutral-700">Need Type: </span>
-                    <span className="text-neutral-900 font-medium capitalize">
+                    <span className="text-neutral-700">
+                      {t("requests.needTypeLabel")}{" "}
+                    </span>
+                    <span className="text-neutral-900 font-medium">
                       {request.need_type === "bottled_water"
-                        ? "Bottled Water"
-                        : "Tanker Truck"}
+                        ? t("requests.bottledWater")
+                        : t("reporter.tankerTruck")}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <span className="w-4" />
-                    <span className="text-neutral-700">Quantity: </span>
-                    <span className="text-neutral-900 font-mono font-semibold">
-                      {request.quantity}
+                    <span className="text-neutral-700">
+                      {t("requests.quantityLabel")}{" "}
+                    </span>
+                    <span className="text-neutral-900 font-mono font-semibold ltr-isolate">
+                      {formatNumber(request.quantity, locale)}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Contact Info */}
               {request.contact_phone && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-neutral-700">
-                    Contact Information
+                    {t("requests.contactInfo")}
                   </h3>
                   <div className="flex items-center gap-3 text-sm p-3 bg-neutral-0 rounded-lg border border-neutral-200">
                     <Phone size={16} className="text-neutral-400" />
-                    <span className="text-neutral-900">
-                      {formatPhone(request.contact_phone)}
+                    <span className="text-neutral-900 font-mono ltr-isolate">
+                      {formatPhone(request.contact_phone, locale)}
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* Notes */}
               {request.note && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-neutral-700">
-                    Additional Notes
+                    {t("requests.additionalNotes")}
                   </h3>
                   <div className="p-3 bg-neutral-0 rounded-lg border border-neutral-200">
                     <p className="text-sm text-neutral-700 whitespace-pre-wrap">
@@ -188,11 +250,10 @@ export function RequestDetailDrawer({
                 </div>
               )}
 
-              {/* Audit Log */}
               {auditLog.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-neutral-700">
-                    Activity Log
+                    {t("requests.activityLog")}
                   </h3>
                   <div className="space-y-2">
                     {auditLog.map((log, index) => (
@@ -203,13 +264,13 @@ export function RequestDetailDrawer({
                         <div className="w-1 h-auto bg-primary-500 rounded-full" />
                         <div className="flex-1">
                           <p className="text-xs text-neutral-400">
-                            {new Date(log.created_at).toLocaleString()}
+                            {formatDate(log.created_at)}
                           </p>
                           <p className="text-sm text-neutral-700 mt-1 capitalize">
                             {log.event_type?.replace(/_/g, " ")}
                           </p>
                           {log.payload && (
-                            <pre className="text-xs text-neutral-500 mt-1 overflow-x-auto">
+                            <pre className="text-xs text-neutral-500 mt-1 overflow-x-auto ltr-isolate">
                               {JSON.stringify(log.payload, null, 2)}
                             </pre>
                           )}
@@ -222,7 +283,7 @@ export function RequestDetailDrawer({
             </>
           ) : (
             <div className="text-center py-8">
-              <p className="text-neutral-500">Request not found</p>
+              <p className="text-neutral-500">{t("requests.notFound")}</p>
             </div>
           )}
         </div>

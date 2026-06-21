@@ -1,10 +1,26 @@
 import { cn } from "../../utils/cn";
+import { useTranslation } from "../../context/LocaleContext";
+import { CheckCircle, Clock, Truck, XCircle } from "lucide-react";
 
-const statusConfig = {
-  pending: { label: "Pending", variant: "warning", icon: "⏳" },
-  dispatched: { label: "Dispatched", variant: "info", icon: "🚛" },
-  fulfilled: { label: "Fulfilled", variant: "success", icon: "✓" },
-  cancelled: { label: "Cancelled", variant: "danger", icon: "✗" },
+const statusVariants = {
+  pending: {
+    variant: "warning",
+    icon: <Clock size={14} className="text-yellow-500 dark:text-yellow-400" />,
+  },
+  dispatched: {
+    variant: "info",
+    icon: <Truck size={14} className="text-blue-500 dark:text-blue-400" />,
+  },
+  fulfilled: {
+    variant: "success",
+    icon: (
+      <CheckCircle size={14} className="text-green-500 dark:text-green-400" />
+    ),
+  },
+  cancelled: {
+    variant: "danger",
+    icon: <XCircle size={14} className="text-red-500 dark:text-red-400" />,
+  },
 };
 
 const variantStyles = {
@@ -20,11 +36,13 @@ export function StatusBadge({
   showIcon = true,
   className = "",
 }) {
-  const config = statusConfig[status] || {
-    label: status,
+  const { t } = useTranslation();
+  const config = statusVariants[status] || {
     variant: "default",
     icon: null,
   };
+  const label = statusVariants[status] ? t(`status.${status}`) : status;
+
   const sizes = {
     sm: "px-2 py-0.5 text-xs gap-1",
     md: "px-2.5 py-1 text-sm gap-1.5",
@@ -40,11 +58,8 @@ export function StatusBadge({
         className,
       )}
     >
-      {showIcon && config.icon && (
-        <span className="text-current opacity-80">{config.icon}</span>
-      )}
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
-      {config.label}
+      {showIcon && config.icon && <>{config.icon}</>}
+      {label}
     </span>
   );
 }
