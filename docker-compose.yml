@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     platform: linux/amd64
-    image: registry.hamdocker.ir/samansayad93/wtf-frontend
+    image: ghcr.io/niflheimdevs/wtf-frontend
     container_name: frontend_app
     restart: always
     ports:
