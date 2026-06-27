@@ -57,7 +57,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           source: docker-compose.yml
-        target: ${{ env.DEPLOY_DIR }}
+          target: ${{ env.DEPLOY_DIR }}
+
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
