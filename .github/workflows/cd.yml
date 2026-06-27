@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [main]
+    branches: [feat/CICD]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
