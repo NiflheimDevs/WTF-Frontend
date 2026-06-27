@@ -8,6 +8,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DEPLOY_DIR: /home/debian/frontend
+
+
 jobs:
   build-and-push-image:
     name: Build & Push Docker image
@@ -59,6 +63,14 @@ jobs:
           source: docker-compose.yml
           target: ${{ env.DEPLOY_DIR }}
 
+      - name: Copy environment file
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          source: .env
+          target: ${{ env.DEPLOY_DIR }}
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
