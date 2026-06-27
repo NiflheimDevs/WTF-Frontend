@@ -1,43 +1,16 @@
-name: CI/CD
+name: CD
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [feat/CICD]
 
-# Avoid overlapping deploys for the same branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-lint:
-    name: Lint & Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Build production bundle
-        run: npm run build
-
   build-and-push-image:
     name: Build & Push Docker image
-    needs: build-and-lint
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
