@@ -18,7 +18,7 @@ export function RequestTable({
   pagination,
   onPageChange,
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: regions = [] } = useRegions();
   const regionsById = useMemo(
     () => new Map(regions.map((region) => [region.id, region])),
@@ -134,7 +134,11 @@ export function RequestTable({
               onClick={() => onPageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}
             >
-              <ChevronLeft size={14} className="me-1" />
+              {locale === "fa" ? (
+                <ChevronRight size={14} className="me-1" />
+              ) : (
+                <ChevronLeft size={14} className="me-1" />
+              )}
               {t("common.previous")}
             </Button>
             <Button
@@ -144,7 +148,11 @@ export function RequestTable({
               disabled={pagination.currentPage === pagination.totalPages}
             >
               {t("common.next")}
-              <ChevronRight size={14} className="ms-1" />
+              {locale === "fa" ? (
+                <ChevronLeft size={14} className="ms-1" />
+              ) : (
+                <ChevronRight size={14} className="ms-1" />
+              )}
             </Button>
           </div>
         </div>

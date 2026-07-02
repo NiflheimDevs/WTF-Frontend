@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
 import { useMetricsByRegion } from "../hooks/useMetrics";
@@ -19,7 +18,6 @@ import { getRegionName, getRegionSecondaryName } from "../utils/regionName";
 import { formatNumber } from "../utils/localeDigits";
 
 export default function RegionsPage() {
-  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, locale } = useTranslation();
 
@@ -42,8 +40,6 @@ export default function RegionsPage() {
   return (
     <div className="min-h-screen bg-neutral-0">
       <Sidebar
-        user={user}
-        onLogout={logout}
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
       />
@@ -101,7 +97,9 @@ export default function RegionsPage() {
                         </div>
                       </div>
                       {regionMetrics && regionMetrics.count > 0 && (
-                        <Badge status="pending" size="sm" />
+                        <Badge status="pending" size="sm">
+                          {formatNumber(regionMetrics.count, locale)}
+                        </Badge>
                       )}
                     </div>
                   </CardHeader>
@@ -120,23 +118,14 @@ export default function RegionsPage() {
                       {regionMetrics?.count > 0 && (
                         <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
                           <div className="flex items-center gap-2 text-sm text-neutral-600">
-                            <TrendingUp size={14} />
+                            <TrendingUp size={14} className="text-warning-fg" />
                             <span>{t("regions.activeNeeds")}</span>
                           </div>
-                          <span className="text-sm text-warning-fg font-medium">
-                            {t("regions.requiresAttention")}
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-warning-bg text-warning-fg">
+                            {formatNumber(regionMetrics.count, locale)} {t("common.requests")}
                           </span>
                         </div>
                       )}
-
-                      <div className="h-1 bg-neutral-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary-500 rounded-full transition-all duration-300"
-                          style={{
-                            width: `${Math.min(((regionMetrics?.count || 0) / 100) * 100, 100)}%`,
-                          }}
-                        />
-                      </div>
                     </div>
                   </CardContent>
                 </Card>

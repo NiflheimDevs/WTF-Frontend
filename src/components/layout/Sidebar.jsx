@@ -5,7 +5,6 @@ import {
   List,
   MapPin,
   Settings,
-  LogOut,
 } from "lucide-react";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
@@ -33,7 +32,7 @@ export const DISPATCHER_NAV_ITEMS = [
   },
 ];
 
-export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }) {
+export function Sidebar({ mobileOpen, onMobileClose }) {
   const { t } = useTranslation();
   const navItems = DISPATCHER_NAV_ITEMS;
 
@@ -86,30 +85,6 @@ export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }) {
             </NavLink>
           ))}
         </nav>
-
-        <div className="px-3 pb-4 border-t border-neutral-200 pt-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-              {user?.full_name?.charAt(0)?.toUpperCase() ||
-                user?.email?.charAt(0)?.toUpperCase() ||
-                "D"}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-neutral-700 truncate">
-                {user?.full_name || t("auth.dispatcher")}
-              </p>
-              <p className="text-[11px] text-neutral-400 truncate">
-                {user?.email || ""}
-              </p>
-            </div>
-            <button
-              onClick={onLogout}
-              className="text-neutral-400 hover:text-danger-fg bg-transparent border-none cursor-pointer p-1"
-            >
-              <LogOut size={15} />
-            </button>
-          </div>
-        </div>
       </aside>
     </>
   );

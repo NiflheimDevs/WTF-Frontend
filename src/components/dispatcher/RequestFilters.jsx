@@ -3,9 +3,12 @@ import { X } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { Input } from "../primitives/Input";
 import { useTranslation } from "../../context/LocaleContext";
+import { useRegions } from "../../hooks/useRegions";
+import { getRegionName } from "../../utils/regionName";
 
 export function RequestFilters({ filters, onChange, onClose }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const { data: regions = [] } = useRegions();
   const [localFilters, setLocalFilters] = useState({
     status: filters.status || "all",
     regionId: filters.regionId || "",
@@ -56,14 +59,25 @@ export function RequestFilters({ filters, onChange, onClose }) {
           </select>
         </div>
 
-        <Input
-          label={t("requests.regionId")}
-          value={localFilters.regionId}
-          onChange={(e) =>
-            setLocalFilters((prev) => ({ ...prev, regionId: e.target.value }))
-          }
-          placeholder={t("requests.regionIdPlaceholder")}
-        />
+        <div>
+          <label className="block text-xs font-semibold text-neutral-600 mb-1">
+            {t("requests.table.region")}
+          </label>
+          <select
+            value={localFilters.regionId}
+            onChange={(e) =>
+              setLocalFilters((prev) => ({ ...prev, regionId: e.target.value }))
+            }
+            className="w-full h-10 px-3 rounded-md border border-neutral-200 bg-neutral-0 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          >
+            <option value="">{t("regions.allRegions") || t("status.all")}</option>
+            {regions.map((region) => (
+              <option key={region.id} value={region.id}>
+                {getRegionName(region, locale)}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label className="block text-xs font-semibold text-neutral-600 mb-1">

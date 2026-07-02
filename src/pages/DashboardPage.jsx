@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { useAuth } from "../hooks/useAuth";
 import { RefreshCw } from "lucide-react";
 import {
   useMetricsSummary,
@@ -21,13 +20,13 @@ import { getDateLocale } from "../i18n";
 import toast from "react-hot-toast";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, locale } = useTranslation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [lastRefreshTime, setLastRefreshTime] = useState(() => new Date());
 
   const { data: metrics, isLoading: metricsLoading } = useMetricsSummary();
   const { data: regions, isLoading: regionsLoading } = useMetricsByRegion(8);
@@ -43,27 +42,22 @@ export default function DashboardPage() {
 
   const handleRefresh = useCallback(async () => {
     await refetch();
+    setLastRefreshTime(new Date());
     toast.success(t("dashboard.refreshed"));
   }, [refetch, t]);
 
   const handleUpdateStatus = useCallback(
-    (id, status) => {
-      updateStatus.mutate({ id, status });
+    async (id, status) => {
+      await updateStatus.mutateAsync({ id, status });
     },
     [updateStatus],
   );
-
-  const handleLogout = useCallback(() => {
-    logout();
-  }, [logout]);
 
   const requests = requestsData?.requests || [];
 
   return (
     <div className="min-h-screen bg-neutral-0">
       <Sidebar
-        user={user}
-        onLogout={handleLogout}
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
       />
@@ -85,7 +79,7 @@ export default function DashboardPage() {
               </h1>
               <p className="text-xs text-neutral-400 mt-0.5 font-mono">
                 {t("dashboard.lastUpdated", {
-                  time: new Date().toLocaleTimeString(getDateLocale(locale)),
+                  time: lastRefreshTime.toLocaleTimeString(getDateLocale(locale)),
                 })}
               </p>
             </div>

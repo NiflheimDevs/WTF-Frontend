@@ -25,7 +25,7 @@ export function LocaleProvider({ children }) {
     document.documentElement.lang = code;
     document.documentElement.dir = dir;
     document.title =
-      locale === "fa" ? "سامانه گزارش‌دهی آب" : "Water Supply Reporting System";
+      locale === "fa" ? "ستاد آب — سامانه مدیریت بحران آب" : "WTF — Water Task Force";
     localStorage.setItem("locale", locale);
   }, [locale]);
 
