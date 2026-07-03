@@ -28,7 +28,7 @@ export function NeedTypePicker({ value, onChange }) {
               type="button"
               onClick={() => onChange(id)}
               className={`
-                min-h-16 flex flex-col items-center justify-center gap-1.5 rounded-md text-sm font-medium
+                min-h-16 flex flex-col items-center justify-center gap-1.5 rounded-md text-sm font-medium cursor-pointer
                 transition-all duration-150 border-2
                 ${
                   active

@@ -1,39 +1,29 @@
-import {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-} from "react";
+import { createContext, useState, useCallback, useMemo } from "react";
 import { authApi } from "../api/endpoints";
-import toast from "react-hot-toast";
 
 export const AuthContext = createContext(null);
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
+function getStoredAuth() {
+  try {
+    const savedToken = localStorage.getItem("dispatcher_token");
+    const savedUser = localStorage.getItem("dispatcher_user");
+    if (savedToken && savedUser) {
+      return {
+        token: savedToken,
+        user: JSON.parse(savedUser),
+      };
+    }
+  } catch {
+    // Ignore invalid stored auth
   }
-  return context;
+  return { token: null, user: null };
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const savedToken = localStorage.getItem("dispatcher_token");
-    const savedUser = localStorage.getItem("dispatcher_user");
-
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
-  }, []);
+  const storedAuth = getStoredAuth();
+  const [user, setUser] = useState(storedAuth.user);
+  const [token, setToken] = useState(storedAuth.token);
+  const [loading] = useState(false);
 
   const login = useCallback(async (email, password) => {
     const { data } = await authApi.login(email, password);
@@ -59,7 +49,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("dispatcher_user");
       document.documentElement.setAttribute("data-theme", "light");
       document.documentElement.classList.remove("dark");
-      window.location.href = "/dispatcher/login";
+      window.location.href = "/login";
     }
   }, []);
 

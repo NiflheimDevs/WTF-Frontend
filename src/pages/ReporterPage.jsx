@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRegions } from "../hooks/useRegions";
 import { useSubmitRequest } from "../hooks/useSubmitRequest";
 import { Button } from "../components/primitives/Button";
@@ -13,11 +13,14 @@ import { NEED_TYPES } from "../api/types";
 import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 import { toLocaleDigits } from "../utils/localeDigits";
+import { Droplets, ChevronDown } from "lucide-react";
 
 export default function ReporterPage() {
   const { t, locale } = useTranslation();
-  const { validateRegion, validateQuantity, validateTankerQuantity } =
-    useMemo(() => createFieldValidators(t), [t]);
+  const { validateRegion, validateQuantity, validateTankerQuantity } = useMemo(
+    () => createFieldValidators(t),
+    [t],
+  );
 
   const { data: regions = [], isLoading: regionsLoading } = useRegions();
   const submitRequest = useSubmitRequest();
@@ -31,6 +34,7 @@ export default function ReporterPage() {
   const [submitted, setSubmitted] = useState(false);
   const [requestId, setRequestId] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const formRef = useRef(null);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -90,8 +94,9 @@ export default function ReporterPage() {
     setQuantity((current) => Math.min(current, max));
     setErrors((prev) => {
       if (!prev.quantity) return prev;
-      const { quantity: _, ...rest } = prev;
-      return rest;
+      const next = { ...prev };
+      delete next.quantity;
+      return next;
     });
   };
 
@@ -111,14 +116,41 @@ export default function ReporterPage() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-neutral-0 flex flex-col items-center justify-center px-4 font-sans"
-      style={{
-        background:
-          "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
-      }}
-    >
-      <main className="flex-1 px-4 py-8 w-full max-w-lg mx-auto">
+    <div className="min-h-screen bg-neutral-0 font-sans">
+      <section
+        className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 text-center"
+        style={{
+          background:
+            "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
+        }}
+      >
+        <div className="w-14 h-14 rounded-2xl bg-primary-500 flex items-center justify-center shadow-lg mb-6">
+          <Droplets size={28} className="text-white" />
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight mb-2">
+          <span>{t("brand.water")}</span>
+          <span className="text-primary-500">{t("brand.supply")}</span>
+        </h1>
+        <p className="text-sm text-neutral-400 font-medium mb-6">
+          {t("brand.crisisResponse")}
+        </p>
+        <h2 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3">
+          {t("reporter.heroTitle")}
+        </h2>
+        <p className="text-sm text-neutral-500 max-w-md mb-8">
+          {t("reporter.heroDescription")}
+        </p>
+        <Button
+          size="lg"
+          onClick={() =>
+            formRef.current?.scrollIntoView({ behavior: "smooth" })
+          }
+        >
+          {t("reporter.heroAction")}
+          <ChevronDown size={16} className="ms-1.5" />
+        </Button>
+      </section>
+      <main ref={formRef} className="px-4 pb-12 pt-18 w-full max-w-lg mx-auto">
         <Card>
           <div className="flex flex-col gap-5">
             <RegionSelect
@@ -139,6 +171,7 @@ export default function ReporterPage() {
             />
 
             <Input
+              dir="ltr"
               label={t("reporter.phoneLabel")}
               type="tel"
               value={phone}

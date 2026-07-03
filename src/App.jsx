@@ -1,9 +1,11 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { RequireAuth } from "./components/auth/RequireAuth";
+import { RouteProgressBar } from "./components/layout/RouteProgressBar";
 import { PageLoader } from "./components/layout/PageLoader";
 import { cn } from "./utils/cn";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SidebarMobileProvider } from "./context/SidebarMobileContext";
 
 const AppHeader = lazy(() => import("./components/layout/AppHeader"));
 const ReporterPage = lazy(() => import("./pages/ReporterPage"));
@@ -12,6 +14,7 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const RequestsPage = lazy(() => import("./pages/RequestsPage"));
 const RegionsPage = lazy(() => import("./pages/RegionsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const TrackRequestPage = lazy(() => import("./pages/TrackRequestPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 function AppBackground() {
@@ -30,8 +33,10 @@ function AppShell({ children }) {
   return (
     <>
       <AppBackground />
-      <AppHeader />
-      {children}
+      <Suspense fallback={<PageLoader />}>
+        <AppHeader />
+      </Suspense>
+      <Suspense fallback={<PageLoader />}>{children}</Suspense>
     </>
   );
 }
@@ -39,8 +44,10 @@ function AppShell({ children }) {
 export default function App() {
   return (
     <ThemeProvider>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
+      <SidebarMobileProvider>
+        <RouteProgressBar />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
           <Route
             path="/"
             element={
@@ -49,13 +56,28 @@ export default function App() {
               </AppShell>
             }
           />
+
           <Route
-            path="/dispatcher/login"
+            path="/login"
             element={
               <AppShell>
                 <LoginPage />
               </AppShell>
             }
+          />
+
+          <Route
+            path="/track/:id?"
+            element={
+              <AppShell>
+                <TrackRequestPage />
+              </AppShell>
+            }
+          />
+
+          <Route
+            path="/dispatcher/login"
+            element={<Navigate to="/login" replace />}
           />
 
           <Route
@@ -108,8 +130,9 @@ export default function App() {
             }
           />
           <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </SidebarMobileProvider>
     </ThemeProvider>
   );
 }

@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
+import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { Sidebar } from "../components/layout/Sidebar";
 import { TopBar } from "../components/layout/TopBar";
 import {
@@ -14,25 +13,18 @@ import { Moon, Sun, Globe } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
   const { theme, toggleTheme, setTheme } = useTheme();
+  const { mobileOpen, toggle, close } = useSidebarMobile();
   const { t, locale, setLocale } = useTranslation();
-
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-neutral-0">
-      <Sidebar
-        user={user}
-        onLogout={logout}
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={close} />
 
       <TopBar
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
+        onMenuToggle={toggle}
         onRefresh={() => {}}
         refreshing={false}
       />

@@ -1,18 +1,21 @@
-// src/components/layout/AppHeader.jsx
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Droplets, Menu, X, LogIn, LayoutDashboard } from "lucide-react";
+import { Droplets, Menu, X, LayoutDashboard, ClipboardList } from "lucide-react";
 import { ThemeToggle } from "../primitives/ThemeToggle";
 import { LanguageToggle } from "../primitives/LanguageToggle";
+import { TrackRequestButton } from "../primitives/TrackRequestButton";
 import { Button } from "../primitives/Button";
 import { useAuth } from "../../hooks/useAuth";
 import { useRouteType } from "../../hooks/useRouteType";
 import { useTranslation } from "../../context/LocaleContext";
+import { useSidebarMobile } from "../../context/SidebarMobileContext";
 import { cn } from "../../utils/cn";
 import { useState, useEffect } from "react";
 
 export default function AppHeader() {
   const { user, logout } = useAuth();
   const { isDispatcherRoute } = useRouteType();
+  const sidebarMobile = useSidebarMobile();
+  const closeSidebar = sidebarMobile?.close;
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,12 +33,25 @@ export default function AppHeader() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
-  }, [location.pathname]);
+    closeSidebar?.();
+  }, [location.pathname, closeSidebar]);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  const handleMobileMenuToggle = () => {
+    if (isDispatcherRoute) {
+      sidebarMobile?.toggle();
+      return;
+    }
+    setMobileMenuOpen((open) => !open);
+  };
+
+  const isMenuOpen = isDispatcherRoute
+    ? sidebarMobile?.mobileOpen
+    : mobileMenuOpen;
 
   return (
     <>
@@ -43,8 +59,8 @@ export default function AppHeader() {
         className={cn(
           "fixed top-0 inset-s-0 inset-e-0 z-50 transition-all duration-300",
           scrolled || isDispatcherRoute
-            ? "bg-neutral-0/95 dark:bg-neutral-0/95 backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 shadow-sm"
-            : "bg-neutral-0 dark:bg-neutral-0 border-b border-neutral-200/50 dark:border-neutral-800/50",
+            ? "bg-neutral-0/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm"
+            : "bg-neutral-0 border-b border-neutral-200/50",
         )}
       >
         <div className="px-4 sm:px-6 lg:px-8">
@@ -69,73 +85,45 @@ export default function AppHeader() {
               </div>
             </Link>
 
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               <LanguageToggle />
               <ThemeToggle />
 
               {isDispatcherRoute ? (
-                <>
-                  <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-700" />
-                  <Link
-                    to="/dispatcher"
-                    className={cn(
-                      "text-sm font-medium transition-colors",
-                      location.pathname === "/dispatcher"
-                        ? "text-primary-500"
-                        : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200",
-                    )}
-                  >
-                    {t("nav.dashboard")}
-                  </Link>
-                  <Link
-                    to="/dispatcher/requests"
-                    className={cn(
-                      "text-sm font-medium transition-colors",
-                      location.pathname === "/dispatcher/requests"
-                        ? "text-primary-500"
-                        : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200",
-                    )}
-                  >
-                    {t("nav.requests")}
-                  </Link>
-                  <Link
-                    to="/"
-                    className={cn(
-                      "text-sm font-medium transition-colors",
-                      location.pathname === "/"
-                        ? "text-primary-500"
-                        : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200",
-                    )}
-                  >
-                    {t("nav.reports")}
-                  </Link>
-                  {user && (
-                    <>
-                      <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-700" />
-                      <div className="flex items-center gap-2">
-                        <div className="text-end">
-                          <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-700">
-                            {user.full_name || user.email?.split("@")[0]}
-                          </p>
-                          <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
-                            {t("auth.dispatcher")}
-                          </p>
-                        </div>
-                        <Button
-                          className="hover:text-red-300 cursor-pointer"
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleLogout}
-                        >
-                          {t("auth.logout")}
-                        </Button>
+                user && (
+                  <>
+                    <div className="h-6 w-px bg-neutral-200" />
+                    <div className="flex items-center gap-2">
+                      <div className="text-end">
+                        <p className="text-xs font-semibold text-neutral-700">
+                          {user.full_name || user.email?.split("@")[0]}
+                        </p>
+                        <p className="text-[10px] text-neutral-400">
+                          {t("auth.dispatcher")}
+                        </p>
                       </div>
-                    </>
-                  )}
-                </>
+                      <Button
+                        className="hover:text-red-300 cursor-pointer"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogout}
+                      >
+                        {t("auth.logout")}
+                      </Button>
+                    </div>
+                  </>
+                )
               ) : (
                 <>
-                  {user ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={ClipboardList}
+                    onClick={() => navigate("/track")}
+                  >
+                    {t("reporter.trackRequest")}
+                  </Button>
+                  {user && (
                     <div className="flex items-center gap-3">
                       <Button
                         variant="primary"
@@ -149,129 +137,64 @@ export default function AppHeader() {
                         {t("auth.logout")}
                       </Button>
                     </div>
-                  ) : (
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      icon={LogIn}
-                      onClick={() => navigate("/dispatcher/login")}
-                    >
-                      {t("auth.login")}
-                    </Button>
                   )}
                 </>
               )}
             </div>
 
-            <div className="flex items-center gap-2 md:hidden">
+            <div className="flex items-center gap-2 lg:hidden">
+              {!isDispatcherRoute && <TrackRequestButton />}
               <LanguageToggle />
               <ThemeToggle />
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-md text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              >
-                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
+              {(isDispatcherRoute || user) && (
+                <button
+                  onClick={handleMobileMenuToggle}
+                  className="p-2 rounded-md text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                >
+                  {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      <div
-        className={cn(
-          "fixed top-16 inset-s-0 inset-e-0 z-40 md:hidden transition-all duration-300",
-          "bg-neutral-0 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800",
-          mobileMenuOpen
-            ? "max-h-96 opacity-100"
-            : "max-h-0 opacity-0 pointer-events-none",
-        )}
-      >
-        <div className="px-4 py-4 space-y-2">
-          {isDispatcherRoute ? (
-            <>
-              <Link
-                to="/dispatcher"
-                className="block px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t("nav.dashboard")}
-              </Link>
-              <Link
-                to="/dispatcher/requests"
-                className="block px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t("nav.requests")}
-              </Link>
-              <Link
-                to="/"
-                className="block px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t("nav.reports")}
-              </Link>
-              {user && (
-                <>
-                  <div className="my-2 pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                    <div className="px-3 py-2">
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                        {user.full_name || user.email?.split("@")[0]}
-                      </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {user.email}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
-                    >
-                      {t("auth.logout")}
-                    </button>
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              {user ? (
-                <>
-                  <button
-                    onClick={() => {
-                      navigate("/dispatcher");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
-                  >
-                    {t("auth.goToDashboard")}
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
-                  >
-                    {t("auth.logout")}
-                  </button>
-                </>
-              ) : (
+      {!isDispatcherRoute && (
+        <div
+          className={cn(
+            "fixed top-16 inset-s-0 inset-e-0 z-40 lg:hidden transition-all duration-300",
+            "bg-neutral-0 border-b border-neutral-200",
+            mobileMenuOpen
+              ? "max-h-96 opacity-100"
+              : "max-h-0 opacity-0 pointer-events-none",
+          )}
+        >
+          <div className="px-4 py-4 space-y-2">
+            {user && (
+              <>
                 <button
                   onClick={() => {
-                    navigate("/dispatcher/login");
+                    navigate("/dispatcher");
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
+                  className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md cursor-pointer"
                 >
-                  {t("auth.login")}
+                  {t("auth.goToDashboard")}
                 </button>
-              )}
-            </>
-          )}
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md cursor-pointer"
+                >
+                  {t("auth.logout")}
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="h-16" />
     </>

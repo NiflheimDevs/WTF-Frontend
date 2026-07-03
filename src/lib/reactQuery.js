@@ -2,9 +2,8 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-  useInfiniteQuery,
 } from "@tanstack/react-query";
-import { queryClient, queryKeys } from "./queryClient";
+import { queryClient } from "./queryClient";
 
 // Custom hook wrappers with error handling
 export function useQueryWithError(key, queryFn, options = {}) {

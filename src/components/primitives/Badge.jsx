@@ -36,13 +36,14 @@ export function Badge({
   size = "md",
   showIcon = true,
   className = "",
+  children,
 }) {
   const { t } = useTranslation();
   const config = statusVariants[status] || {
     variant: "default",
     icon: null,
   };
-  const label = statusVariants[status] ? t(`status.${status}`) : status;
+  const label = children ?? (statusVariants[status] ? t(`status.${status}`) : status);
 
   const sizes = {
     sm: "px-2 py-0.5 text-xs gap-1",

@@ -18,7 +18,7 @@ export function RequestTable({
   pagination,
   onPageChange,
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: regions = [] } = useRegions();
   const regionsById = useMemo(
     () => new Map(regions.map((region) => [region.id, region])),
@@ -45,7 +45,7 @@ export function RequestTable({
             key={status}
             onClick={() => onFilterChange(status)}
             className={cn(
-              "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100",
+              "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100 cursor-pointer",
               filter === status
                 ? "bg-primary-500 text-white shadow-sm"
                 : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
@@ -92,7 +92,7 @@ export function RequestTable({
                     <p className="text-sm font-medium">{t("requests.noMatch")}</p>
                     <button
                       onClick={() => onFilterChange("all")}
-                      className="text-xs text-primary-500 font-semibold hover:underline"
+                      className="text-xs text-primary-500 font-semibold hover:underline cursor-pointer"
                     >
                       {t("common.clearFilters")}
                     </button>
@@ -134,7 +134,11 @@ export function RequestTable({
               onClick={() => onPageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}
             >
-              <ChevronLeft size={14} className="me-1" />
+              {locale === "fa" ? (
+                <ChevronRight size={14} className="me-1" />
+              ) : (
+                <ChevronLeft size={14} className="me-1" />
+              )}
               {t("common.previous")}
             </Button>
             <Button
@@ -144,7 +148,11 @@ export function RequestTable({
               disabled={pagination.currentPage === pagination.totalPages}
             >
               {t("common.next")}
-              <ChevronRight size={14} className="ms-1" />
+              {locale === "fa" ? (
+                <ChevronLeft size={14} className="ms-1" />
+              ) : (
+                <ChevronRight size={14} className="ms-1" />
+              )}
             </Button>
           </div>
         </div>

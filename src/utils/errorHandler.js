@@ -60,7 +60,7 @@ export function handleApiError(error, context = "") {
         toast.error(errorCodes.AUTH_003);
         localStorage.removeItem("dispatcher_token");
         localStorage.removeItem("dispatcher_user");
-        setTimeout(() => (window.location.href = "/dispatcher/login"), 1500);
+        setTimeout(() => (window.location.href = "/login"), 1500);
         return new AppError("AUTH_003", errorCodes.AUTH_003, error);
 
       case 403:

@@ -83,7 +83,7 @@ export function useRequests(filters = {}) {
       const { data } = await dispatcherApi.getRequests(params);
       return data;
     },
-    refetchInterval: 15000,
+    refetchOnWindowFocus: false,
     staleTime: 10000,
     placeholderData: (previousData) => previousData,
   });
@@ -108,7 +108,7 @@ export function useInfiniteRequests(filters = {}) {
       return undefined;
     },
     initialPageParam: 1,
-    refetchInterval: 15000,
+    refetchOnWindowFocus: false,
     staleTime: 10000,
   });
 }
@@ -133,10 +133,42 @@ export function useRequestDetail(id, fallbackRequest = null) {
   });
 }
 
+function matchesRequestId(requestId, targetId) {
+  return String(requestId) === String(targetId);
+}
+
+function patchRequestStatusInListCache(old, id, status) {
+  if (!old) return old;
+
+  if (old.requests) {
+    return {
+      ...old,
+      requests: old.requests.map((req) =>
+        matchesRequestId(req.id, id) ? { ...req, status } : req,
+      ),
+    };
+  }
+
+  if (old.pages) {
+    return {
+      ...old,
+      pages: old.pages.map((page) => ({
+        ...page,
+        requests: page.requests?.map((req) =>
+          matchesRequestId(req.id, id) ? { ...req, status } : req,
+        ),
+      })),
+    };
+  }
+
+  return old;
+}
+
 export function useUpdateRequestStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    retry: false,
     mutationFn: async ({ id, status }) => {
       const { data } = await dispatcherApi.updateStatus(id, status);
       return data;
@@ -144,26 +176,22 @@ export function useUpdateRequestStatus() {
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: requestsKeys.all });
 
-      const previousRequests = queryClient.getQueryData(requestsKeys.lists());
-
-      queryClient.setQueryData(requestsKeys.lists(), (old) => {
-        if (!old?.requests) return old;
-        return {
-          ...old,
-          requests: old.requests.map((req) =>
-            req.id === id ? { ...req, status } : req,
-          ),
-        };
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: requestsKeys.lists(),
       });
 
-      return { previousRequests };
+      queryClient.setQueriesData(
+        { queryKey: requestsKeys.lists() },
+        (old) => patchRequestStatusInListCache(old, id, status),
+      );
+
+      return { previousQueries };
     },
     onError: (err, variables, context) => {
-      if (context?.previousRequests) {
-        queryClient.setQueryData(
-          requestsKeys.lists(),
-          context.previousRequests,
-        );
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
       }
       toast.error(t("requests.statusUpdateFailed"));
     },

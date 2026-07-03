@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Droplets, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 
@@ -56,6 +56,8 @@ function LoginForm() {
   const { login } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dispatcher";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -89,7 +91,7 @@ function LoginForm() {
 
     try {
       await login(email, password);
-      navigate("/dispatcher", { replace: true });
+      navigate(from, { replace: true });
       toast.success(t("auth.welcomeBack"));
     } catch (err) {
       const newAttempts = attempts + 1;
@@ -146,7 +148,7 @@ function LoginForm() {
         <button
           type="button"
           onClick={() => setShowPass((s) => !s)}
-          className="absolute end-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
+          className="absolute inset-e-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
           tabIndex={-1}
         >
           {showPass ? <EyeOff size={16} /> : <Eye size={16} />}

@@ -4,6 +4,7 @@ import api from "./axios";
 export const publicApi = {
   getRegions: () => api.get("/regions"),
   submitRequest: (data) => api.post("/requests", data),
+  getRequest: (id) => api.get(`/request/${encodeURIComponent(id)}`),
   health: () => api.get("/health"),
   readiness: () => api.get("/health/ready"),
 };

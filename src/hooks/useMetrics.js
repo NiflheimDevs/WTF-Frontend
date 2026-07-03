@@ -15,7 +15,7 @@ export function useMetricsSummary() {
       const { data } = await dispatcherApi.getMetricsSummary();
       return data;
     },
-    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
     staleTime: 25000,
     select: (data) => ({
       totalRequests: data.total_requests,
@@ -33,7 +33,7 @@ export function useMetricsByRegion(limit = 10) {
       const { data } = await dispatcherApi.getMetricsByRegion(limit);
       return data;
     },
-    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
     staleTime: 25000,
     select: (data) =>
       data.map((region) => ({
@@ -52,7 +52,7 @@ export function useMetricsByNeedType() {
       const { data } = await dispatcherApi.getMetricsByNeedType();
       return data;
     },
-    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
     staleTime: 25000,
     select: (data) => ({
       bottles: data.find((d) => d.need_type === "bottled_water"),

@@ -15,7 +15,7 @@ export function useSubmitRequest() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: regionsKeys.all });
       toast.success(
-        t("reporter.requestSubmitted", { id: String(data.id ?? "").slice(0, 8) }),
+        t("reporter.requestSubmitted", { id: String(data.id ?? "") }),
       );
     },
     onError: (error) => {

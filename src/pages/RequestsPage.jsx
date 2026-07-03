@@ -1,7 +1,8 @@
-import { useState, useCallback } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useState, useCallback, useMemo } from "react";
 import { useRequests, useUpdateRequestStatus } from "../hooks/useRequests";
+import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
+import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { Sidebar } from "../components/layout/Sidebar";
 import { TopBar } from "../components/layout/TopBar";
 import { RequestTable } from "../components/dispatcher/RequestTable";
@@ -11,14 +12,14 @@ import { Card } from "../components/primitives/Card";
 import { Button } from "../components/primitives/Button";
 import { Filter, Download, RefreshCw } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
+import { getRequestRegionName } from "../utils/regionName";
 import toast from "react-hot-toast";
 
 export default function RequestsPage() {
-  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { t } = useTranslation();
+  const { mobileOpen, toggle, close } = useSidebarMobile();
+  const { t, locale } = useTranslation();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filters, setFilters] = useState({
     status: "all",
     page: 1,
@@ -28,7 +29,21 @@ export default function RequestsPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { data, isLoading, refetch } = useRequests(filters);
+  const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
+
+  const requests = useMemo(() => data?.requests || [], [data?.requests]);
+  const pagination = {
+    currentPage: data?.page || 1,
+    totalPages: Math.ceil((data?.total || 0) / (data?.page_size || 20)),
+    totalItems: data?.total || 0,
+    pageSize: data?.page_size || 20,
+  };
+
+  const regionsById = useMemo(
+    () => new Map(regions.map((r) => [r.id, r])),
+    [regions],
+  );
 
   const handleFilterChange = useCallback((newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
@@ -40,42 +55,67 @@ export default function RequestsPage() {
   }, []);
 
   const handleUpdateStatus = useCallback(
-    (id, status) => {
-      updateStatus.mutate({ id, status });
+    async (id, status) => {
+      await updateStatus.mutateAsync({ id, status });
     },
     [updateStatus],
   );
 
   const handleExport = useCallback(() => {
+    if (!requests.length) {
+      toast.error(t("requests.noMatch"));
+      return;
+    }
+
+    const headers = [
+      t("requests.table.id"),
+      t("requests.table.region"),
+      t("requests.table.need"),
+      t("requests.table.qty"),
+      t("requests.table.status"),
+      t("requests.table.submitted"),
+    ];
+
+    const escCsv = (val) => {
+      const str = String(val ?? "");
+      return str.includes(",") || str.includes('"') || str.includes("\n")
+        ? `"${str.replace(/"/g, '""')}"`
+        : str;
+    };
+
+    const rows = requests.map((r) => [
+      r.id,
+      getRequestRegionName(r, locale, regionsById) || t("common.unknown"),
+      r.need_type === "bottled_water" ? t("requests.bottledWater") : t("reporter.tankerTruck"),
+      r.quantity,
+      t(`status.${r.status}`),
+      r.created_at ? new Date(r.created_at).toLocaleString() : "",
+    ]);
+
+    const csv = [headers, ...rows].map((row) => row.map(escCsv).join(",")).join("\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `wtf-requests-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
     toast.success(t("requests.exportStarted"));
-  }, [t]);
+  }, [t, locale, requests, regionsById]);
 
   const handleRefresh = useCallback(async () => {
     await refetch();
     toast.success(t("requests.refreshed"));
   }, [refetch, t]);
 
-  const requests = data?.requests || [];
-  const pagination = {
-    currentPage: data?.page || 1,
-    totalPages: Math.ceil((data?.total || 0) / (data?.page_size || 20)),
-    totalItems: data?.total || 0,
-    pageSize: data?.page_size || 20,
-  };
-
   return (
     <div className="min-h-screen bg-neutral-0">
-      <Sidebar
-        user={user}
-        onLogout={logout}
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={close} />
 
       <TopBar
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
+        onMenuToggle={toggle}
         onRefresh={handleRefresh}
         refreshing={updateStatus.isPending}
       />
@@ -135,7 +175,9 @@ export default function RequestsPage() {
               loading={isLoading}
               filter={filters.status}
               onFilterChange={(status) => handleFilterChange({ status })}
-              updatingId={updateStatus.variables?.id}
+              updatingId={
+                updateStatus.isPending ? updateStatus.variables?.id : null
+              }
               onRowClick={setSelectedRequest}
               pagination={pagination}
               onPageChange={handlePageChange}
@@ -149,7 +191,6 @@ export default function RequestsPage() {
         fallbackRequest={selectedRequest}
         isOpen={!!selectedRequest}
         onClose={() => setSelectedRequest(null)}
-        onUpdateStatus={handleUpdateStatus}
       />
     </div>
   );

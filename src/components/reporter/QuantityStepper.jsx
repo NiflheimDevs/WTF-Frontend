@@ -24,7 +24,7 @@ export function QuantityStepper({ value, onChange, needType, error }) {
             ${
               value <= min
                 ? "text-neutral-300 cursor-not-allowed"
-                : "text-neutral-700 hover:bg-neutral-50"
+                : "text-neutral-700 hover:bg-neutral-50 cursor-pointer"
             }
           `}
         >
@@ -45,7 +45,7 @@ export function QuantityStepper({ value, onChange, needType, error }) {
             ${
               value >= max
                 ? "text-neutral-300 cursor-not-allowed"
-                : "text-neutral-700 hover:bg-neutral-50"
+                : "text-neutral-700 hover:bg-neutral-50 cursor-pointer"
             }
           `}
         >

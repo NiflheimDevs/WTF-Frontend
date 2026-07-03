@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Calendar, MapPin, Phone, Clock } from "lucide-react";
+import { X, Calendar, MapPin, Phone, Clock, Droplet, Truck, Hash } from "lucide-react";
 import { useRequestDetail } from "../../hooks/useRequests";
 import { useUpdateRequestStatus } from "../../hooks/useRequests";
 import { useRegions } from "../../hooks/useRegions";
@@ -16,7 +16,6 @@ export function RequestDetailDrawer({
   fallbackRequest = null,
   isOpen,
   onClose,
-  onUpdateStatus,
 }) {
   const { t, locale } = useTranslation();
   const { data, isLoading } = useRequestDetail(requestId, fallbackRequest);
@@ -24,14 +23,17 @@ export function RequestDetailDrawer({
   const updateStatus = useUpdateRequestStatus();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
 
+  const drawerKey = `${requestId ?? ""}-${isOpen}`;
+  const [prevDrawerKey, setPrevDrawerKey] = useState(drawerKey);
+  if (prevDrawerKey !== drawerKey) {
+    setPrevDrawerKey(drawerKey);
+    setConfirmingCancel(false);
+  }
+
   const regionsById = useMemo(
     () => new Map(regions.map((region) => [region.id, region])),
     [regions],
   );
-
-  useEffect(() => {
-    setConfirmingCancel(false);
-  }, [requestId, isOpen]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -56,9 +58,11 @@ export function RequestDetailDrawer({
   const showLoading = isLoading && !request;
 
   const handleStatusChange = async (newStatus) => {
-    await updateStatus.mutateAsync({ id: requestId, status: newStatus });
-    setConfirmingCancel(false);
-    onUpdateStatus?.(requestId, newStatus);
+    try {
+      await updateStatus.mutateAsync({ id: requestId, status: newStatus });
+    } finally {
+      setConfirmingCancel(false);
+    }
   };
 
   const canCancel =
@@ -69,7 +73,7 @@ export function RequestDetailDrawer({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 z-40 animate-fade-in"
+        className="fixed inset-0 bg-black/50 z-40 animate-fade-in cursor-pointer"
         onClick={onClose}
       />
 
@@ -85,7 +89,7 @@ export function RequestDetailDrawer({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md hover:bg-neutral-100 transition-colors"
+            className="p-1 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer"
           >
             <X size={20} className="text-neutral-400" />
           </button>
@@ -169,57 +173,71 @@ export function RequestDetailDrawer({
                 <h3 className="text-sm font-semibold text-neutral-700">
                   {t("requests.requestInfo")}
                 </h3>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 text-sm">
-                    <MapPin size={16} className="text-neutral-400" />
-                    <span className="text-neutral-700">
-                      {t("requests.regionLabel")}{" "}
-                    </span>
-                    <span className="text-neutral-900 font-medium">
-                      {getRequestRegionName(request, locale, regionsById) ||
-                        t("common.unknown")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Calendar size={16} className="text-neutral-400" />
-                    <span className="text-neutral-700">
-                      {t("requests.createdLabel")}{" "}
-                    </span>
-                    <span className="text-neutral-900">
-                      {formatDate(request.created_at)}
-                    </span>
-                  </div>
-                  {request.dispatched_at && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <Clock size={16} className="text-neutral-400" />
-                      <span className="text-neutral-700">
-                        {t("requests.dispatchedLabel")}{" "}
-                      </span>
-                      <span className="text-neutral-900">
-                        {formatDate(request.dispatched_at)}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-neutral-0 rounded-lg border border-neutral-200">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <MapPin size={14} className="text-primary-500" />
+                      <span className="text-[11px] text-neutral-400 uppercase tracking-wider">
+                        {t("requests.regionLabel").replace(":", "")}
                       </span>
                     </div>
-                  )}
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="w-4" />
-                    <span className="text-neutral-700">
-                      {t("requests.needTypeLabel")}{" "}
-                    </span>
-                    <span className="text-neutral-900 font-medium">
+                    <p className="text-sm text-neutral-900 font-semibold">
+                      {getRequestRegionName(request, locale, regionsById) ||
+                        t("common.unknown")}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-neutral-0 rounded-lg border border-neutral-200">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      {request.need_type === "bottled_water" ? (
+                        <Droplet size={14} className="text-cyan-500" />
+                      ) : (
+                        <Truck size={14} className="text-orange-500" />
+                      )}
+                      <span className="text-[11px] text-neutral-400 uppercase tracking-wider">
+                        {t("requests.needTypeLabel").replace(":", "")}
+                      </span>
+                    </div>
+                    <p className="text-sm text-neutral-900 font-semibold">
                       {request.need_type === "bottled_water"
                         ? t("requests.bottledWater")
                         : t("reporter.tankerTruck")}
-                    </span>
+                    </p>
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="w-4" />
-                    <span className="text-neutral-700">
-                      {t("requests.quantityLabel")}{" "}
-                    </span>
-                    <span className="text-neutral-900 font-mono font-semibold ltr-isolate">
+                  <div className="p-3 bg-neutral-0 rounded-lg border border-neutral-200">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Hash size={14} className="text-neutral-400" />
+                      <span className="text-[11px] text-neutral-400 uppercase tracking-wider">
+                        {t("requests.quantityLabel").replace(":", "")}
+                      </span>
+                    </div>
+                    <p className="text-lg text-neutral-900 font-bold font-mono ltr-isolate">
                       {formatNumber(request.quantity, locale)}
-                    </span>
+                    </p>
                   </div>
+                  <div className="p-3 bg-neutral-0 rounded-lg border border-neutral-200">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Calendar size={14} className="text-neutral-400" />
+                      <span className="text-[11px] text-neutral-400 uppercase tracking-wider">
+                        {t("requests.createdLabel").replace(":", "")}
+                      </span>
+                    </div>
+                    <p className="text-sm text-neutral-900 font-medium">
+                      {formatDate(request.created_at)}
+                    </p>
+                  </div>
+                  {request.dispatched_at && (
+                    <div className="col-span-2 p-3 bg-info-bg/50 rounded-lg border border-info-bg">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Clock size={14} className="text-info-fg" />
+                        <span className="text-[11px] text-neutral-400 uppercase tracking-wider">
+                          {t("requests.dispatchedLabel").replace(":", "")}
+                        </span>
+                      </div>
+                      <p className="text-sm text-neutral-900 font-medium">
+                        {formatDate(request.dispatched_at)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
