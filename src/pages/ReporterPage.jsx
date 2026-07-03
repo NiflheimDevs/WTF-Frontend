@@ -13,7 +13,7 @@ import { NEED_TYPES } from "../api/types";
 import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 import { toLocaleDigits } from "../utils/localeDigits";
-import { Droplets, ChevronDown } from "lucide-react";
+import { Droplets, ChevronDown, ArrowRight } from "lucide-react";
 
 export default function ReporterPage() {
   const { t, locale } = useTranslation();
@@ -209,7 +209,7 @@ export default function ReporterPage() {
               disabled={!isOnline}
               fullWidth
               size="xl"
-              icon={!submitRequest.isPending && isOnline ? "→" : null}
+              icon={!submitRequest.isPending && isOnline ? ArrowRight : null}
               iconPosition="right"
             >
               {!isOnline
