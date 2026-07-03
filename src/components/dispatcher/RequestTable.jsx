@@ -45,7 +45,6 @@ export function RequestTable({
             key={status}
             onClick={() => onFilterChange(status)}
             className={cn(
-              "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100",
               "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100 cursor-pointer",
               filter === status
                 ? "bg-primary-500 text-white shadow-sm"
