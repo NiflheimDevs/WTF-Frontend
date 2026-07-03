@@ -17,8 +17,10 @@ import { Droplets, ChevronDown } from "lucide-react";
 
 export default function ReporterPage() {
   const { t, locale } = useTranslation();
-  const { validateRegion, validateQuantity, validateTankerQuantity } =
-    useMemo(() => createFieldValidators(t), [t]);
+  const { validateRegion, validateQuantity, validateTankerQuantity } = useMemo(
+    () => createFieldValidators(t),
+    [t],
+  );
 
   const { data: regions = [], isLoading: regionsLoading } = useRegions();
   const submitRequest = useSubmitRequest();
@@ -115,7 +117,7 @@ export default function ReporterPage() {
   return (
     <div className="min-h-screen bg-neutral-0 font-sans">
       <section
-        className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center"
+        className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 text-center"
         style={{
           background:
             "radial-gradient(circle at 0% 0%, rgba(11,107,203,0.08), transparent 50%), var(--color-neutral-0)",
@@ -147,8 +149,7 @@ export default function ReporterPage() {
           <ChevronDown size={16} className="ms-1.5" />
         </Button>
       </section>
-
-      <main ref={formRef} className="px-4 py-12 w-full max-w-lg mx-auto">
+      <main ref={formRef} className="px-4 pb-12 pt-18 w-full max-w-lg mx-auto">
         <Card>
           <div className="flex flex-col gap-5">
             <RegionSelect

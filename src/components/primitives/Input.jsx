@@ -25,6 +25,7 @@ export const Input = forwardRef(
             </div>
           )}
           <input
+            dir="ltr"
             ref={ref}
             type={inputType}
             className={cn(

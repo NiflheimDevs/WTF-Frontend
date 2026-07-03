@@ -57,6 +57,8 @@ export function AuthProvider({ children }) {
       setToken(null);
       localStorage.removeItem("dispatcher_token");
       localStorage.removeItem("dispatcher_user");
+      document.documentElement.setAttribute("data-theme", "light");
+      document.documentElement.classList.remove("dark");
       window.location.href = "/dispatcher/login";
     }
   }, []);

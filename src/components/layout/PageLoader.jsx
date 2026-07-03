@@ -1,5 +1,9 @@
 import { Spinner } from "../primitives/Spinner";
 
 export function PageLoader() {
-  return <Spinner size="lg" />;
+  return (
+    <div className="animate-fade-in">
+      <Spinner size="lg" fullScreen={false} />
+    </div>
+  );
 }
