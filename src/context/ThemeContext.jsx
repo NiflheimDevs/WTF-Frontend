@@ -1,8 +1,7 @@
 // src/context/ThemeContext.jsx
 import { createContext, useEffect, useState } from "react";
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const ThemeContext = createContext(); // ADD "export" here
+export const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {

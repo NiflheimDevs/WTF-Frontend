@@ -1,37 +1,8 @@
 import { NavLink } from "react-router-dom";
-import {
-  Droplets,
-  LayoutDashboard,
-  List,
-  MapPin,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { Droplets, LogOut } from "lucide-react";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
-
-export const DISPATCHER_NAV_ITEMS = [
-  {
-    id: "overview",
-    icon: LayoutDashboard,
-    path: "/dispatcher",
-  },
-  {
-    id: "requests",
-    icon: List,
-    path: "/dispatcher/requests",
-  },
-  {
-    id: "regions",
-    icon: MapPin,
-    path: "/dispatcher/regions",
-  },
-  {
-    id: "settings",
-    icon: Settings,
-    path: "/dispatcher/settings",
-  },
-];
+import { DISPATCHER_NAV_ITEMS } from "./dispatcherNavItems";
 
 export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }) {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Droplets, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { useTranslation } from "../context/LocaleContext";
 import toast from "react-hot-toast";
 

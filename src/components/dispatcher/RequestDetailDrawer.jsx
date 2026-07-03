@@ -23,14 +23,17 @@ export function RequestDetailDrawer({
   const updateStatus = useUpdateRequestStatus();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
 
+  const drawerKey = `${requestId ?? ""}-${isOpen}`;
+  const [prevDrawerKey, setPrevDrawerKey] = useState(drawerKey);
+  if (prevDrawerKey !== drawerKey) {
+    setPrevDrawerKey(drawerKey);
+    setConfirmingCancel(false);
+  }
+
   const regionsById = useMemo(
     () => new Map(regions.map((region) => [region.id, region])),
     [regions],
   );
-
-  useEffect(() => {
-    setConfirmingCancel(false);
-  }, [requestId, isOpen]);
 
   useEffect(() => {
     const handleEscape = (e) => {

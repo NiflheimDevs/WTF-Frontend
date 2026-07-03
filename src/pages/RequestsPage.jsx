@@ -32,7 +32,7 @@ export default function RequestsPage() {
   const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
 
-  const requests = data?.requests || [];
+  const requests = useMemo(() => data?.requests || [], [data?.requests]);
   const pagination = {
     currentPage: data?.page || 1,
     totalPages: Math.ceil((data?.total || 0) / (data?.page_size || 20)),

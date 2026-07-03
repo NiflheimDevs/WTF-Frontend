@@ -1,7 +1,7 @@
 import { Menu, RefreshCw, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { DISPATCHER_NAV_ITEMS } from "./Sidebar";
+import { DISPATCHER_NAV_ITEMS } from "./dispatcherNavItems";
 import { LanguageToggle } from "../primitives/LanguageToggle";
 import { useTranslation } from "../../context/LocaleContext";
 import { getDateLocale } from "../../i18n";

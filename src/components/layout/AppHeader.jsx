@@ -15,6 +15,7 @@ export default function AppHeader() {
   const { user, logout } = useAuth();
   const { isDispatcherRoute } = useRouteType();
   const sidebarMobile = useSidebarMobile();
+  const closeSidebar = sidebarMobile?.close;
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,8 +33,8 @@ export default function AppHeader() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
-    sidebarMobile?.close();
-  }, [location.pathname, sidebarMobile?.close]);
+    closeSidebar?.();
+  }, [location.pathname, closeSidebar]);
 
   const handleLogout = () => {
     logout();

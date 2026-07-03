@@ -94,8 +94,9 @@ export default function ReporterPage() {
     setQuantity((current) => Math.min(current, max));
     setErrors((prev) => {
       if (!prev.quantity) return prev;
-      const { quantity: _, ...rest } = prev;
-      return rest;
+      const next = { ...prev };
+      delete next.quantity;
+      return next;
     });
   };
 

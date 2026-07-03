@@ -13,7 +13,7 @@ import {
 } from "../components/primitives/Card";
 import { Input } from "../components/primitives/Input";
 import { Badge } from "../components/primitives/Badge";
-import { Search, MapPin, TrendingUp, Activity } from "lucide-react";
+import { Search, MapPin, Activity } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
 import { getRegionName, getRegionSecondaryName } from "../utils/regionName";
 import { formatNumber } from "../utils/localeDigits";
