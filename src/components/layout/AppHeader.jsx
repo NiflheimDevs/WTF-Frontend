@@ -1,7 +1,8 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Droplets, Menu, X, LayoutDashboard } from "lucide-react";
+import { Droplets, Menu, X, LayoutDashboard, ClipboardList } from "lucide-react";
 import { ThemeToggle } from "../primitives/ThemeToggle";
 import { LanguageToggle } from "../primitives/LanguageToggle";
+import { TrackRequestButton } from "../primitives/TrackRequestButton";
 import { Button } from "../primitives/Button";
 import { useAuth } from "../../hooks/useAuth";
 import { useRouteType } from "../../hooks/useRouteType";
@@ -112,33 +113,46 @@ export default function AppHeader() {
                   </>
                 )
               ) : (
-                user && (
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      icon={LayoutDashboard}
-                      onClick={() => navigate("/dispatcher")}
-                    >
-                      {t("auth.goToDashboard")}
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleLogout}>
-                      {t("auth.logout")}
-                    </Button>
-                  </div>
-                )
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={ClipboardList}
+                    onClick={() => navigate("/track")}
+                  >
+                    {t("reporter.trackRequest")}
+                  </Button>
+                  {user && (
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        icon={LayoutDashboard}
+                        onClick={() => navigate("/dispatcher")}
+                      >
+                        {t("auth.goToDashboard")}
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={handleLogout}>
+                        {t("auth.logout")}
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
+              {!isDispatcherRoute && <TrackRequestButton />}
               <LanguageToggle />
               <ThemeToggle />
-              <button
-                onClick={handleMobileMenuToggle}
-                className="p-2 rounded-md text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
-              >
-                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
+              {(isDispatcherRoute || user) && (
+                <button
+                  onClick={handleMobileMenuToggle}
+                  className="p-2 rounded-md text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                >
+                  {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -162,7 +176,7 @@ export default function AppHeader() {
                     navigate("/dispatcher");
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
+                  className="w-full text-start px-3 py-2 text-primary-600 dark:text-primary-400 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md cursor-pointer"
                 >
                   {t("auth.goToDashboard")}
                 </button>
@@ -171,7 +185,7 @@ export default function AppHeader() {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md"
+                  className="w-full text-start px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-md cursor-pointer"
                 >
                   {t("auth.logout")}
                 </button>

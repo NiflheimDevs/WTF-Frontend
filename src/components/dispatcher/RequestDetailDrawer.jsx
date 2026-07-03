@@ -16,7 +16,6 @@ export function RequestDetailDrawer({
   fallbackRequest = null,
   isOpen,
   onClose,
-  onUpdateStatus,
 }) {
   const { t, locale } = useTranslation();
   const { data, isLoading } = useRequestDetail(requestId, fallbackRequest);
@@ -58,7 +57,6 @@ export function RequestDetailDrawer({
   const handleStatusChange = async (newStatus) => {
     try {
       await updateStatus.mutateAsync({ id: requestId, status: newStatus });
-      onUpdateStatus?.(requestId, newStatus);
     } finally {
       setConfirmingCancel(false);
     }
@@ -72,7 +70,7 @@ export function RequestDetailDrawer({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 z-40 animate-fade-in"
+        className="fixed inset-0 bg-black/50 z-40 animate-fade-in cursor-pointer"
         onClick={onClose}
       />
 
@@ -88,7 +86,7 @@ export function RequestDetailDrawer({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md hover:bg-neutral-100 transition-colors"
+            className="p-1 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer"
           >
             <X size={20} className="text-neutral-400" />
           </button>

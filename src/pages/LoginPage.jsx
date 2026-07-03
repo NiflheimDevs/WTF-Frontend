@@ -148,7 +148,7 @@ function LoginForm() {
         <button
           type="button"
           onClick={() => setShowPass((s) => !s)}
-          className="absolute end-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
+          className="absolute inset-e-3 top-1/2 -translate-y-1/2 text-neutral-400 bg-transparent border-none cursor-pointer p-0"
           tabIndex={-1}
         >
           {showPass ? <EyeOff size={16} /> : <Eye size={16} />}

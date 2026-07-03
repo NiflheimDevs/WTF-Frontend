@@ -82,7 +82,7 @@ export function TopBar({
         >
           <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
         </button>
-        <LanguageToggle className="!w-8 !h-8 !bg-transparent hover:!bg-neutral-100 dark:hover:!bg-neutral-800" />
+        <LanguageToggle className="w-8! h-8! bg-transparent! hover:bg-neutral-100! dark:hover:bg-neutral-800!" />
         <button
           onClick={onThemeToggle}
           className="text-neutral-400 hover:text-neutral-700 bg-transparent border-none cursor-pointer p-1"

@@ -97,6 +97,33 @@ export default {
     invalidRequestInput: "درخواست نامعتبر. ورودی خود را بررسی کنید.",
     serviceBusy: "سرویس شلوغ است. لطفاً دوباره تلاش کنید.",
     submitFailed: "ثبت درخواست ممکن نشد. لطفاً دوباره تلاش کنید.",
+    trackRequest: "پیگیری درخواست",
+  },
+  track: {
+    title: "پیگیری درخواست",
+    subtitle:
+      "شناسه پیگیری که پس از ثبت دریافت کردید را وارد کنید تا وضعیت درخواست را ببینید.",
+    referenceIdLabel: "شناسه پیگیری",
+    referenceIdPlaceholder: "مثال: abcd1234-5678-1234-abcd-1234567890ab",
+    referenceIdHint: "UUID نمایش‌داده‌شده در صفحه تأیید",
+    referenceIdRequired: "لطفاً شناسه پیگیری را وارد کنید.",
+    invalidReferenceId: "فرمت شناسه پیگیری نامعتبر است.",
+    search: "بررسی وضعیت",
+    searching: "در حال جستجو…",
+    notFound: "درخواستی با این شناسه پیگیری یافت نشد.",
+    lookupFailed: "جستجوی درخواست ممکن نشد. لطفاً دوباره تلاش کنید.",
+    currentStatus: "وضعیت فعلی",
+    lastUpdated: "آخرین بروزرسانی",
+    backToReporter: "بازگشت به ثبت درخواست",
+    cancelledHint: "این درخواست لغو شده است.",
+    steps: {
+      received: "درخواست ثبت شد",
+      receivedHint: "ثبت و در صف بررسی",
+      dispatched: "اعزام شد",
+      dispatchedHint: "امداد در راه است",
+      fulfilled: "تکمیل شد",
+      fulfilledHint: "تحویل انجام شد",
+    },
   },
   dashboard: {
     title: "نمای کلی اعزام",
@@ -273,5 +300,6 @@ export default {
   a11y: {
     toggleTheme: "تغییر تم",
     toggleLanguage: "تغییر زبان",
+    trackRequest: "پیگیری درخواست",
   },
 };

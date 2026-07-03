@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Check, CheckCircle, Copy } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "../primitives/Button";
@@ -65,6 +66,15 @@ export function SuccessView({ requestId, onReset }) {
       <Button variant="ghost" onClick={onReset} className="mt-2">
         {t("reporter.submitAnother")}
       </Button>
+
+      {fullId && (
+        <Link
+          to={`/track/${fullId}`}
+          className="text-sm text-primary-600 hover:text-primary-700 font-medium cursor-pointer"
+        >
+          {t("reporter.trackRequest")} →
+        </Link>
+      )}
     </div>
   );
 }

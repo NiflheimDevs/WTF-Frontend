@@ -66,7 +66,7 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
         type="button"
         onClick={() => setOpen(true)}
         className={`
-          w-full h-11 px-3 flex items-center justify-between bg-neutral-0 rounded-md text-base font-sans
+          w-full h-11 px-3 flex items-center justify-between bg-neutral-0 rounded-md text-base font-sans cursor-pointer
           transition-all duration-200 border
           ${error ? "border-danger-fg" : "border-neutral-200 hover:border-primary-500"}
           ${selected ? "text-neutral-900 font-semibold" : "text-neutral-400"}
@@ -89,7 +89,7 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
             <div className="relative">
               <Search
                 size={14}
-                className="absolute start-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-neutral-400"
               />
               <input
                 ref={inputRef}
@@ -117,7 +117,7 @@ export function RegionSelect({ value, onChange, regions, loading, error }) {
                       setSearch("");
                     }}
                     className={`
-                      w-full px-3 py-2.5 flex items-center justify-between text-start
+                      w-full px-3 py-2.5 flex items-center justify-between text-start cursor-pointer
                       transition-colors duration-100 hover:bg-neutral-50
                       ${value === region.id ? "bg-primary-50 text-primary-700 font-semibold" : "text-neutral-700"}
                     `}

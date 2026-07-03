@@ -73,7 +73,7 @@ export function LoginForm({ onSwitch }) {
         <button
           type="button"
           onClick={onSwitch}
-          className="text-primary-500 font-semibold hover:underline"
+          className="text-primary-500 font-semibold hover:underline cursor-pointer"
         >
           Create an account
         </button>

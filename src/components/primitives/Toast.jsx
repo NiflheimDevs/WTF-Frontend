@@ -34,7 +34,7 @@ export function Toast({ message, type = "info", onClose, duration = 4000 }) {
     >
       <Icon size={18} className="shrink-0 mt-0.5" />
       <p className="text-sm flex-1">{message}</p>
-      <button onClick={onClose} className="shrink-0 hover:opacity-70">
+      <button onClick={onClose} className="shrink-0 hover:opacity-70 cursor-pointer">
         <X size={14} />
       </button>
     </div>

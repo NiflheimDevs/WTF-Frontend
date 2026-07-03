@@ -83,7 +83,7 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={handleRefresh}
-              className="flex items-center gap-2 text-xs font-semibold text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md px-3 py-2 transition-colors"
+              className="flex items-center gap-2 text-xs font-semibold text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md px-3 py-2 transition-colors cursor-pointer"
             >
               <RefreshCw
                 size={13}
@@ -166,7 +166,9 @@ export default function DashboardPage() {
               loading={requestsLoading}
               filter={filterStatus}
               onFilterChange={setFilterStatus}
-              updatingId={updateStatus.variables?.id}
+              updatingId={
+                updateStatus.isPending ? updateStatus.variables?.id : null
+              }
               onRowClick={setSelectedRequest}
             />
           </div>
@@ -178,7 +180,6 @@ export default function DashboardPage() {
         fallbackRequest={selectedRequest}
         isOpen={!!selectedRequest}
         onClose={() => setSelectedRequest(null)}
-        onUpdateStatus={handleUpdateStatus}
       />
     </div>
   );

@@ -175,7 +175,9 @@ export default function RequestsPage() {
               loading={isLoading}
               filter={filters.status}
               onFilterChange={(status) => handleFilterChange({ status })}
-              updatingId={updateStatus.variables?.id}
+              updatingId={
+                updateStatus.isPending ? updateStatus.variables?.id : null
+              }
               onRowClick={setSelectedRequest}
               pagination={pagination}
               onPageChange={handlePageChange}
@@ -189,7 +191,6 @@ export default function RequestsPage() {
         fallbackRequest={selectedRequest}
         isOpen={!!selectedRequest}
         onClose={() => setSelectedRequest(null)}
-        onUpdateStatus={handleUpdateStatus}
       />
     </div>
   );

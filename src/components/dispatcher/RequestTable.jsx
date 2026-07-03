@@ -46,6 +46,7 @@ export function RequestTable({
             onClick={() => onFilterChange(status)}
             className={cn(
               "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100",
+              "px-3 py-1 rounded-full text-xs font-semibold transition-all duration-100 cursor-pointer",
               filter === status
                 ? "bg-primary-500 text-white shadow-sm"
                 : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
@@ -92,7 +93,7 @@ export function RequestTable({
                     <p className="text-sm font-medium">{t("requests.noMatch")}</p>
                     <button
                       onClick={() => onFilterChange("all")}
-                      className="text-xs text-primary-500 font-semibold hover:underline"
+                      className="text-xs text-primary-500 font-semibold hover:underline cursor-pointer"
                     >
                       {t("common.clearFilters")}
                     </button>

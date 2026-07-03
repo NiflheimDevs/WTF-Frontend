@@ -97,6 +97,33 @@ export default {
     invalidRequestInput: "Invalid request. Please check your input.",
     serviceBusy: "Service is busy. Please try again.",
     submitFailed: "Could not submit request. Please try again.",
+    trackRequest: "Track your request",
+  },
+  track: {
+    title: "Track Your Request",
+    subtitle:
+      "Enter the reference ID you received after submitting to see your request status.",
+    referenceIdLabel: "Reference ID",
+    referenceIdPlaceholder: "e.g. abcd1234-5678-1234-abcd-1234567890ab",
+    referenceIdHint: "The UUID shown on your confirmation screen",
+    referenceIdRequired: "Please enter your reference ID.",
+    invalidReferenceId: "Invalid reference ID format.",
+    search: "Check Status",
+    searching: "Looking up…",
+    notFound: "No request found with that reference ID.",
+    lookupFailed: "Could not look up request. Please try again.",
+    currentStatus: "Current Status",
+    lastUpdated: "Last updated",
+    backToReporter: "Back to submit a request",
+    cancelledHint: "This request has been cancelled.",
+    steps: {
+      received: "Request Received",
+      receivedHint: "Submitted and queued",
+      dispatched: "Dispatched",
+      dispatchedHint: "Relief is on the way",
+      fulfilled: "Fulfilled",
+      fulfilledHint: "Delivery completed",
+    },
   },
   dashboard: {
     title: "Dispatch Overview",
@@ -273,5 +300,6 @@ export default {
   a11y: {
     toggleTheme: "Toggle theme",
     toggleLanguage: "Toggle language",
+    trackRequest: "Track your request",
   },
 };

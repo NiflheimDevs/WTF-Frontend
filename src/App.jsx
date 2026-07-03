@@ -14,6 +14,7 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const RequestsPage = lazy(() => import("./pages/RequestsPage"));
 const RegionsPage = lazy(() => import("./pages/RegionsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const TrackRequestPage = lazy(() => import("./pages/TrackRequestPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 function AppBackground() {
@@ -61,6 +62,15 @@ export default function App() {
             element={
               <AppShell>
                 <LoginPage />
+              </AppShell>
+            }
+          />
+
+          <Route
+            path="/track/:id?"
+            element={
+              <AppShell>
+                <TrackRequestPage />
               </AppShell>
             }
           />

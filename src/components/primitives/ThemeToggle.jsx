@@ -12,7 +12,7 @@ export function ThemeToggle({ className = "" }) {
     <button
       onClick={toggleTheme}
       className={cn(
-        "relative w-9 h-9 rounded-md flex items-center justify-center",
+        "relative w-9 h-9 rounded-md flex items-center justify-center cursor-pointer",
         "bg-neutral-100 hover:bg-neutral-200 dark:bg-gray-800 dark:hover:bg-gray-700",
         "transition-all duration-300",
         className,
