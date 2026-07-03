@@ -200,6 +200,7 @@ export default {
     activeNeeds: "Active Needs",
     requiresAttention: "Requires attention",
     noRegionsFound: "No regions found",
+    selectProvinceHint: "Select a country and province to view cities",
     allRegions: "All Regions",
   },
   settings: {

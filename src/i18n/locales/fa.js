@@ -200,6 +200,7 @@ export default {
     activeNeeds: "نیازهای فعال",
     requiresAttention: "نیاز به توجه",
     noRegionsFound: "منطقه‌ای یافت نشد",
+    selectProvinceHint: "کشور و استان را انتخاب کنید تا شهرها نمایش داده شوند",
     allRegions: "همه مناطق",
   },
   settings: {
