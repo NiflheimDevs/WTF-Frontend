@@ -4,7 +4,16 @@ import { cn } from "../../utils/cn";
 
 export const Input = forwardRef(
   (
-    { label, error, hint, type = "text", icon: Icon, className = "", ...props },
+    {
+      label,
+      error,
+      hint,
+      type = "text",
+      icon: Icon,
+      className = "",
+      dir = "rtl",
+      ...props
+    },
     ref,
   ) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +34,7 @@ export const Input = forwardRef(
             </div>
           )}
           <input
-            dir="ltr"
+            dir={dir}
             ref={ref}
             type={inputType}
             className={cn(

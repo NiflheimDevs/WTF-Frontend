@@ -30,8 +30,11 @@ export function RequestRow({
   const handleConfirm = async (nextStatus) => {
     setLocalUpdating(true);
     setConfirmingAction(null);
-    await onUpdateStatus(request.id, nextStatus);
-    setLocalUpdating(false);
+    try {
+      await onUpdateStatus(request.id, nextStatus);
+    } finally {
+      setLocalUpdating(false);
+    }
   };
 
   const getActionButtons = () => {

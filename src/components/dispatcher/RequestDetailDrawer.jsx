@@ -56,9 +56,12 @@ export function RequestDetailDrawer({
   const showLoading = isLoading && !request;
 
   const handleStatusChange = async (newStatus) => {
-    await updateStatus.mutateAsync({ id: requestId, status: newStatus });
-    setConfirmingCancel(false);
-    onUpdateStatus?.(requestId, newStatus);
+    try {
+      await updateStatus.mutateAsync({ id: requestId, status: newStatus });
+      onUpdateStatus?.(requestId, newStatus);
+    } finally {
+      setConfirmingCancel(false);
+    }
   };
 
   const canCancel =

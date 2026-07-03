@@ -170,6 +170,7 @@ export default function ReporterPage() {
             />
 
             <Input
+              dir="ltr"
               label={t("reporter.phoneLabel")}
               type="tel"
               value={phone}
