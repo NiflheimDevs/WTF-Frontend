@@ -2,19 +2,18 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { Input } from "../primitives/Input";
+import { RegionCascadeSelect } from "../reporter/RegionCascadeSelect";
 import { useTranslation } from "../../context/LocaleContext";
-import { useRegions } from "../../hooks/useRegions";
-import { getRegionName } from "../../utils/regionName";
 
 export function RequestFilters({ filters, onChange, onClose }) {
-  const { t, locale } = useTranslation();
-  const { data: regions = [] } = useRegions();
+  const { t } = useTranslation();
   const [localFilters, setLocalFilters] = useState({
     status: filters.status || "all",
     regionId: filters.regionId || "",
     from: filters.from || "",
     to: filters.to || "",
   });
+  const [regionSelectKey, setRegionSelectKey] = useState(0);
 
   const handleApply = () => {
     onChange(localFilters);
@@ -24,6 +23,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
   const handleReset = () => {
     const resetFilters = { status: "all", regionId: "", from: "", to: "" };
     setLocalFilters(resetFilters);
+    setRegionSelectKey((key) => key + 1);
     onChange(resetFilters);
     onClose();
   };
@@ -59,25 +59,15 @@ export function RequestFilters({ filters, onChange, onClose }) {
           </select>
         </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1">
-            {t("requests.table.region")}
-          </label>
-          <select
-            value={localFilters.regionId}
-            onChange={(e) =>
-              setLocalFilters((prev) => ({ ...prev, regionId: e.target.value }))
-            }
-            className="w-full h-10 px-3 rounded-md border border-neutral-200 bg-neutral-0 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-          >
-            <option value="">{t("regions.allRegions") || t("status.all")}</option>
-            {regions.map((region) => (
-              <option key={region.id} value={region.id}>
-                {getRegionName(region, locale)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RegionCascadeSelect
+          key={regionSelectKey}
+          value={localFilters.regionId}
+          onChange={(regionId) =>
+            setLocalFilters((prev) => ({ ...prev, regionId }))
+          }
+          required={false}
+          size="sm"
+        />
 
         <div>
           <label className="block text-xs font-semibold text-neutral-600 mb-1">

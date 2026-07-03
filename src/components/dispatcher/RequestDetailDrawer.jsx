@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Calendar, MapPin, Phone, Clock, Droplet, Truck, Hash } from "lucide-react";
 import { useRequestDetail } from "../../hooks/useRequests";
 import { useUpdateRequestStatus } from "../../hooks/useRequests";
-import { useRegions } from "../../hooks/useRegions";
 import { StatusBadge } from "./StatusBadge";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
@@ -19,7 +18,6 @@ export function RequestDetailDrawer({
 }) {
   const { t, locale } = useTranslation();
   const { data, isLoading } = useRequestDetail(requestId, fallbackRequest);
-  const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
 
@@ -29,11 +27,6 @@ export function RequestDetailDrawer({
     setPrevDrawerKey(drawerKey);
     setConfirmingCancel(false);
   }
-
-  const regionsById = useMemo(
-    () => new Map(regions.map((region) => [region.id, region])),
-    [regions],
-  );
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -182,7 +175,7 @@ export function RequestDetailDrawer({
                       </span>
                     </div>
                     <p className="text-sm text-neutral-900 font-semibold">
-                      {getRequestRegionName(request, locale, regionsById) ||
+                      {getRequestRegionName(request, locale) ||
                         t("common.unknown")}
                     </p>
                   </div>

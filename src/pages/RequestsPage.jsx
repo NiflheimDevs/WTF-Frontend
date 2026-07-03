@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
 import { useRequests, useUpdateRequestStatus } from "../hooks/useRequests";
-import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
 import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { Sidebar } from "../components/layout/Sidebar";
@@ -29,7 +28,6 @@ export default function RequestsPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { data, isLoading, refetch } = useRequests(filters);
-  const { data: regions = [] } = useRegions();
   const updateStatus = useUpdateRequestStatus();
 
   const requests = useMemo(() => data?.requests || [], [data?.requests]);
@@ -39,11 +37,6 @@ export default function RequestsPage() {
     totalItems: data?.total || 0,
     pageSize: data?.page_size || 20,
   };
-
-  const regionsById = useMemo(
-    () => new Map(regions.map((r) => [r.id, r])),
-    [regions],
-  );
 
   const handleFilterChange = useCallback((newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
@@ -85,7 +78,7 @@ export default function RequestsPage() {
 
     const rows = requests.map((r) => [
       r.id,
-      getRequestRegionName(r, locale, regionsById) || t("common.unknown"),
+      getRequestRegionName(r, locale) || t("common.unknown"),
       r.need_type === "bottled_water" ? t("requests.bottledWater") : t("reporter.tankerTruck"),
       r.quantity,
       t(`status.${r.status}`),
@@ -101,7 +94,7 @@ export default function RequestsPage() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success(t("requests.exportStarted"));
-  }, [t, locale, requests, regionsById]);
+  }, [t, locale, requests]);
 
   const handleRefresh = useCallback(async () => {
     await refetch();

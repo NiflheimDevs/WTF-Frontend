@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
 import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { useMetricsByRegion } from "../hooks/useMetrics";
@@ -13,6 +12,7 @@ import {
 } from "../components/primitives/Card";
 import { Input } from "../components/primitives/Input";
 import { Badge } from "../components/primitives/Badge";
+import { Skeleton } from "../components/primitives/Skeleton";
 import { Search, MapPin, Activity } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
 import { getRegionName, getRegionSecondaryName } from "../utils/regionName";
@@ -25,18 +25,14 @@ export default function RegionsPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: regions = [], isLoading: regionsLoading } = useRegions();
-  const { data: metrics = [] } = useMetricsByRegion(50);
+  const { data: regionMetrics = [], isLoading: metricsLoading } =
+    useMetricsByRegion(50);
 
-  const filteredRegions = regions.filter(
+  const filteredMetrics = regionMetrics.filter(
     (region) =>
       region.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
       region.name_fa.includes(searchQuery),
   );
-
-  const getMetricsForRegion = (regionId) => {
-    return metrics.find((m) => m.id === regionId);
-  };
 
   return (
     <div className="min-h-screen bg-neutral-0">
@@ -77,61 +73,54 @@ export default function RegionsPage() {
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredRegions.map((region) => {
-              const regionMetrics = getMetricsForRegion(region.id);
-              return (
-                <Card key={region.id}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-                          <MapPin size={16} className="text-primary-500" />
-                        </div>
-                        <div>
-                          <CardTitle>{getRegionName(region, locale)}</CardTitle>
-                          <p className="text-xs text-neutral-400">
-                            {getRegionSecondaryName(region, locale)}
-                          </p>
-                        </div>
-                      </div>
-                      {regionMetrics && regionMetrics.count > 0 && (
-                        <Badge status="pending" size="sm">
-                          {formatNumber(regionMetrics.count, locale)}
-                        </Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-neutral-600">
-                          <Activity size={14} />
-                          <span>{t("regions.totalRequests")}</span>
-                        </div>
-                        <span className="font-mono text-lg font-semibold text-neutral-900">
-                          {formatNumber(regionMetrics?.count || 0, locale)}
-                        </span>
-                      </div>
-
-                      {regionMetrics?.count > 0 && (
-                        <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
-                          {/* <div className="flex items-center gap-2 text-sm text-neutral-600">
-                            <TrendingUp size={14} className="text-warning-fg" />
-                            <span>{t("regions.activeNeeds")}</span>
+            {metricsLoading
+              ? [...Array(6)].map((_, i) => (
+                  <Card key={i}>
+                    <Skeleton className="h-24 w-full" />
+                  </Card>
+                ))
+              : filteredMetrics.map((region) => (
+                  <Card key={region.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+                            <MapPin size={16} className="text-primary-500" />
                           </div>
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-warning-bg text-warning-fg">
-                            {formatNumber(regionMetrics.count, locale)} {t("common.requests")}
-                          </span> */}
+                          <div>
+                            <CardTitle>
+                              {getRegionName(region, locale)}
+                            </CardTitle>
+                            <p className="text-xs text-neutral-400">
+                              {getRegionSecondaryName(region, locale)}
+                            </p>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                        {region.count > 0 && (
+                          <Badge status="pending" size="sm">
+                            {formatNumber(region.count, locale)}
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-neutral-600">
+                            <Activity size={14} />
+                            <span>{t("regions.totalRequests")}</span>
+                          </div>
+                          <span className="font-mono text-lg font-semibold text-neutral-900">
+                            {formatNumber(region.count, locale)}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
           </div>
 
-          {filteredRegions.length === 0 && !regionsLoading && (
+          {filteredMetrics.length === 0 && !metricsLoading && (
             <div className="text-center py-12">
               <MapPin size={48} className="mx-auto text-neutral-300 mb-4" />
               <p className="text-neutral-500">{t("regions.noRegionsFound")}</p>

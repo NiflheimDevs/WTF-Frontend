@@ -13,7 +13,6 @@ export function RequestRow({
   onUpdateStatus,
   onRowClick,
   isUpdating,
-  regionsById,
 }) {
   const { t, locale } = useTranslation();
   const [confirmingAction, setConfirmingAction] = useState(null);
@@ -131,7 +130,7 @@ export function RequestRow({
         </span>
       </td>
       <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">
-        {getRequestRegionName(request, locale, regionsById) ||
+        {getRequestRegionName(request, locale) ||
           t("common.unknown")}
       </td>
       <td className="px-4 py-3 text-center text-lg">

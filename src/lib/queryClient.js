@@ -45,7 +45,8 @@ export const queryKeys = {
   },
   regions: {
     all: ["regions"],
-    list: () => [...queryKeys.regions.all, "list"],
-    detail: (id) => [...queryKeys.regions.all, "detail", id],
+    countries: () => [...queryKeys.regions.all, "countries"],
+    provinces: (countryId) => [...queryKeys.regions.all, "provinces", countryId],
+    cities: (provinceId) => [...queryKeys.regions.all, "cities", provinceId],
   },
 };

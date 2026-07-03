@@ -2,7 +2,11 @@ import api from "./axios";
 
 // Public endpoints
 export const publicApi = {
-  getRegions: () => api.get("/regions"),
+  getCountries: () => api.get("/regions/countries"),
+  getProvinces: (countryId) =>
+    api.get(`/regions/countries/${encodeURIComponent(countryId)}/provinces`),
+  getCities: (provinceId) =>
+    api.get(`/regions/provinces/${encodeURIComponent(provinceId)}/cities`),
   submitRequest: (data) => api.post("/requests", data),
   getRequest: (id) => api.get(`/request/${encodeURIComponent(id)}`),
   health: () => api.get("/health"),
