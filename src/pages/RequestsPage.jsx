@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useRequests, useUpdateRequestStatus } from "../hooks/useRequests";
 import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
+import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { Sidebar } from "../components/layout/Sidebar";
 import { TopBar } from "../components/layout/TopBar";
 import { RequestTable } from "../components/dispatcher/RequestTable";
@@ -16,9 +17,9 @@ import toast from "react-hot-toast";
 
 export default function RequestsPage() {
   const { theme, toggleTheme } = useTheme();
+  const { mobileOpen, toggle, close } = useSidebarMobile();
   const { t, locale } = useTranslation();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filters, setFilters] = useState({
     status: "all",
     page: 1,
@@ -109,15 +110,12 @@ export default function RequestsPage() {
 
   return (
     <div className="min-h-screen bg-neutral-0">
-      <Sidebar
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={close} />
 
       <TopBar
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
+        onMenuToggle={toggle}
         onRefresh={handleRefresh}
         refreshing={updateStatus.isPending}
       />

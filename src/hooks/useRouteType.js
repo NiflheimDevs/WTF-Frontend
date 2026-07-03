@@ -4,7 +4,8 @@ export function useRouteType() {
   const { pathname } = useLocation();
 
   const isDispatcherRoute = pathname.startsWith("/dispatcher");
-  const isAuthRoute = pathname.startsWith("/dispatcher/login");
+  const isAuthRoute =
+    pathname === "/login" || pathname.startsWith("/dispatcher/login");
   const isPublicRoute = !isDispatcherRoute;
 
   return {

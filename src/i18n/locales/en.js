@@ -88,6 +88,9 @@ export default {
     requestReceivedHint:
       "A dispatcher has been notified — typical response is within 2 hours.",
     referenceId: "Your reference ID",
+    copyReferenceId: "Copy",
+    referenceIdCopied: "Copied!",
+    copyReferenceIdFailed: "Could not copy reference ID.",
     submitAnother: "Submit another request",
     requestSubmitted: "Request submitted! ID: {{id}}",
     tooManyRequests: "Too many requests. Please wait a moment.",

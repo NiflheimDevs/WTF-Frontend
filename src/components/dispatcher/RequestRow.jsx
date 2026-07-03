@@ -125,9 +125,9 @@ export function RequestRow({
       onClick={() => onRowClick?.(request)}
       className="border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-100 cursor-pointer group"
     >
-      <td className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors">
-        <span className="ltr-isolate">
-          {String(request.id ?? "").slice(0, 8)}
+      <td className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors whitespace-nowrap">
+        <span className="ltr-isolate" dir="ltr">
+          {String(request.id ?? "")}
         </span>
       </td>
       <td className="px-4 py-3 text-neutral-700 font-medium max-w-37.5 truncate">

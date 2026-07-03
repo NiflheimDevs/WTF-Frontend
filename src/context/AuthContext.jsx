@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("dispatcher_user");
       document.documentElement.setAttribute("data-theme", "light");
       document.documentElement.classList.remove("dark");
-      window.location.href = "/dispatcher/login";
+      window.location.href = "/login";
     }
   }, []);
 

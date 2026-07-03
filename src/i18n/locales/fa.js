@@ -88,6 +88,9 @@ export default {
     requestReceivedHint:
       "به اعزام‌کننده اطلاع داده شد — پاسخ معمولاً ظرف ۲ ساعت است.",
     referenceId: "شناسه پیگیری شما",
+    copyReferenceId: "کپی",
+    referenceIdCopied: "کپی شد!",
+    copyReferenceIdFailed: "کپی شناسه پیگیری انجام نشد.",
     submitAnother: "ثبت درخواست دیگر",
     requestSubmitted: "درخواست ثبت شد! شناسه: {{id}}",
     tooManyRequests: "درخواست‌های زیاد. لطفاً کمی صبر کنید.",

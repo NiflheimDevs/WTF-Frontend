@@ -44,13 +44,13 @@ export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }) {
           type="button"
           aria-label={t("nav.closeMenu")}
           onClick={onMobileClose}
-          className="fixed inset-0 bg-neutral-900/40 z-10 lg:hidden border-none cursor-pointer"
+          className="fixed inset-0 bg-neutral-900/40 z-30 lg:hidden border-none cursor-pointer"
         />
       )}
 
       <aside
         className={cn(
-          "fixed top-0 left-0 rtl:left-auto rtl:right-0 h-full w-60 bg-neutral-50 border-e border-neutral-200 flex flex-col z-20 transition-transform duration-200",
+          "fixed top-16 left-0 rtl:left-auto rtl:right-0 h-[calc(100%-4rem)] w-60 bg-neutral-50 border-e border-neutral-200 flex flex-col z-40 lg:top-0 lg:h-full lg:z-20 transition-transform duration-200",
           !mobileOpen &&
             "max-lg:-translate-x-full max-lg:rtl:translate-x-full",
           mobileOpen && "max-lg:translate-x-0",

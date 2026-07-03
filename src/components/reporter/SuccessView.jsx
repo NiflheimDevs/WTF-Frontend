@@ -1,10 +1,26 @@
-import { CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { Check, CheckCircle, Copy } from "lucide-react";
+import toast from "react-hot-toast";
 import { Button } from "../primitives/Button";
 import { useTranslation } from "../../context/LocaleContext";
 
 export function SuccessView({ requestId, onReset }) {
   const { t } = useTranslation();
-  const shortId = requestId?.slice(0, 8).toUpperCase();
+  const [copied, setCopied] = useState(false);
+  const fullId = String(requestId ?? "");
+
+  const handleCopy = async () => {
+    if (!fullId) return;
+
+    try {
+      await navigator.clipboard.writeText(fullId);
+      setCopied(true);
+      toast.success(t("reporter.referenceIdCopied"));
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error(t("reporter.copyReferenceIdFailed"));
+    }
+  };
 
   return (
     <div className="animate-fade-in flex flex-col items-center text-center px-6 py-12 gap-5">
@@ -21,13 +37,29 @@ export function SuccessView({ requestId, onReset }) {
         </p>
       </div>
 
-      <div className="bg-neutral-50 border border-neutral-200 rounded-lg px-6 py-3">
-        <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">
+      <div className="w-full max-w-md bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3">
+        <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-2">
           {t("reporter.referenceId")}
         </p>
-        <p className="font-mono text-lg font-semibold text-neutral-900 ltr-isolate">
-          {shortId}
-        </p>
+        <div
+          className="overflow-x-auto rounded-md bg-neutral-0 border border-neutral-200 px-3 py-2.5 mb-3"
+          dir="ltr"
+        >
+          <p className="font-mono text-xs sm:text-sm font-semibold text-neutral-900 ltr-isolate whitespace-nowrap select-all text-center">
+            {fullId}
+          </p>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleCopy}
+          disabled={!fullId}
+          fullWidth
+          aria-label={t("reporter.copyReferenceId")}
+        >
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? t("reporter.referenceIdCopied") : t("reporter.copyReferenceId")}
+        </Button>
       </div>
 
       <Button variant="ghost" onClick={onReset} className="mt-2">

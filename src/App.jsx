@@ -5,6 +5,7 @@ import { RouteProgressBar } from "./components/layout/RouteProgressBar";
 import { PageLoader } from "./components/layout/PageLoader";
 import { cn } from "./utils/cn";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SidebarMobileProvider } from "./context/SidebarMobileContext";
 
 const AppHeader = lazy(() => import("./components/layout/AppHeader"));
 const ReporterPage = lazy(() => import("./pages/ReporterPage"));
@@ -42,9 +43,10 @@ function AppShell({ children }) {
 export default function App() {
   return (
     <ThemeProvider>
-      <RouteProgressBar />
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
+      <SidebarMobileProvider>
+        <RouteProgressBar />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
           <Route
             path="/"
             element={
@@ -55,12 +57,17 @@ export default function App() {
           />
 
           <Route
-            path="/dispatcher/login"
+            path="/login"
             element={
               <AppShell>
                 <LoginPage />
               </AppShell>
             }
+          />
+
+          <Route
+            path="/dispatcher/login"
+            element={<Navigate to="/login" replace />}
           />
 
           <Route
@@ -113,8 +120,9 @@ export default function App() {
             }
           />
           <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </SidebarMobileProvider>
     </ThemeProvider>
   );
 }

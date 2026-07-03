@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Droplets, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/LocaleContext";
@@ -56,6 +56,8 @@ function LoginForm() {
   const { login } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dispatcher";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -89,7 +91,7 @@ function LoginForm() {
 
     try {
       await login(email, password);
-      navigate("/dispatcher", { replace: true });
+      navigate(from, { replace: true });
       toast.success(t("auth.welcomeBack"));
     } catch (err) {
       const newAttempts = attempts + 1;

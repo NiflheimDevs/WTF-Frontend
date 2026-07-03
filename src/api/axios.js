@@ -28,7 +28,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       localStorage.removeItem("dispatcher_token");
       localStorage.removeItem("dispatcher_user");
-      window.location.href = "/dispatcher/login";
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);

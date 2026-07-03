@@ -15,15 +15,16 @@ import { RequestTable } from "../components/dispatcher/RequestTable";
 import { RequestDetailDrawer } from "../components/dispatcher/RequestDetailDrawer";
 import { KpiCardSkeleton } from "../components/primitives/Skeleton";
 import { useTheme } from "../hooks/useTheme";
+import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { useTranslation } from "../context/LocaleContext";
 import { getDateLocale } from "../i18n";
 import toast from "react-hot-toast";
 
 export default function DashboardPage() {
   const { theme, toggleTheme } = useTheme();
+  const { mobileOpen, toggle, close } = useSidebarMobile();
   const { t, locale } = useTranslation();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [lastRefreshTime, setLastRefreshTime] = useState(() => new Date());
@@ -57,15 +58,12 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-neutral-0">
-      <Sidebar
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={close} />
 
       <TopBar
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
+        onMenuToggle={toggle}
         onRefresh={handleRefresh}
         refreshing={updateStatus.isPending}
       />

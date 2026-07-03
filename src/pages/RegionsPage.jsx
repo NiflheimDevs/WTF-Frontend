@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRegions } from "../hooks/useRegions";
 import { useTheme } from "../hooks/useTheme";
+import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { useMetricsByRegion } from "../hooks/useMetrics";
 import { Sidebar } from "../components/layout/Sidebar";
 import { TopBar } from "../components/layout/TopBar";
@@ -19,9 +20,9 @@ import { formatNumber } from "../utils/localeDigits";
 
 export default function RegionsPage() {
   const { theme, toggleTheme } = useTheme();
+  const { mobileOpen, toggle, close } = useSidebarMobile();
   const { t, locale } = useTranslation();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: regions = [], isLoading: regionsLoading } = useRegions();
@@ -39,15 +40,12 @@ export default function RegionsPage() {
 
   return (
     <div className="min-h-screen bg-neutral-0">
-      <Sidebar
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={close} />
 
       <TopBar
         theme={theme}
         onThemeToggle={toggleTheme}
-        onMenuToggle={() => setMobileMenuOpen((open) => !open)}
+        onMenuToggle={toggle}
         onRefresh={() => {}}
         refreshing={false}
       />
@@ -117,13 +115,13 @@ export default function RegionsPage() {
 
                       {regionMetrics?.count > 0 && (
                         <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
-                          <div className="flex items-center gap-2 text-sm text-neutral-600">
+                          {/* <div className="flex items-center gap-2 text-sm text-neutral-600">
                             <TrendingUp size={14} className="text-warning-fg" />
                             <span>{t("regions.activeNeeds")}</span>
                           </div>
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-warning-bg text-warning-fg">
                             {formatNumber(regionMetrics.count, locale)} {t("common.requests")}
-                          </span>
+                          </span> */}
                         </div>
                       )}
                     </div>
