@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { Input } from "../primitives/Input";
-import { RegionCascadeSelect } from "../reporter/RegionCascadeSelect";
+import { RegionHierarchyFilters } from "../regions/RegionHierarchyFilters";
 import { useTranslation } from "../../context/LocaleContext";
 
 export function RequestFilters({ filters, onChange, onClose }) {
@@ -13,19 +13,24 @@ export function RequestFilters({ filters, onChange, onClose }) {
     from: filters.from || "",
     to: filters.to || "",
   });
-  const [regionSelectKey, setRegionSelectKey] = useState(0);
+  const [countryId, setCountryId] = useState("");
+  const [provinceId, setProvinceId] = useState("");
+
+  const isPartialRegion = !!(countryId && !localFilters.regionId);
+  const isPartialDate =
+    (!!localFilters.from) !== (!!localFilters.to);
+  const isIncomplete = isPartialRegion || isPartialDate;
 
   const handleApply = () => {
     onChange(localFilters);
-    onClose();
   };
 
   const handleReset = () => {
     const resetFilters = { status: "all", regionId: "", from: "", to: "" };
     setLocalFilters(resetFilters);
-    setRegionSelectKey((key) => key + 1);
+    setCountryId("");
+    setProvinceId("");
     onChange(resetFilters);
-    onClose();
   };
 
   return (
@@ -59,14 +64,19 @@ export function RequestFilters({ filters, onChange, onClose }) {
           </select>
         </div>
 
-        <RegionCascadeSelect
-          key={regionSelectKey}
-          value={localFilters.regionId}
-          onChange={(regionId) =>
+        <RegionHierarchyFilters
+          countryId={countryId}
+          provinceId={provinceId}
+          cityId={localFilters.regionId}
+          onCountryChange={setCountryId}
+          onProvinceChange={setProvinceId}
+          onCityChange={(regionId) =>
             setLocalFilters((prev) => ({ ...prev, regionId }))
           }
-          required={false}
+          showCity
+          layout="column"
           size="sm"
+          required={false}
         />
 
         <div>
@@ -95,7 +105,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <Button onClick={handleApply} fullWidth>
+        <Button onClick={handleApply} fullWidth disabled={isIncomplete}>
           {t("requests.applyFilters")}
         </Button>
         <Button onClick={handleReset} variant="secondary" fullWidth>

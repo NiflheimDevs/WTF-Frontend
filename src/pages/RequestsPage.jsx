@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import { useRequests, useUpdateRequestStatus } from "../hooks/useRequests";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRequests, useUpdateRequestStatus, requestsKeys } from "../hooks/useRequests";
 import { useTheme } from "../hooks/useTheme";
 import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { Sidebar } from "../components/layout/Sidebar";
@@ -29,6 +30,7 @@ export default function RequestsPage() {
 
   const { data, isLoading, refetch } = useRequests(filters);
   const updateStatus = useUpdateRequestStatus();
+  const queryClient = useQueryClient();
 
   const requests = useMemo(() => data?.requests || [], [data?.requests]);
   const pagination = {
@@ -39,8 +41,15 @@ export default function RequestsPage() {
   };
 
   const handleFilterChange = useCallback((newFilters) => {
-    setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
-  }, []);
+    setFilters((prev) => {
+      const merged = { ...prev, ...newFilters, page: 1 };
+      for (const key of ["regionId", "from", "to"]) {
+        if (!merged[key]) delete merged[key];
+      }
+      return merged;
+    });
+    queryClient.invalidateQueries({ queryKey: requestsKeys.lists() });
+  }, [queryClient]);
 
   const handlePageChange = useCallback((newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
@@ -151,15 +160,13 @@ export default function RequestsPage() {
             </div>
           </div>
 
-          {showFilters && (
-            <Card className="mb-6">
-              <RequestFilters
-                filters={filters}
-                onChange={handleFilterChange}
-                onClose={() => setShowFilters(false)}
-              />
-            </Card>
-          )}
+          <Card className={showFilters ? "mb-6" : "hidden"}>
+            <RequestFilters
+              filters={filters}
+              onChange={handleFilterChange}
+              onClose={() => setShowFilters(false)}
+            />
+          </Card>
 
           <Card>
             <RequestTable
