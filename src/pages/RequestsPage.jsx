@@ -10,15 +10,15 @@ import { RequestDetailDrawer } from "../components/dispatcher/RequestDetailDrawe
 import { RequestFilters } from "../components/dispatcher/RequestFilters";
 import { Card } from "../components/primitives/Card";
 import { Button } from "../components/primitives/Button";
-import { Filter, Download, RefreshCw } from "lucide-react";
+import { Filter, /* Download, */ RefreshCw } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
-import { getRequestRegionName } from "../utils/regionName";
+// import { getRequestRegionName } from "../utils/regionName";
 import toast from "react-hot-toast";
 
 export default function RequestsPage() {
   const { theme, toggleTheme } = useTheme();
   const { mobileOpen, toggle, close } = useSidebarMobile();
-  const { t, locale } = useTranslation();
+  const { t /* , locale */ } = useTranslation();
 
   const [filters, setFilters] = useState({
     status: "all",
@@ -51,6 +51,15 @@ export default function RequestsPage() {
     queryClient.invalidateQueries({ queryKey: requestsKeys.lists() });
   }, [queryClient]);
 
+  const handleClearFilters = useCallback(() => {
+    setFilters({
+      status: "all",
+      page: 1,
+      pageSize: 20,
+    });
+    queryClient.invalidateQueries({ queryKey: requestsKeys.lists() });
+  }, [queryClient]);
+
   const handlePageChange = useCallback((newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -63,47 +72,47 @@ export default function RequestsPage() {
     [updateStatus],
   );
 
-  const handleExport = useCallback(() => {
-    if (!requests.length) {
-      toast.error(t("requests.noMatch"));
-      return;
-    }
-
-    const headers = [
-      t("requests.table.id"),
-      t("requests.table.region"),
-      t("requests.table.need"),
-      t("requests.table.qty"),
-      t("requests.table.status"),
-      t("requests.table.submitted"),
-    ];
-
-    const escCsv = (val) => {
-      const str = String(val ?? "");
-      return str.includes(",") || str.includes('"') || str.includes("\n")
-        ? `"${str.replace(/"/g, '""')}"`
-        : str;
-    };
-
-    const rows = requests.map((r) => [
-      r.id,
-      getRequestRegionName(r, locale) || t("common.unknown"),
-      r.need_type === "bottled_water" ? t("requests.bottledWater") : t("reporter.tankerTruck"),
-      r.quantity,
-      t(`status.${r.status}`),
-      r.created_at ? new Date(r.created_at).toLocaleString() : "",
-    ]);
-
-    const csv = [headers, ...rows].map((row) => row.map(escCsv).join(",")).join("\n");
-    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `wtf-requests-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success(t("requests.exportStarted"));
-  }, [t, locale, requests]);
+  // const handleExport = useCallback(() => {
+  //   if (!requests.length) {
+  //     toast.error(t("requests.noMatch"));
+  //     return;
+  //   }
+  //
+  //   const headers = [
+  //     t("requests.table.id"),
+  //     t("requests.table.region"),
+  //     t("requests.table.need"),
+  //     t("requests.table.qty"),
+  //     t("requests.table.status"),
+  //     t("requests.table.submitted"),
+  //   ];
+  //
+  //   const escCsv = (val) => {
+  //     const str = String(val ?? "");
+  //     return str.includes(",") || str.includes('"') || str.includes("\n")
+  //       ? `"${str.replace(/"/g, '""')}"`
+  //       : str;
+  //   };
+  //
+  //   const rows = requests.map((r) => [
+  //     r.id,
+  //     getRequestRegionName(r, locale) || t("common.unknown"),
+  //     r.need_type === "bottled_water" ? t("requests.bottledWater") : t("reporter.tankerTruck"),
+  //     r.quantity,
+  //     t(`status.${r.status}`),
+  //     r.created_at ? new Date(r.created_at).toLocaleString() : "",
+  //   ]);
+  //
+  //   const csv = [headers, ...rows].map((row) => row.map(escCsv).join(",")).join("\n");
+  //   const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  //   const url = URL.createObjectURL(blob);
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = `wtf-requests-${new Date().toISOString().slice(0, 10)}.csv`;
+  //   a.click();
+  //   URL.revokeObjectURL(url);
+  //   toast.success(t("requests.exportStarted"));
+  // }, [t, locale, requests]);
 
   const handleRefresh = useCallback(async () => {
     await refetch();
@@ -142,14 +151,14 @@ export default function RequestsPage() {
               >
                 {t("common.filters")}
               </Button>
-              <Button
+              {/* <Button
                 variant="secondary"
                 size="sm"
                 icon={Download}
                 onClick={handleExport}
               >
                 {t("common.export")}
-              </Button>
+              </Button> */}
               <Button
                 variant="secondary"
                 size="sm"
@@ -175,6 +184,7 @@ export default function RequestsPage() {
               loading={isLoading}
               filter={filters.status}
               onFilterChange={(status) => handleFilterChange({ status })}
+              onClearFilters={handleClearFilters}
               updatingId={
                 updateStatus.isPending ? updateStatus.variables?.id : null
               }

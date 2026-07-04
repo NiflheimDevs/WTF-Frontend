@@ -11,6 +11,7 @@ export function RequestTable({
   loading,
   filter,
   onFilterChange,
+  onClearFilters,
   updatingId,
   onRowClick,
   pagination,
@@ -84,7 +85,11 @@ export function RequestTable({
                     <AlertCircle size={24} />
                     <p className="text-sm font-medium">{t("requests.noMatch")}</p>
                     <button
-                      onClick={() => onFilterChange("all")}
+                      onClick={() =>
+                        onClearFilters
+                          ? onClearFilters()
+                          : onFilterChange("all")
+                      }
                       className="text-xs text-primary-500 font-semibold hover:underline cursor-pointer"
                     >
                       {t("common.clearFilters")}
