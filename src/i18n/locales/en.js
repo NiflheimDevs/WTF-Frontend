@@ -19,6 +19,8 @@ export default {
     export: "Export",
     previous: "Previous",
     next: "Next",
+    idCopied: "ID copied!",
+    idCopyFailed: "Could not copy ID.",
     clearFilters: "Clear filters",
     version: "v1.0 · WTF",
     footer: "WTF · Water Task Force · v1.0",
@@ -65,7 +67,8 @@ export default {
   },
   reporter: {
     heroTitle: "Report a Water Shortage",
-    heroDescription: "Submit your request and a dispatcher will coordinate relief to your area. Typical response time is within 2 hours.",
+    heroDescription:
+      "Submit your request and a dispatcher will coordinate relief to your area. Typical response time is within 2 hours.",
     heroAction: "Submit a Request",
     region: "Region",
     country: "Country",
@@ -82,7 +85,7 @@ export default {
     tankerTruck: "Tanker Truck",
     howMany: "How many?",
     phoneLabel: "Phone number (optional)",
-    phonePlaceholder: "0912 345 6789",
+    phonePlaceholder: "09123456789",
     phoneHint: "Your phone is only used to coordinate delivery",
     noteLabel: "Additional note",
     notePlaceholder: "Any details that help dispatchers…",

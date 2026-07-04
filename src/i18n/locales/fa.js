@@ -19,6 +19,8 @@ export default {
     export: "خروجی",
     previous: "قبلی",
     next: "بعدی",
+    idCopied: "شناسه کپی شد!",
+    idCopyFailed: "کپی شناسه انجام نشد.",
     clearFilters: "پاک کردن فیلترها",
     version: "نسخه ۱.۰ · ستاد آب",
     footer: "ستاد آب · سامانه مدیریت بحران آب · نسخه ۱.۰",
@@ -65,7 +67,8 @@ export default {
   },
   reporter: {
     heroTitle: "گزارش کمبود آب",
-    heroDescription: "درخواست خود را ثبت کنید تا اعزام‌کننده امداد را به منطقه شما هماهنگ کند. زمان پاسخ‌دهی معمولاً ظرف ۲ ساعت است.",
+    heroDescription:
+      "درخواست خود را ثبت کنید تا اعزام‌کننده امداد را به منطقه شما هماهنگ کند. زمان پاسخ‌دهی معمولاً ظرف ۲ ساعت است.",
     heroAction: "ثبت درخواست",
     region: "منطقه",
     country: "کشور",
@@ -82,7 +85,7 @@ export default {
     tankerTruck: "تانکر آب",
     howMany: "چند عدد؟",
     phoneLabel: "شماره تلفن (اختیاری)",
-    phonePlaceholder: "۰۹۱۲ ۳۴۵ ۶۷۸۹",
+    phonePlaceholder: "۰۹۱۲۳۴۵۶۷۸۹",
     phoneHint: "شماره تلفن فقط برای هماهنگی تحویل استفاده می‌شود",
     noteLabel: "یادداشت تکمیلی",
     notePlaceholder: "هر جزئیاتی که به اعزام‌کنندگان کمک می‌کند…",
@@ -254,8 +257,7 @@ export default {
   },
   notFound: {
     title: "صفحه یافت نشد",
-    description:
-      "صفحه‌ای که دنبال آن هستید وجود ندارد یا جابجا شده است.",
+    description: "صفحه‌ای که دنبال آن هستید وجود ندارد یا جابجا شده است.",
     goToReporter: "رفتن به صفحه گزارش",
     goToDashboard: "رفتن به داشبورد",
   },

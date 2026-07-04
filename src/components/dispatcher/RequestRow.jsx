@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Droplet, Truck } from "lucide-react";
+import toast from "react-hot-toast";
 import { StatusBadge } from "./StatusBadge";
 import { relativeTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
 import { getRequestRegionName } from "../../utils/regionName";
 import { formatNumber } from "../../utils/localeDigits";
-import { Droplet, Truck } from "lucide-react";
 
 export function RequestRow({
   request,
@@ -24,6 +24,18 @@ export function RequestRow({
     ) : (
       <Truck size={18} className="text-orange-500 dark:text-orange-400" />
     );
+  };
+
+  const handleCopyId = async (e) => {
+    e.stopPropagation();
+    const id = String(request.id ?? "");
+    if (!id) return;
+    try {
+      await navigator.clipboard.writeText(id);
+      toast.success(t("common.idCopied"));
+    } catch {
+      toast.error(t("common.idCopyFailed"));
+    }
   };
 
   const handleConfirm = async (nextStatus) => {
@@ -124,7 +136,11 @@ export function RequestRow({
       onClick={() => onRowClick?.(request)}
       className="border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-100 cursor-pointer group"
     >
-      <td className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors whitespace-nowrap">
+      <td
+        className="px-4 py-3 font-mono text-xs text-neutral-400 group-hover:text-primary-500 transition-colors whitespace-nowrap cursor-copy"
+        onClick={handleCopyId}
+        title={t("common.idCopied").replace("!", "")}
+      >
         <span className="ltr-isolate" dir="ltr">
           {String(request.id ?? "")}
         </span>
