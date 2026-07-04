@@ -1,10 +1,8 @@
-import { useMemo } from "react";
 import { Filter, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { RequestRow } from "./RequestRow";
 import { Button } from "../primitives/Button";
 import { Skeleton } from "../primitives/Skeleton";
 import { useTranslation } from "../../context/LocaleContext";
-import { useRegions } from "../../hooks/useRegions";
 import { cn } from "../../utils/cn";
 
 export function RequestTable({
@@ -13,17 +11,13 @@ export function RequestTable({
   loading,
   filter,
   onFilterChange,
+  onClearFilters,
   updatingId,
   onRowClick,
   pagination,
   onPageChange,
 }) {
   const { t, locale } = useTranslation();
-  const { data: regions = [] } = useRegions();
-  const regionsById = useMemo(
-    () => new Map(regions.map((region) => [region.id, region])),
-    [regions],
-  );
   const statuses = ["all", "pending", "dispatched", "fulfilled", "cancelled"];
 
   if (loading) {
@@ -91,7 +85,11 @@ export function RequestTable({
                     <AlertCircle size={24} />
                     <p className="text-sm font-medium">{t("requests.noMatch")}</p>
                     <button
-                      onClick={() => onFilterChange("all")}
+                      onClick={() =>
+                        onClearFilters
+                          ? onClearFilters()
+                          : onFilterChange("all")
+                      }
                       className="text-xs text-primary-500 font-semibold hover:underline cursor-pointer"
                     >
                       {t("common.clearFilters")}
@@ -107,7 +105,6 @@ export function RequestTable({
                   onUpdateStatus={onUpdateStatus}
                   onRowClick={onRowClick}
                   isUpdating={updatingId === request.id}
-                  regionsById={regionsById}
                 />
               ))
             )}

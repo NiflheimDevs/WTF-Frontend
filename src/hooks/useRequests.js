@@ -61,6 +61,12 @@ export const requestsKeys = {
   detail: (id) => [...requestsKeys.details(), id],
 };
 
+function toISOIfValid(value) {
+  if (!value) return undefined;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? undefined : d.toISOString();
+}
+
 export function buildRequestParams(filters = {}) {
   const params = {};
 
@@ -68,8 +74,11 @@ export function buildRequestParams(filters = {}) {
   if (filters.pageSize) params.page_size = filters.pageSize;
   if (filters.status && filters.status !== "all") params.status = filters.status;
   if (filters.regionId) params.region_id = filters.regionId;
-  if (filters.from) params.from = filters.from;
-  if (filters.to) params.to = filters.to;
+
+  const from = toISOIfValid(filters.from);
+  if (from) params.from = from;
+  const to = toISOIfValid(filters.to);
+  if (to) params.to = to;
 
   return params;
 }
@@ -78,7 +87,7 @@ export function useRequests(filters = {}) {
   const params = buildRequestParams(filters);
 
   return useQuery({
-    queryKey: requestsKeys.list(filters),
+    queryKey: requestsKeys.list(params),
     queryFn: async () => {
       const { data } = await dispatcherApi.getRequests(params);
       return data;

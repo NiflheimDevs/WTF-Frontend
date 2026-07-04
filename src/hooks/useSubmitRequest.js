@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { publicApi } from "../api/endpoints";
-import { regionsKeys } from "./useRegions";
+import { metricsKeys } from "./useMetrics";
 import { t } from "../i18n";
 import toast from "react-hot-toast";
 
@@ -13,7 +13,7 @@ export function useSubmitRequest() {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: regionsKeys.all });
+      queryClient.invalidateQueries({ queryKey: metricsKeys.all });
       toast.success(
         t("reporter.requestSubmitted", { id: String(data.id ?? "") }),
       );

@@ -3,26 +3,47 @@ import { publicApi } from "../api/endpoints";
 
 export const regionsKeys = {
   all: ["regions"],
-  lists: () => [...regionsKeys.all, "list"],
-  list: (filters) => [...regionsKeys.lists(), { filters }],
-  details: () => [...regionsKeys.all, "detail"],
-  detail: (id) => [...regionsKeys.details(), id],
+  countries: () => [...regionsKeys.all, "countries"],
+  provinces: (countryId) => [...regionsKeys.all, "provinces", countryId],
+  cities: (provinceId) => [...regionsKeys.all, "cities", provinceId],
 };
 
-export function useRegions() {
+const regionQueryOptions = {
+  staleTime: 5 * 60 * 1000,
+  gcTime: 10 * 60 * 1000,
+};
+
+export function useCountries() {
   return useQuery({
-    queryKey: regionsKeys.lists(),
+    queryKey: regionsKeys.countries(),
     queryFn: async () => {
-      const { data } = await publicApi.getRegions();
+      const { data } = await publicApi.getCountries();
       return data;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    select: (data) =>
-      data.map((region) => ({
-        ...region,
-        name: region.name_en,
-        displayName: region.name_fa,
-      })),
+    ...regionQueryOptions,
+  });
+}
+
+export function useProvinces(countryId) {
+  return useQuery({
+    queryKey: regionsKeys.provinces(countryId),
+    queryFn: async () => {
+      const { data } = await publicApi.getProvinces(countryId);
+      return data;
+    },
+    enabled: Boolean(countryId),
+    ...regionQueryOptions,
+  });
+}
+
+export function useCities(provinceId) {
+  return useQuery({
+    queryKey: regionsKeys.cities(provinceId),
+    queryFn: async () => {
+      const { data } = await publicApi.getCities(provinceId);
+      return data;
+    },
+    enabled: Boolean(provinceId),
+    ...regionQueryOptions,
   });
 }

@@ -8,6 +8,11 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { SidebarMobileProvider } from "./context/SidebarMobileContext";
 
 const AppHeader = lazy(() => import("./components/layout/AppHeader"));
+const AppFooter = lazy(() =>
+  import("./components/layout/AppFooter").then((module) => ({
+    default: module.AppFooter,
+  })),
+);
 const ReporterPage = lazy(() => import("./pages/ReporterPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
@@ -37,6 +42,9 @@ function AppShell({ children }) {
         <AppHeader />
       </Suspense>
       <Suspense fallback={<PageLoader />}>{children}</Suspense>
+      <Suspense fallback={null}>
+        <AppFooter />
+      </Suspense>
     </>
   );
 }
@@ -48,88 +56,95 @@ export default function App() {
         <RouteProgressBar />
         <Suspense fallback={<PageLoader />}>
           <Routes>
-          <Route
-            path="/"
-            element={
-              <AppShell>
-                <ReporterPage />
-              </AppShell>
-            }
-          />
-
-          <Route
-            path="/login"
-            element={
-              <AppShell>
-                <LoginPage />
-              </AppShell>
-            }
-          />
-
-          <Route
-            path="/track/:id?"
-            element={
-              <AppShell>
-                <TrackRequestPage />
-              </AppShell>
-            }
-          />
-
-          <Route
-            path="/dispatcher/login"
-            element={<Navigate to="/login" replace />}
-          />
-
-          <Route
-            path="/dispatcher"
-            element={
-              <RequireAuth>
+            <Route
+              path="/"
+              element={
                 <AppShell>
-                  <DashboardPage />
+                  <ReporterPage />
                 </AppShell>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/dispatcher/requests"
-            element={
-              <RequireAuth>
+              }
+            />
+            <Route
+              path="/login"
+              element={
                 <AppShell>
-                  <RequestsPage />
+                  <LoginPage />
                 </AppShell>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/dispatcher/regions"
-            element={
-              <RequireAuth>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
                 <AppShell>
-                  <RegionsPage />
+                  <LoginPage />
                 </AppShell>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/dispatcher/settings"
-            element={
-              <RequireAuth>
-                <AppShell>
-                  <SettingsPage />
-                </AppShell>
-              </RequireAuth>
-            }
-          />
+              }
+            />
 
-          <Route
-            path="/404"
-            element={
-              <AppShell>
-                <NotFoundPage />
-              </AppShell>
-            }
-          />
-          <Route path="*" element={<Navigate to="/404" replace />} />
+            <Route
+              path="/track/:id?"
+              element={
+                <AppShell>
+                  <TrackRequestPage />
+                </AppShell>
+              }
+            />
+
+            <Route
+              path="/dispatcher/login"
+              element={<Navigate to="/login" replace />}
+            />
+
+            <Route
+              path="/dispatcher"
+              element={
+                <RequireAuth>
+                  <AppShell>
+                    <DashboardPage />
+                  </AppShell>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/dispatcher/requests"
+              element={
+                <RequireAuth>
+                  <AppShell>
+                    <RequestsPage />
+                  </AppShell>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/dispatcher/regions"
+              element={
+                <RequireAuth>
+                  <AppShell>
+                    <RegionsPage />
+                  </AppShell>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/dispatcher/settings"
+              element={
+                <RequireAuth>
+                  <AppShell>
+                    <SettingsPage />
+                  </AppShell>
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/404"
+              element={
+                <AppShell>
+                  <NotFoundPage />
+                </AppShell>
+              }
+            />
+            <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </Suspense>
       </SidebarMobileProvider>

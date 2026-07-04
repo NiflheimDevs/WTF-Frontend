@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useRegions } from "../hooks/useRegions";
 import { useSubmitRequest } from "../hooks/useSubmitRequest";
 import { Button } from "../components/primitives/Button";
 import { Card } from "../components/primitives/Card";
 import { Input } from "../components/primitives/Input";
-import { RegionSelect } from "../components/reporter/RegionSelect";
+import { RegionCascadeSelect } from "../components/reporter/RegionCascadeSelect";
 import { NeedTypePicker } from "../components/reporter/NeedTypePicker";
 import { QuantityStepper } from "../components/reporter/QuantityStepper";
 import { SuccessView } from "../components/reporter/SuccessView";
@@ -22,7 +21,6 @@ export default function ReporterPage() {
     [t],
   );
 
-  const { data: regions = [], isLoading: regionsLoading } = useRegions();
   const submitRequest = useSubmitRequest();
 
   const [region, setRegion] = useState("");
@@ -153,11 +151,9 @@ export default function ReporterPage() {
       <main ref={formRef} className="px-4 pb-12 pt-18 w-full max-w-lg mx-auto">
         <Card>
           <div className="flex flex-col gap-5">
-            <RegionSelect
+            <RegionCascadeSelect
               value={region}
               onChange={setRegion}
-              regions={regions}
-              loading={regionsLoading}
               error={errors.region}
             />
 
@@ -221,10 +217,6 @@ export default function ReporterPage() {
           </div>
         </Card>
       </main>
-
-      <footer className="px-6 py-4 text-center text-[11px] text-neutral-400 uppercase tracking-widest border-t border-neutral-200">
-        {t("common.footer")}
-      </footer>
     </div>
   );
 }

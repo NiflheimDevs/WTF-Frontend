@@ -311,6 +311,11 @@ table,
   direction: ltr;
   unicode-bidi: isolate;
 }
+
+/* Native selects respect logical text alignment in RTL */
+select {
+  text-align: start;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
