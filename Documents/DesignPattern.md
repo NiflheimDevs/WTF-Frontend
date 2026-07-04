@@ -104,9 +104,17 @@ Dispatcher queries set `refetchInterval` (15s for requests, 30s for metrics) rat
 ```js
 export function createValidators(t) {
   return {
-    required: (value) => { /* ... uses t("validation.required") ... */ },
-    min: (min) => (value) => { /* ... */ },
-    compose: (...validators) => (value) => { /* runs each, returns first error */ },
+    required: (value) => {
+      /* ... uses t("validation.required") ... */
+    },
+    min: (min) => (value) => {
+      /* ... */
+    },
+    compose:
+      (...validators) =>
+      (value) => {
+        /* runs each, returns first error */
+      },
   };
 }
 ```
@@ -159,17 +167,14 @@ This split exists because mutation callbacks and module-level code can't call ho
 
 ## Summary table
 
-| Concern | Pattern |
-|---|---|
-| Generic UI | Primitives layer, variant/size props, compound components |
-| Domain UI | Feature folders per area, fully controlled by parent page state |
-| Server state | React Query, key factories, `select` for shape translation |
-| Live data | Polling (`refetchInterval`) as baseline, websocket as enhancement |
-| Mutations with visible side effects | Optimistic update + rollback (`onMutate`/`onError`/`onSettled`) |
-| Conditional classes | `cn()` (clsx + tailwind-merge) when merging external `className`; inline ternaries otherwise |
-| Theming | Tailwind v4 `@theme` block over CSS variables |
-| Validation | Composable validator factories parameterized by `t` |
-| Errors | Inconsistent — prefer per-hook translated toasts over `errorHandler.js` for new code |
-| i18n | `useTranslation()` in components, standalone `t` outside components |
-| Dispatcher shell | Inconsistent — live shell is `AppShell`/`AppHeader`; `DispatcherLayout`/`Sidebar`/`TopBar` are built but unmounted |
-| Query client / key registry | Inconsistent — live setup is the inline `QueryClient` in `main.jsx` + per-hook key factories; `src/lib/queryClient.js`/`reactQuery.js` are an unused alternate implementation |
+| Concern                             | Pattern                                                                                      |
+| ----------------------------------- | -------------------------------------------------------------------------------------------- |
+| Generic UI                          | Primitives layer, variant/size props, compound components                                    |
+| Domain UI                           | Feature folders per area, fully controlled by parent page state                              |
+| Server state                        | React Query, key factories, `select` for shape translation                                   |
+| Live data                           | Polling (`refetchInterval`) as baseline, websocket as enhancement                            |
+| Mutations with visible side effects | Optimistic update + rollback (`onMutate`/`onError`/`onSettled`)                              |
+| Conditional classes                 | `cn()` (clsx + tailwind-merge) when merging external `className`; inline ternaries otherwise |
+| Theming                             | Tailwind v4 `@theme` block over CSS variables                                                |
+| Validation                          | Composable validator factories parameterized by `t`                                          |
+| i18n                                | `useTranslation()` in components, standalone `t` outside components                          |
