@@ -8,8 +8,8 @@ This document covers the recurring code patterns used across WTF-Frontend: how c
 
 UI is split into two layers:
 
-- **`components/primitives/`** — generic, domain-agnostic building blocks (`Button`, `Card`, `Input`, `Badge`, `Spinner`, `Skeleton`, `Toast`, `ThemeToggle`, `LanguageToggle`). These know nothing about water requests, regions, or dispatchers.
-- **`components/{reporter,dispatcher,auth,layout}/`** — feature components that compose primitives into domain-specific UI (`RegionSelect`, `NeedTypePicker`, `QuantityStepper`, `SuccessView`, etc.).
+- **`components/primitives/`** — generic, domain-agnostic building blocks (`Button`, `Card`, `Input`, `Select`, `Badge`, `Spinner`, `Skeleton`, `Toast`, `ThemeToggle`, `LanguageToggle`). One exception worth flagging: `TrackRequestButton` lives here but is domain-specific (it navigates to `/track`) — it reads more like a `reporter`/`layout` component than a generic primitive.
+- **`components/{reporter,dispatcher,auth,layout,regions}/`** — feature components that compose primitives into domain-specific UI: `RegionCascadeSelect`, `NeedTypePicker`, `QuantityStepper`, `SuccessView`, `RequestStatusTimeline` in `reporter/`; `RequestTable`, `KpiCard`, `RegionRankList` in `dispatcher/`; `RegionHierarchyFilters` in its own `regions/` folder (used from the dispatcher regions page, but kept separate from `components/dispatcher/` since it's specifically region-hierarchy UI).
 
 This keeps the primitives reusable and testable in isolation, and keeps domain logic out of generic UI.
 
@@ -35,11 +35,15 @@ const variants = {
 
 ### Controlled components throughout
 
-Form-adjacent components (`RegionSelect`, `NeedTypePicker`, `QuantityStepper`) are fully controlled: they receive `value` and `onChange` and hold no internal state of their own. The owning page (`ReporterPage`) is the single source of truth for form state. This makes validation, reset, and submission logic live in one place instead of being scattered across child components.
+Form-adjacent components (`RegionCascadeSelect`, `NeedTypePicker`, `QuantityStepper`) are fully controlled: they receive `value` and `onChange` and hold no internal state of their own beyond local UI concerns (e.g. `Select`'s own open/closed dropdown state). The owning page (`ReporterPage`) is the single source of truth for form state. `RegionCascadeSelect` layers three dependent `Select` primitives (country → province → city) over `useCountries`/`useProvinces`/`useCities`, but still reports out a single controlled value/change pair to its parent. This makes validation, reset, and submission logic live in one place instead of being scattered across child components.
 
 ### Lazy-loaded routes
 
 Every page component is wrapped in `React.lazy()` and the route tree sits inside one shared `<Suspense>` with a single `PageLoader` fallback, rather than per-route fallbacks. This keeps initial bundle size down — the reporter form (the most-trafficked, public route) doesn't pay for dispatcher dashboard code.
+
+### Parked alternate layout
+
+`components/layout/DispatcherLayout.jsx`, `Sidebar.jsx`, `TopBar.jsx`, and `PublicLayout.jsx` follow a different composition pattern from the rest of `layout/` — an `<Outlet>`-based nested-route layout, versus the `children`-prop `AppShell` that's actually used in `App.jsx`. They're fully built (including their own nav-item config in `dispatcherNavItems.js`) but not mounted anywhere. If picking up work in `layout/`, check `App.jsx` first to confirm which shell pattern is live before extending either one.
 
 ## State & data patterns
 
@@ -62,6 +66,8 @@ export const requestsKeys = {
 ```
 
 This makes invalidation targetable at different levels of granularity (`invalidateQueries({ queryKey: requestsKeys.all })` nukes everything request-related; `requestsKeys.detail(id)` targets one record) and avoids typos in hand-written key arrays scattered through the app.
+
+There's a second, unused copy of this pattern in `src/lib/queryClient.js` (a centralized `queryKeys` object covering the same domains) that nothing actually imports — every hook uses its own colocated factory instead. Follow the per-hook-module pattern for new hooks; don't extend `lib/queryClient.js`'s `queryKeys` under the assumption it's the canonical registry.
 
 ### Optimistic updates with rollback
 
@@ -165,3 +171,5 @@ This split exists because mutation callbacks and module-level code can't call ho
 | Validation | Composable validator factories parameterized by `t` |
 | Errors | Inconsistent — prefer per-hook translated toasts over `errorHandler.js` for new code |
 | i18n | `useTranslation()` in components, standalone `t` outside components |
+| Dispatcher shell | Inconsistent — live shell is `AppShell`/`AppHeader`; `DispatcherLayout`/`Sidebar`/`TopBar` are built but unmounted |
+| Query client / key registry | Inconsistent — live setup is the inline `QueryClient` in `main.jsx` + per-hook key factories; `src/lib/queryClient.js`/`reactQuery.js` are an unused alternate implementation |
