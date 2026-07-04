@@ -23,7 +23,7 @@ import { formatNumber } from "../utils/localeDigits";
 export default function RegionsPage() {
   const { theme, toggleTheme } = useTheme();
   const { mobileOpen, toggle, close } = useSidebarMobile();
-  const { t, locale } = useTranslation();
+  const { t, locale, dir } = useTranslation();
 
   const [countryId, setCountryId] = useState("");
   const [provinceId, setProvinceId] = useState("");
@@ -114,7 +114,8 @@ export default function RegionsPage() {
                   placeholder={t("regions.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="ps-10"
+                  dir={dir}
+                  className="ps-10 text-start"
                 />
               </div>
             </Card>

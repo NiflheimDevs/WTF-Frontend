@@ -1,13 +1,9 @@
 import { Skeleton } from "../primitives/Skeleton";
+import { Select } from "../primitives/Select";
 import { useTranslation } from "../../context/LocaleContext";
 import { useCountries, useProvinces, useCities } from "../../hooks/useRegions";
 import { getRegionName } from "../../utils/regionName";
 import { cn } from "../../utils/cn";
-
-const selectStyles = {
-  md: "h-11 text-base",
-  sm: "h-10 text-sm",
-};
 
 function RegionDropdown({
   label,
@@ -21,18 +17,12 @@ function RegionDropdown({
   error,
   size,
   locale,
+  dir,
 }) {
-  const selectClass = cn(
-    "w-full px-3 rounded-md border bg-neutral-0 font-sans transition-all duration-200",
-    "focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none",
-    selectStyles[size],
-    error ? "border-danger-fg" : "border-neutral-200",
-    disabled
-      ? "opacity-60 cursor-not-allowed"
-      : "cursor-pointer hover:border-primary-500",
-    !value && "text-neutral-400",
-    value && "text-neutral-900",
-  );
+  const selectOptions = options.map((option) => ({
+    value: option.id,
+    label: getRegionName(option, locale),
+  }));
 
   return (
     <div>
@@ -44,19 +34,16 @@ function RegionDropdown({
       {loading ? (
         <Skeleton className={cn("w-full", size === "md" ? "h-11" : "h-10")} />
       ) : (
-        <select
+        <Select
           value={value}
           onChange={onChange}
+          options={selectOptions}
+          placeholder={placeholder}
           disabled={disabled}
-          className={selectClass}
-        >
-          <option value="">{placeholder}</option>
-          {options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {getRegionName(option, locale)}
-            </option>
-          ))}
-        </select>
+          size={size}
+          dir={dir}
+          error={error}
+        />
       )}
     </div>
   );
@@ -75,21 +62,21 @@ export function RegionHierarchyFilters({
   required = true,
   error,
 }) {
-  const { t, locale } = useTranslation();
+  const { t, locale, dir } = useTranslation();
 
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
   const { data: provinces = [], isLoading: provincesLoading } =
     useProvinces(countryId);
   const { data: cities = [], isLoading: citiesLoading } = useCities(provinceId);
 
-  const handleCountryChange = (e) => {
-    onCountryChange(e.target.value);
+  const handleCountryChange = (nextCountryId) => {
+    onCountryChange(nextCountryId);
     onProvinceChange("");
     if (onCityChange) onCityChange("");
   };
 
-  const handleProvinceChange = (e) => {
-    onProvinceChange(e.target.value);
+  const handleProvinceChange = (nextProvinceId) => {
+    onProvinceChange(nextProvinceId);
     if (onCityChange) onCityChange("");
   };
 
@@ -114,6 +101,7 @@ export function RegionHierarchyFilters({
         error={error && !countryId ? error : undefined}
         size={size}
         locale={locale}
+        dir={dir}
       />
 
       <RegionDropdown
@@ -128,13 +116,14 @@ export function RegionHierarchyFilters({
         error={error && countryId && !provinceId ? error : undefined}
         size={size}
         locale={locale}
+        dir={dir}
       />
 
       {showCity && onCityChange && (
         <RegionDropdown
           label={t("reporter.city")}
           value={cityId}
-          onChange={(e) => onCityChange(e.target.value)}
+          onChange={(nextCityId) => onCityChange(nextCityId)}
           options={cities}
           loading={citiesLoading}
           disabled={!provinceId || citiesLoading}
@@ -143,6 +132,7 @@ export function RegionHierarchyFilters({
           error={error && provinceId && !cityId ? error : undefined}
           size={size}
           locale={locale}
+          dir={dir}
         />
       )}
 
