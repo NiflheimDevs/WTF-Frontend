@@ -8,6 +8,11 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { SidebarMobileProvider } from "./context/SidebarMobileContext";
 
 const AppHeader = lazy(() => import("./components/layout/AppHeader"));
+const AppFooter = lazy(() =>
+  import("./components/layout/AppFooter").then((module) => ({
+    default: module.AppFooter,
+  })),
+);
 const ReporterPage = lazy(() => import("./pages/ReporterPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
@@ -37,6 +42,9 @@ function AppShell({ children }) {
         <AppHeader />
       </Suspense>
       <Suspense fallback={<PageLoader />}>{children}</Suspense>
+      <Suspense fallback={null}>
+        <AppFooter />
+      </Suspense>
     </>
   );
 }

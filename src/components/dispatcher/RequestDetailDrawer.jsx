@@ -9,6 +9,7 @@ import { formatPhone, formatDateTime } from "../../utils/formatters";
 import { useTranslation } from "../../context/LocaleContext";
 import { getRequestRegionName } from "../../utils/regionName";
 import { formatNumber } from "../../utils/localeDigits";
+import { AuditLogEntry } from "./AuditLogEntry";
 
 export function RequestDetailDrawer({
   requestId,
@@ -266,27 +267,13 @@ export function RequestDetailDrawer({
                   <h3 className="text-sm font-semibold text-neutral-700">
                     {t("requests.activityLog")}
                   </h3>
-                  <div className="space-y-2">
+                  <div>
                     {auditLog.map((log, index) => (
-                      <div
+                      <AuditLogEntry
                         key={log.id || index}
-                        className="flex gap-3 text-sm p-3 bg-neutral-0 rounded-lg border border-neutral-200"
-                      >
-                        <div className="w-1 h-auto bg-primary-500 rounded-full" />
-                        <div className="flex-1">
-                          <p className="text-xs text-neutral-400">
-                            {formatDate(log.created_at)}
-                          </p>
-                          <p className="text-sm text-neutral-700 mt-1 capitalize">
-                            {log.event_type?.replace(/_/g, " ")}
-                          </p>
-                          {log.payload && (
-                            <pre className="text-xs text-neutral-500 mt-1 overflow-x-auto ltr-isolate">
-                              {JSON.stringify(log.payload, null, 2)}
-                            </pre>
-                          )}
-                        </div>
-                      </div>
+                        log={log}
+                        isLast={index === auditLog.length - 1}
+                      />
                     ))}
                   </div>
                 </div>

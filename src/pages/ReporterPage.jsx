@@ -217,10 +217,6 @@ export default function ReporterPage() {
           </div>
         </Card>
       </main>
-
-      <footer className="px-6 py-4 text-center text-[11px] text-neutral-400 uppercase tracking-widest border-t border-neutral-200">
-        {t("common.footer")}
-      </footer>
     </div>
   );
 }
