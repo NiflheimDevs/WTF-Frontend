@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "../primitives/Button";
 import { Input } from "../primitives/Input";
@@ -16,7 +16,17 @@ export function RequestFilters({ filters, onChange, onClose }) {
   const [countryId, setCountryId] = useState("");
   const [provinceId, setProvinceId] = useState("");
 
-  useEffect(() => {
+  const syncedFilterKey = [
+    filters.status,
+    filters.regionId,
+    filters.from,
+    filters.to,
+  ].join("|");
+  const [prevSyncedFilterKey, setPrevSyncedFilterKey] =
+    useState(syncedFilterKey);
+
+  if (syncedFilterKey !== prevSyncedFilterKey) {
+    setPrevSyncedFilterKey(syncedFilterKey);
     setLocalFilters({
       status: filters.status || "all",
       regionId: filters.regionId || "",
@@ -27,7 +37,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
       setCountryId("");
       setProvinceId("");
     }
-  }, [filters.status, filters.regionId, filters.from, filters.to]);
+  }
 
   const isPartialRegion = !!(countryId && !localFilters.regionId);
   const isPartialDate =
