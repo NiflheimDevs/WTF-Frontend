@@ -193,6 +193,17 @@ export default {
     failedToLoad: "Couldn't load this section",
     retry: "Retry",
   },
+  dispatchAction: {
+    title: "Update Request",
+    dispatching: "Updating request…",
+    successTitle: "Request updated",
+    successBody: "The request is now marked as {{status}}.",
+    errorTitle: "Couldn't update the request",
+    missingId: "No request ID provided.",
+    missingIdHint: "Append ?id=<request-id> to the URL.",
+    backToRequests: "Back to requests",
+    retry: "Try again",
+  },
   requests: {
     title: "Requests",
     subtitle: "Manage and track water supply requests",
