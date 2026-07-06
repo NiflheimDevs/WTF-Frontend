@@ -10,6 +10,7 @@ export function KpiCard({
   caption,
   delta,
   sparkline,
+  displayValue,
   intent = "default",
   loading,
 }) {
@@ -19,6 +20,12 @@ export function KpiCard({
     warning: "text-warning-fg",
     danger: "text-danger-fg",
   };
+
+  // displayValue wins when provided (used for percentages / durations /
+  // nullable metrics). When both are absent we render an em dash so nullable
+  // backend fields (rates, averages) never show a misleading "0".
+  const display =
+    displayValue ?? (value == null ? null : formatNumber(value, locale));
 
   if (loading) {
     return (
@@ -61,7 +68,7 @@ export function KpiCard({
           intentColor[intent],
         )}
       >
-        {formatNumber(value, locale)}
+        {display ?? "—"}
       </p>
 
       {sparkline && <Sparkline data={sparkline} />}

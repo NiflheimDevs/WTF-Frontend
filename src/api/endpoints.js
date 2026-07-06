@@ -34,5 +34,18 @@ export const dispatcherApi = {
   getMetricsSummary: () => api.get("/dispatcher/metrics/summary"),
   getMetricsByRegion: (limit = 10) =>
     api.get("/dispatcher/metrics/by-region", { params: { limit } }),
-  getMetricsByNeedType: () => api.get("/dispatcher/metrics/by-need-type"),
+  // `params.scope` may be "today" to restrict counts to the current day.
+  getMetricsByNeedType: (params) =>
+    api.get("/dispatcher/metrics/by-need-type", { params }),
+
+  // Metrics — added in API v1.1.0
+  // timeseries: { from?, to?, region_id?, group_by_need?: "true" }
+  getMetricsTimeSeries: (params) =>
+    api.get("/dispatcher/metrics/timeseries", { params }),
+  // dispatchers: { scope?: "today" }
+  getMetricsDispatchers: (params) =>
+    api.get("/dispatcher/metrics/dispatchers", { params }),
+  // funnel: { stuck_threshold_hours?: number }
+  getMetricsFunnel: (params) =>
+    api.get("/dispatcher/metrics/funnel", { params }),
 };
