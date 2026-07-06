@@ -170,6 +170,7 @@ export default {
     unitsPending: "{{count}} units pending",
     allTime: "All time",
     today: "Today",
+    window: "Window",
     volumeOverTime: "Request Volume Over Time",
     volumeByNeed: "Volume by Need Type",
     last7Days: "7d",

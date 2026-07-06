@@ -61,6 +61,7 @@ export default function DashboardPage() {
   const [tsRegionId, setTsRegionId] = useState("");
   const [tsGroupByNeed, setTsGroupByNeed] = useState(false);
   const [funnelThreshold, setFunnelThreshold] = useState(24);
+  const [funnelWindow, setFunnelWindow] = useState(0);
   const [dispatcherScope, setDispatcherScope] = useState("");
   const [breakdownScope, setBreakdownScope] = useState("");
 
@@ -88,7 +89,10 @@ export default function DashboardPage() {
     isLoading: funnelLoading,
     isError: funnelError,
     refetch: refetchFunnel,
-  } = useMetricsFunnel(funnelThreshold);
+  } = useMetricsFunnel({
+    stuckThresholdHours: funnelThreshold,
+    windowHours: funnelWindow,
+  });
 
   const {
     data: requestsData,
@@ -271,6 +275,8 @@ export default function DashboardPage() {
               isError={funnelError}
               threshold={funnelThreshold}
               onThresholdChange={setFunnelThreshold}
+              windowHours={funnelWindow}
+              onWindowHoursChange={setFunnelWindow}
               onRetry={refetchFunnel}
             />
             <DispatcherLeaderboard

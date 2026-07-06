@@ -6,6 +6,9 @@ import { cn } from "../../utils/cn";
 import { formatNumber, toLocaleDigits } from "../../utils/localeDigits";
 
 const STUCK_OPTIONS = [6, 12, 24, 48, 72];
+// window_hours scopes every stage count to requests that reached that stage
+// within the last N hours (0 / omitted = all-time). Stuck count is unaffected.
+const WINDOW_OPTIONS = [0, 24, 48, 168];
 
 function RateStat({ label, value, intent, locale }) {
   const display =
@@ -41,6 +44,8 @@ export function DispatchFunnel({
   isError,
   threshold,
   onThresholdChange,
+  windowHours,
+  onWindowHoursChange,
   onRetry,
 }) {
   const { t, locale } = useTranslation();
@@ -69,6 +74,14 @@ export function DispatchFunnel({
   const stuck = data?.stuck_dispatched ?? 0;
   const maxCount = Math.max(stages[0].value, stages[1].value, stages[2].value, 1);
 
+  const windowOptions = WINDOW_OPTIONS.map((h) => ({
+    value: String(h),
+    label:
+      h === 0
+        ? t("dashboard.allTime")
+        : toLocaleDigits(h >= 168 ? "7d" : `${h}h`, locale),
+  }));
+
   const thresholdOptions = STUCK_OPTIONS.map((h) => ({
     value: String(h),
     label: toLocaleDigits(`${h}h`, locale),
@@ -82,12 +95,12 @@ export function DispatchFunnel({
         </h2>
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-neutral-400">
-            {t("dashboard.stuckThreshold")}
+            {t("dashboard.window")}
           </span>
           <SegmentedControl
-            options={thresholdOptions}
-            value={String(threshold)}
-            onChange={(v) => onThresholdChange(Number(v))}
+            options={windowOptions}
+            value={String(windowHours ?? 0)}
+            onChange={(v) => onWindowHoursChange(Number(v))}
             size="xs"
           />
         </div>
@@ -167,10 +180,22 @@ export function DispatchFunnel({
             </span>
           </div>
 
-          {/* Stuck dispatched alert */}
+          {/* Stuck dispatched alert — the threshold only affects this block,
+              so its control lives here next to it rather than in the header. */}
+          <div className="flex items-center justify-between mt-4 mb-1.5">
+            <span className="text-[11px] text-neutral-400">
+              {t("dashboard.stuckThreshold")}
+            </span>
+            <SegmentedControl
+              options={thresholdOptions}
+              value={String(threshold)}
+              onChange={(v) => onThresholdChange(Number(v))}
+              size="xs"
+            />
+          </div>
           <div
             className={cn(
-              "flex items-center gap-3 rounded-md mt-4 px-3 py-2.5",
+              "flex items-center gap-3 rounded-md px-3 py-2.5",
               stuck > 0 ? "bg-warning-bg" : "bg-neutral-100",
             )}
           >

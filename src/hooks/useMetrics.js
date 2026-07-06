@@ -8,7 +8,12 @@ export const metricsKeys = {
   byNeedType: (scope) => [...metricsKeys.all, "by-need-type", scope ?? "all"],
   timeSeries: (params) => [...metricsKeys.all, "timeseries", params],
   dispatchers: (scope) => [...metricsKeys.all, "dispatchers", scope ?? "all"],
-  funnel: (threshold) => [...metricsKeys.all, "funnel", threshold],
+  funnel: (threshold, window) => [
+    ...metricsKeys.all,
+    "funnel",
+    threshold ?? 24,
+    window ?? 0,
+  ],
 };
 
 // Normalizes the summary payload into camelCase, exposing the v1.1.0 additions.
@@ -127,15 +132,23 @@ export function useMetricsDispatchers(scope) {
   });
 }
 
-// Completion funnel + quality metrics. `stuckThresholdHours` flags requests
-// sitting in "dispatched" longer than the threshold (default 24h on the API).
-export function useMetricsFunnel(stuckThresholdHours = 24) {
+// Completion funnel + quality metrics.
+// - stuckThresholdHours: flags requests sitting in "dispatched" longer than the
+//   threshold (API default 24h). Independent of window_hours.
+// - windowHours: when > 0, every stage count is scoped to requests that reached
+//   that stage within the last N hours (each stage uses its own timestamp).
+//   0 / omitted = all-time counts. The stuck count is never affected by this.
+export function useMetricsFunnel({
+  stuckThresholdHours = 24,
+  windowHours = 0,
+} = {}) {
+  const params = { stuck_threshold_hours: stuckThresholdHours };
+  if (windowHours && windowHours > 0) params.window_hours = windowHours;
+
   return useQuery({
-    queryKey: metricsKeys.funnel(stuckThresholdHours),
+    queryKey: metricsKeys.funnel(stuckThresholdHours, windowHours),
     queryFn: async () => {
-      const { data } = await dispatcherApi.getMetricsFunnel({
-        stuck_threshold_hours: stuckThresholdHours,
-      });
+      const { data } = await dispatcherApi.getMetricsFunnel(params);
       return data;
     },
     refetchOnWindowFocus: false,

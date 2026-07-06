@@ -170,6 +170,7 @@ export default {
     unitsPending: "{{count}} واحد در انتظار",
     allTime: "کل مدت",
     today: "امروز",
+    window: "بازه",
     volumeOverTime: "حجم درخواست‌ها در طول زمان",
     volumeByNeed: "حجم بر اساس نوع نیاز",
     last7Days: "۷ روز",
