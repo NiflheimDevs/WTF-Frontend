@@ -2,11 +2,18 @@ import { NavLink } from "react-router-dom";
 import { Droplets, LogOut } from "lucide-react";
 import { useTranslation } from "../../context/LocaleContext";
 import { cn } from "../../utils/cn";
+import { useAuth } from "../../hooks/useAuth";
 import { DISPATCHER_NAV_ITEMS } from "./dispatcherNavItems";
 
-export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }) {
+export function Sidebar({ mobileOpen, onMobileClose }) {
+  const { user, logout } = useAuth();
   const { t } = useTranslation();
   const navItems = DISPATCHER_NAV_ITEMS;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <>
@@ -67,14 +74,17 @@ export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-neutral-700 truncate">
-                {user?.full_name || t("auth.dispatcher")}
+                {user?.full_name || t(user?.role)}
               </p>
               <p className="text-[11px] text-neutral-400 truncate">
                 {user?.email || ""}
               </p>
             </div>
             <button
-              onClick={onLogout}
+              onClick={() => {
+                handleLogout();
+                onMobileClose();
+              }}
               className="text-neutral-400 hover:text-danger-fg bg-transparent border-none cursor-pointer p-1"
             >
               <LogOut size={15} />

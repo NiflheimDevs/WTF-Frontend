@@ -99,7 +99,7 @@ export default function AppHeader() {
                           {user.full_name || user.email?.split("@")[0]}
                         </p>
                         <p className="text-[10px] text-neutral-400">
-                          {t("auth.dispatcher")}
+                          {t(user.role)}
                         </p>
                       </div>
                       <Button

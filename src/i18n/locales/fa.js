@@ -47,6 +47,8 @@ export default {
     dashboard: "داشبورد",
     closeMenu: "بستن منو",
   },
+  admin:"مدیر",
+  dispatcher:"اعزام کننده",
   auth: {
     login: "ورود",
     logout: "خروج",

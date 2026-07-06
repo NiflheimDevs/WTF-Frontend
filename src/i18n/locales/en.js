@@ -47,6 +47,8 @@ export default {
     dashboard: "Dashboard",
     closeMenu: "Close menu",
   },
+  admin:"Admin",
+  dispatcher:"Dispatcher",
   auth: {
     login: "Login",
     logout: "Logout",
