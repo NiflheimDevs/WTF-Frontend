@@ -8,9 +8,16 @@ import { compactNumber } from "../../utils/formatters";
 import { formatDateTime } from "../../utils/localeDigits";
 import { getRegionName } from "../../utils/regionName";
 
-// ── Date helpers (metric_date is a UTC "YYYY-MM-DD" string) ────────────────
+// ── Date helpers (metric_date may arrive as "YYYY-MM-DD" or a full
+//    "YYYY-MM-DDTHH:MM:SSZ" timestamp — we only ever care about the date) ────
+function dateKey(metricDate) {
+  // Take the leading date portion so a timestamp suffix can't corrupt parsing
+  // or break Map-key alignment with the generated day domain.
+  return String(metricDate).slice(0, 10);
+}
+
 function parseISODate(str) {
-  const [y, m, d] = String(str).split("-").map(Number);
+  const [y, m, d] = dateKey(str).split("-").map(Number);
   return new Date(y, (m || 1) - 1, d || 1);
 }
 
@@ -78,14 +85,15 @@ const NEED_PALETTE = [
 function buildSeries(points, groupByNeed, t) {
   if (!points || points.length === 0) return { series: [], days: [] };
 
-  const dates = points.map((p) => p.metric_date).sort();
+  const dates = points.map((p) => dateKey(p.metric_date)).sort();
   const days = eachDay(parseISODate(dates[0]), parseISODate(dates[dates.length - 1]));
   const dayKeys = days.map(toISODate);
 
   const rowsByDate = new Map();
   for (const p of points) {
-    if (!rowsByDate.has(p.metric_date)) rowsByDate.set(p.metric_date, []);
-    rowsByDate.get(p.metric_date).push(p);
+    const dk = dateKey(p.metric_date);
+    if (!rowsByDate.has(dk)) rowsByDate.set(dk, []);
+    rowsByDate.get(dk).push(p);
   }
 
   if (groupByNeed) {
