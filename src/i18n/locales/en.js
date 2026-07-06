@@ -156,7 +156,7 @@ export default {
     noRegionData: "No region data available",
     totalQuantity: "Total quantity: {{count}}",
     metricRequests: "Requests",
-    activeBacklog: "Active Backlog",
+    activeBacklog: "Active Requests",
     activeBacklogCaption: "{{count}} units in queue",
     cancelled: "Cancelled",
     cancelledCaption: "{{rate}} of all requests",

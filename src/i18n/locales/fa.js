@@ -156,7 +156,7 @@ export default {
     noRegionData: "داده منطقه‌ای موجود نیست",
     totalQuantity: "مجموع تعداد: {{count}}",
     metricRequests: "درخواست‌ها",
-    activeBacklog: "انبار فعال",
+    activeBacklog: "درخواست های فعال",
     activeBacklogCaption: "{{count}} واحد در صف",
     cancelled: "لغوشده",
     cancelledCaption: "{{rate}} از کل درخواست‌ها",
