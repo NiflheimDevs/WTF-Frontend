@@ -243,9 +243,6 @@ export default function DashboardPage() {
                 <KpiCard
                   label={t("dashboard.avgResponse")}
                   displayValue={formatMinutes(metrics?.avgResponseMinutes)}
-                  caption={t("dashboard.avgResponseCaption", {
-                    value: formatMinutes(metrics?.medianResponseMinutes) ?? "—",
-                  })}
                 />
               </>
             )}

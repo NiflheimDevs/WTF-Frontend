@@ -252,6 +252,7 @@ export default {
         request_submitted: "Request submitted",
         request_status_changed: "Status changed",
         dispatcher_notified: "Dispatcher notified",
+        requester_sms_sent: "SMS sent",
         metrics_refreshed: "Metrics refreshed",
       },
       fields: {
