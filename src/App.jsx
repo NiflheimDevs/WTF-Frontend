@@ -21,9 +21,6 @@ const RegionsPage = lazy(() => import("./pages/RegionsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const TrackRequestPage = lazy(() => import("./pages/TrackRequestPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
-// Hidden action page — no nav link points here; reachable only by typing the
-// URL directly (e.g. /dispatcher/dispatch?id=<uuid>).
-const DispatchActionPage = lazy(() => import("./pages/DispatchActionPage"));
 
 function AppBackground() {
   return (
@@ -135,17 +132,6 @@ export default function App() {
                   <AppShell>
                     <SettingsPage />
                   </AppShell>
-                </RequireAuth>
-              }
-            />
-
-            {/* Status-action shortcut: ?id=&status= — auth-gated but deliberately
-                absent from the sidebar; only URL entry reaches it. */}
-            <Route
-              path="/dispatcher/dispatch"
-              element={
-                <RequireAuth>
-                  <DispatchActionPage />
                 </RequireAuth>
               }
             />
