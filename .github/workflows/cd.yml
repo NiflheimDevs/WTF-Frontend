@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/new-metric]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -10,7 +10,6 @@ concurrency:
 
 env:
   DEPLOY_DIR: /home/debian/frontend
-
 
 jobs:
   build-and-push-image:
@@ -86,3 +85,4 @@ jobs:
             docker compose pull
             docker compose up -d
             docker image prune -f
+
