@@ -193,17 +193,6 @@ export default {
     failedToLoad: "بارگذاری این بخش ناموفق بود",
     retry: "تلاش مجدد",
   },
-  dispatchAction: {
-    title: "بروزرسانی درخواست",
-    dispatching: "در حال بروزرسانی درخواست…",
-    successTitle: "درخواست بروزرسانی شد",
-    successBody: "وضعیت درخواست اکنون «{{status}}» است.",
-    errorTitle: "بروزرسانی درخواست ناموفق بود",
-    missingId: "شناسه درخواستی ارسال نشده است.",
-    missingIdHint: "شناسه را با ?id=<request-id> به URL اضافه کنید.",
-    backToRequests: "بازگشت به درخواست‌ها",
-    retry: "تلاش مجدد",
-  },
   requests: {
     title: "درخواست‌ها",
     subtitle: "مدیریت و پیگیری درخواست‌های آب",
