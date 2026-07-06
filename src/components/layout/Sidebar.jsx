@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Droplets, LogOut } from "lucide-react";
 import { useTranslation } from "../../context/LocaleContext";
@@ -8,6 +9,7 @@ import { DISPATCHER_NAV_ITEMS } from "./dispatcherNavItems";
 export function Sidebar({ mobileOpen, onMobileClose }) {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const navItems = DISPATCHER_NAV_ITEMS;
 
   const handleLogout = () => {
