@@ -75,7 +75,9 @@ export function DispatcherLeaderboard({
                 key={d.user_id}
                 className={cn(
                   "flex items-center gap-3 py-1.5 rounded-md px-2 transition-colors duration-100",
-                  isTop ? "bg-primary-50" : "hover:bg-neutral-100",
+                  isTop
+                    ? "bg-primary-50 dark:bg-primary-500/20"
+                    : "hover:bg-neutral-100",
                 )}
               >
                 <span className="font-mono text-xs text-neutral-400 w-5 shrink-0 flex items-center gap-0.5">

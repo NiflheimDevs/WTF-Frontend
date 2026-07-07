@@ -25,7 +25,7 @@ import { useTheme } from "../hooks/useTheme";
 import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { useTranslation } from "../context/LocaleContext";
 import { getDateLocale } from "../i18n";
-import { toLocaleDigits } from "../utils/localeDigits";
+import { toLocaleDigits, formatNumber } from "../utils/localeDigits";
 import toast from "react-hot-toast";
 
 // ── Date helpers (timeseries uses ISO "YYYY-MM-DD" date strings) ───────────
@@ -127,10 +127,6 @@ export default function DashboardPage() {
   // Rate / duration formatting for the nullable v1.1.0 summary fields.
   const formatRate = useCallback(
     (rate) => (rate == null ? null : toLocaleDigits(`${(rate * 100).toFixed(1)}%`, locale)),
-    [locale],
-  );
-  const formatMinutes = useCallback(
-    (min) => (min == null ? null : toLocaleDigits(`${Math.round(min)}m`, locale)),
     [locale],
   );
 
@@ -246,7 +242,16 @@ export default function DashboardPage() {
                 />
                 <KpiCard
                   label={t("dashboard.avgResponse")}
-                  displayValue={formatMinutes(metrics?.avgResponseMinutes)}
+                  displayValue={
+                    metrics?.avgResponseMinutes == null ? null : (
+                      <>
+                        {formatNumber(Math.round(metrics.avgResponseMinutes), locale)}
+                        <span className="text-lg font-medium text-neutral-400 ms-1.5">
+                          {t("dashboard.minutesUnit")}
+                        </span>
+                      </>
+                    )
+                  }
                 />
               </>
             )}

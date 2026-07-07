@@ -6,6 +6,7 @@ import { Skeleton } from "../primitives/Skeleton";
 import { cn } from "../../utils/cn";
 import { compactNumber } from "../../utils/formatters";
 import { formatDateTime } from "../../utils/localeDigits";
+import { NEED_TYPES } from "../../api/types";
 import { getRegionName } from "../../utils/regionName";
 
 // ── Date helpers (metric_date may arrive as "YYYY-MM-DD" or a full
@@ -80,6 +81,20 @@ const NEED_PALETTE = [
   { color: "text-orange-500", dot: "bg-orange-500" },
 ];
 
+function getNeedTypeId(needType) {
+  if (!needType) return null;
+  if (typeof needType === "string") return needType;
+  return needType.id ?? null;
+}
+
+function getNeedTypeLabel(needType, t) {
+  const id = getNeedTypeId(needType);
+  if (id === NEED_TYPES.TANKER) return t("reporter.tankerTruck");
+  if (id === NEED_TYPES.BOTTLED_WATER) return t("reporter.waterBottles");
+  if (typeof needType === "object") return needType.name || id;
+  return id;
+}
+
 // Transform raw API points into chart series with a contiguous date domain.
 // Missing days are filled with 0 so the x-axis stays even.
 function buildSeries(points, groupByNeed, t) {
@@ -100,16 +115,18 @@ function buildSeries(points, groupByNeed, t) {
     const needOrder = [];
     const needName = new Map();
     for (const p of points) {
-      const id = p.need_type?.id;
+      const id = getNeedTypeId(p.need_type);
       if (id && !needName.has(id)) {
-        needName.set(id, p.need_type?.name || id);
+        needName.set(id, getNeedTypeLabel(p.need_type, t));
         needOrder.push(id);
       }
     }
     const series = needOrder.map((id, idx) => {
       const { color, dot } = NEED_PALETTE[idx % NEED_PALETTE.length];
       const values = dayKeys.map((dk) => {
-        const rows = (rowsByDate.get(dk) || []).filter((r) => r.need_type?.id === id);
+        const rows = (rowsByDate.get(dk) || []).filter(
+          (r) => getNeedTypeId(r.need_type) === id,
+        );
         return rows.reduce((sum, r) => sum + (Number(r.request_count) || 0), 0);
       });
       return { key: id, label: needName.get(id), color, dot, values };
@@ -287,11 +304,10 @@ export function TimeSeriesChart({
 }) {
   const { t, locale } = useTranslation();
   const [ref, width] = useResizeWidth();
-  const points = Array.isArray(data) ? data : [];
 
   const { series, days } = useMemo(
-    () => buildSeries(points, groupByNeed, t),
-    [points, groupByNeed, t],
+    () => buildSeries(Array.isArray(data) ? data : [], groupByNeed, t),
+    [data, groupByNeed, t],
   );
 
   const presetOptions = [
@@ -311,7 +327,7 @@ export function TimeSeriesChart({
             value={regionId || ""}
             onChange={(e) => onRegionIdChange(e.target.value)}
             aria-label={t("dashboard.allRegions")}
-            className="h-7 text-xs rounded-md border border-neutral-200 bg-neutral-0 px-2 text-neutral-700 cursor-pointer hover:border-neutral-300 focus:border-primary-500 focus:outline-none max-w-[10rem]"
+            className="h-7 text-xs rounded-md border border-neutral-200 bg-neutral-0 px-2 text-neutral-700 cursor-pointer hover:border-neutral-300 focus:border-primary-500 focus:outline-none max-w-40"
           >
             <option value="">{t("dashboard.allRegions")}</option>
             {(regions || []).map((r) => (
