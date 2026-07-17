@@ -14,6 +14,7 @@ export const EVENT_TYPES = {
   REQUEST_SUBMITTED: "request_submitted",
   REQUEST_STATUS_CHANGED: "request_status_changed",
   DISPATCHER_NOTIFIED: "dispatcher_notified",
+  REQUESTER_SMS_SENT: "requester_sms_sent",
   METRICS_REFRESHED: "metrics_refreshed",
 };
 

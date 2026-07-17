@@ -68,25 +68,7 @@ export function RequestFilters({ filters, onChange, onClose }) {
       </div>
 
       <div className="space-y-3">
-        <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1">
-            {t("requests.table.status")}
-          </label>
-          <select
-            value={localFilters.status}
-            onChange={(e) =>
-              setLocalFilters((prev) => ({ ...prev, status: e.target.value }))
-            }
-            className="w-full h-10 px-3 rounded-md border border-neutral-200 bg-neutral-0 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-          >
-            <option value="all">{t("requests.allStatuses")}</option>
-            <option value="pending">{t("status.pending")}</option>
-            <option value="dispatched">{t("status.dispatched")}</option>
-            <option value="fulfilled">{t("status.fulfilled")}</option>
-            <option value="cancelled">{t("status.cancelled")}</option>
-          </select>
-        </div>
-
+        
         <RegionHierarchyFilters
           countryId={countryId}
           provinceId={provinceId}

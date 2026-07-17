@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
 import { useSidebarMobile } from "../context/SidebarMobileContext";
 import { useMetricsByRegion } from "../hooks/useMetrics";
@@ -15,10 +16,11 @@ import { Badge } from "../components/primitives/Badge";
 import { Skeleton } from "../components/primitives/Skeleton";
 import { Search, MapPin, Activity } from "lucide-react";
 import { useTranslation } from "../context/LocaleContext";
-import { getRegionName, getRegionSecondaryName } from "../utils/regionName";
+import { getRegionName } from "../utils/regionName";
 import { formatNumber } from "../utils/localeDigits";
 
 export default function RegionsPage() {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { mobileOpen, toggle, close } = useSidebarMobile();
   const { t, locale, dir } = useTranslation();
@@ -37,6 +39,23 @@ export default function RegionsPage() {
         region.name_fa.includes(searchQuery.trim()),
     );
   }, [regionMetrics, searchQuery]);
+
+  const handleRegionClick = useCallback(
+    (regionId) => {
+      navigate(`/dispatcher/requests?regionId=${encodeURIComponent(regionId)}`);
+    },
+    [navigate],
+  );
+
+  const handleRegionKeyDown = useCallback(
+    (event, regionId) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handleRegionClick(regionId);
+      }
+    },
+    [handleRegionClick],
+  );
 
   return (
     <div className="min-h-screen bg-neutral-0">
@@ -89,18 +108,23 @@ export default function RegionsPage() {
                   </Card>
                 ))
               : displayedRegions.map((region) => (
-                  <Card key={region.id}>
+                  <Card
+                    key={region.id}
+                    hover
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${getRegionName(region, locale)} — ${t("regions.viewRequests")}`}
+                    onClick={() => handleRegionClick(region.id)}
+                    onKeyDown={(event) => handleRegionKeyDown(event, region.id)}
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-500/20 flex items-center justify-center">
                             <MapPin size={16} className="text-primary-500" />
                           </div>
                           <div>
                             <CardTitle>{getRegionName(region, locale)}</CardTitle>
-                            <p className="text-xs text-neutral-400">
-                              {getRegionSecondaryName(region, locale)}
-                            </p>
                           </div>
                         </div>
                         {region.count > 0 && (
@@ -111,7 +135,25 @@ export default function RegionsPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between">
+                      <dl className="space-y-2 mb-4">
+                        <div className="flex items-center justify-between gap-3 text-sm">
+                          <dt className="text-neutral-500 shrink-0">
+                            {t("regions.englishName")}
+                          </dt>
+                          <dd className="text-neutral-900 text-end truncate">
+                            {region.name_en}
+                          </dd>
+                        </div>
+                        <div className="flex items-center justify-between gap-3 text-sm">
+                          <dt className="text-neutral-500 shrink-0">
+                            {t("regions.persianName")}
+                          </dt>
+                          <dd className="text-neutral-900 text-end truncate" dir="rtl">
+                            {region.name_fa}
+                          </dd>
+                        </div>
+                      </dl>
+                      <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
                         <div className="flex items-center gap-2 text-sm text-neutral-600">
                           <Activity size={14} />
                           <span>{t("regions.totalRequests")}</span>

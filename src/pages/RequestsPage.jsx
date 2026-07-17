@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRequests, useUpdateRequestStatus, requestsKeys } from "../hooks/useRequests";
 import { useTheme } from "../hooks/useTheme";
@@ -19,14 +20,17 @@ export default function RequestsPage() {
   const { theme, toggleTheme } = useTheme();
   const { mobileOpen, toggle, close } = useSidebarMobile();
   const { t /* , locale */ } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const regionIdFromUrl = searchParams.get("regionId") || "";
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState(() => ({
     status: "all",
     page: 1,
     pageSize: 20,
-  });
+    ...(regionIdFromUrl ? { regionId: regionIdFromUrl } : {}),
+  }));
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(Boolean(regionIdFromUrl));
 
   const { data, isLoading, refetch } = useRequests(filters);
   const updateStatus = useUpdateRequestStatus();

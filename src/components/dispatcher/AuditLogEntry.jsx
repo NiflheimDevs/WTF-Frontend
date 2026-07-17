@@ -37,6 +37,12 @@ const EVENT_CONFIG = {
       "bg-warning-bg text-warning-fg border-warning-bg dark:border-warning-fg/35",
     dot: "bg-amber-500 dark:bg-amber-400",
   },
+  [EVENT_TYPES.REQUESTER_SMS_SENT]: {
+    icon: Bell,
+    accent:
+      "bg-warning-bg text-warning-fg border-warning-bg dark:border-warning-fg/35",
+    dot: "bg-amber-500 dark:bg-amber-400",
+  },
   [EVENT_TYPES.METRICS_REFRESHED]: {
     icon: RefreshCw,
     accent:
